@@ -81,6 +81,7 @@ const cs = {
     comment: "Komentář",
     instructions: "Instrukce",
     demoNote: "Ukázkové PDF (testovací režim)",
+    registries: "Veřejné registry",
   },
   decide: { comment: "Komentář…", approve: "✓ Schválit", reject: "✕ Zamítnout" },
   status: {
@@ -292,6 +293,7 @@ const en: typeof cs = {
     comment: "Comment",
     instructions: "Instructions",
     demoNote: "Sample PDF (test mode)",
+    registries: "Public registries",
   },
   decide: { comment: "Comment…", approve: "✓ Approve", reject: "✕ Reject" },
   status: {

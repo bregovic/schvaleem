@@ -1,7 +1,15 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { runCheck } from "@/lib/checks";
-import type { FieldRole, Workflow } from "@/generated/prisma/client";
+import type { CheckType, FieldRole, Workflow } from "@/generated/prisma/client";
+
+// Registrové kontroly běží online (na detailu, async) – ne v synchronní sadě.
+const REGISTRY_TYPES = new Set<CheckType>([
+  "ARES_SUBJECT",
+  "VAT_RELIABILITY",
+  "VAT_ACCOUNT_PUBLISHED",
+  "INSOLVENCY",
+]);
 
 export type DisplayField = {
   key: string;
@@ -23,7 +31,8 @@ export type WorkflowDisplay = {
   currency: string | null;
   fields: DisplayField[]; // pole pro detail (bez skrytých)
   previewFields: DisplayField[]; // pole zvolená do náhledu hlavičky
-  checks: CheckOutcome[]; // výsledky automatických kontrol
+  checks: CheckOutcome[]; // výsledky lokálních automatických kontrol
+  registryChecks: { type: CheckType; jsonKey: string; label: string }[]; // online registry (běží na detailu)
   suggestedAction: "APPROVE" | "REJECT" | null; // návrh akce
   priority: "high" | "normal";
   rules: {
@@ -114,11 +123,17 @@ export async function resolveWorkflowDisplay(
     }
   }
 
-  // Automatické kontroly
-  const checks: CheckOutcome[] = (config?.checks ?? []).map((ch) => {
-    const res = runCheck(ch.type, asText(values[ch.jsonKey]));
-    return { label: ch.label, ok: res.ok, message: res.message };
-  });
+  // Automatické kontroly – lokální (synchronní) vs. registrové (online, na detailu)
+  const allChecks = config?.checks ?? [];
+  const checks: CheckOutcome[] = allChecks
+    .filter((ch) => !REGISTRY_TYPES.has(ch.type))
+    .map((ch) => {
+      const res = runCheck(ch.type, asText(values[ch.jsonKey]));
+      return { label: ch.label, ok: res.ok, message: res.message };
+    });
+  const registryChecks = allChecks
+    .filter((ch) => REGISTRY_TYPES.has(ch.type))
+    .map((ch) => ({ type: ch.type, jsonKey: ch.jsonKey, label: ch.label }));
 
   // Návrh akce + priorita
   const amountNum = parseAmount(amount);
@@ -137,6 +152,7 @@ export async function resolveWorkflowDisplay(
     fields,
     previewFields,
     checks,
+    registryChecks,
     suggestedAction,
     priority,
     rules,

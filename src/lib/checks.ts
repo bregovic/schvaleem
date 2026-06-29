@@ -95,4 +95,8 @@ export const CHECK_LABELS: Record<CheckType, string> = {
   ICO_CZ: "IČO",
   IBAN: "IBAN",
   DIC_CZ: "DIČ",
+  ARES_SUBJECT: "ARES – aktivní subjekt",
+  VAT_RELIABILITY: "Spolehlivost plátce DPH",
+  VAT_ACCOUNT_PUBLISHED: "Zveřejněný účet pro DPH",
+  INSOLVENCY: "Insolvence",
 };

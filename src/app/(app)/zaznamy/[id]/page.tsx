@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { getDict } from "@/lib/i18n";
 import { resolveWorkflowDisplay } from "@/lib/config";
+import { runRegistryCheck } from "@/lib/registries";
 import { StatusBadge } from "../../StatusBadge";
 import { DecideForm } from "./DecideForm";
 import { EscClose } from "./EscClose";
@@ -51,6 +52,15 @@ export default async function WorkitemDetail({
 
   const display = await resolveWorkflowDisplay(workitem.workflow);
   const visibleFields = display.fields.filter((f) => f.role !== "HIDDEN");
+
+  // Online kontroly z veřejných registrů (ARES, DPH) – jen na detailu, cachované.
+  const regValues = (workitem.workflow.values ?? {}) as Record<string, unknown>;
+  const registryResults = await Promise.all(
+    display.registryChecks.map(async (rc) => ({
+      label: rc.label,
+      ...(await runRegistryCheck(rc.type, rc.jsonKey, regValues)),
+    })),
+  );
 
   // Dokumenty k náhledu. V testovacím režimu (env SCHVALEEM_DEMO_PDF=1) se při
   // chybějícím skenu zobrazí náhodné PDF ze systému – v ostré verzi NIKDY.
@@ -130,6 +140,27 @@ export default async function WorkitemDetail({
               <ul className="space-y-1 text-sm">
                 {display.checks.map((c) => (
                   <li key={c.label} className="flex items-center gap-2">
+                    <span
+                      className={
+                        c.ok === true ? "text-green-500" : c.ok === false ? "text-red-500" : "text-muted"
+                      }
+                    >
+                      {c.ok === true ? "✓" : c.ok === false ? "✕" : "•"}
+                    </span>
+                    <span className="font-medium text-fg">{c.label}:</span>
+                    <span className="text-muted">{c.message}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {registryResults.length > 0 && (
+            <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
+              <h2 className="mb-2 text-sm font-semibold text-muted">{t.detail.registries}</h2>
+              <ul className="space-y-1 text-sm">
+                {registryResults.map((c, i) => (
+                  <li key={i} className="flex items-center gap-2">
                     <span
                       className={
                         c.ok === true ? "text-green-500" : c.ok === false ? "text-red-500" : "text-muted"

@@ -120,6 +120,11 @@ enum CheckType {
   ICO_CZ // kontrolní číslice IČO
   IBAN // kontrola IBAN (mod 97)
   DIC_CZ // formát DIČ (CZxxxxxxxx)
+  // Veřejné registry (online, běží na detailu, cachované):
+  ARES_SUBJECT // ARES: subjekt existuje a je aktivní
+  VAT_RELIABILITY // Finanční správa: spolehlivý plátce DPH
+  VAT_ACCOUNT_PUBLISHED // účet faktury je mezi zveřejněnými účty plátce
+  INSOLVENCY // ISIR: není v insolvenci (Fáze 2)
 }
 
 model CheckConfig {
@@ -267,4 +272,16 @@ model ApiLog {
   createdAt  DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// Cache odpovědí z veřejných registrů (ARES, DPH) – kvůli rychlosti a rate-limitům.
+model RegistryCache {
+  id        String   @id @default(cuid())
+  kind      String // "ARES" | "VAT"
+  key       String // IČO nebo DIČ
+  ok        Boolean?
+  result    Json
+  checkedAt DateTime @default(now())
+
+  @@unique([kind, key])
 }
