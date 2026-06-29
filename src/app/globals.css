@@ -36,9 +36,26 @@ body {
     sans-serif;
 }
 
-/* tmavé prvky formulářů */
+/* tmavé prvky formulářů – aby nikde nebyl světlý text na světlém pozadí */
 input,
 textarea,
 select {
   color-scheme: dark;
+}
+
+select,
+textarea,
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
+  background-color: var(--surface-2);
+  color: var(--fg);
+}
+
+select option {
+  background-color: var(--surface-2);
+  color: var(--fg);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
 }
