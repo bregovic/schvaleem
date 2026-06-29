@@ -44,6 +44,21 @@ export async function assignDataAreas(formData: FormData): Promise<void> {
   revalidatePath("/sprava/konfigurace");
 }
 
+// Ruční přidání / úprava dataArea (kód firmy z ERP = ContextCompanyId).
+export async function createDataArea(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const code = String(formData.get("code") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim() || null;
+  const organizationId = String(formData.get("organizationId") ?? "").trim() || null;
+  if (!code) throw new Error("Kód dataArea je povinný.");
+  await prisma.dataArea.upsert({
+    where: { code },
+    update: { name, organizationId },
+    create: { code, name, organizationId },
+  });
+  revalidatePath("/sprava/organizace");
+}
+
 export async function unassignDataArea(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
@@ -66,6 +81,7 @@ export async function upsertDocTypeConfig(formData: FormData): Promise<void> {
   const documentType = String(formData.get("documentType") ?? "").trim();
   if (!organizationId || !documentType) throw new Error("Organizace a typ dokumentu jsou povinné.");
 
+  const name = String(formData.get("name") ?? "").trim() || null;
   const requireCommentOnReject = formData.get("requireCommentOnReject") === "on";
   const requireCommentOnApprove = formData.get("requireCommentOnApprove") === "on";
   const thresholdRaw = String(formData.get("amountThreshold") ?? "").trim();
@@ -74,10 +90,11 @@ export async function upsertDocTypeConfig(formData: FormData): Promise<void> {
 
   await prisma.documentTypeConfig.upsert({
     where: { organizationId_documentType: { organizationId, documentType } },
-    update: { requireCommentOnReject, requireCommentOnApprove, amountThreshold, thresholdAction },
+    update: { name, requireCommentOnReject, requireCommentOnApprove, amountThreshold, thresholdAction },
     create: {
       organizationId,
       documentType,
+      name,
       requireCommentOnReject,
       requireCommentOnApprove,
       amountThreshold,

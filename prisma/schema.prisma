@@ -95,7 +95,8 @@ model DocumentTypeConfig {
   id             String       @id @default(cuid())
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  documentType   String
+  documentType   String // ContextTableId z ERP (např. "1425")
+  name           String? // čitelný název (např. "Schvalování přijatých faktur dodavatele")
 
   // Pravidla schvalování
   requireCommentOnReject  Boolean         @default(true)

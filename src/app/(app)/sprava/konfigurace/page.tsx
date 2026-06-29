@@ -68,7 +68,8 @@ export default async function KonfiguracePage() {
                 </option>
               ))}
             </select>
-            <input name="documentType" required placeholder="Typ dokumentu (např. VendInvoice)" className={inp} />
+            <input name="documentType" required placeholder="ContextTableId (např. 1425)" className={inp} />
+            <input name="name" placeholder="Název (Cestovní žádanka)" className={inp} />
             <label className="flex items-center gap-1 text-xs text-slate-600">
               <input type="checkbox" name="requireCommentOnReject" defaultChecked /> komentář u reject
             </label>
@@ -96,7 +97,12 @@ export default async function KonfiguracePage() {
           <section key={c.id} className="overflow-hidden rounded-lg bg-white ring-1 ring-slate-200">
             <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
               <h2 className="text-sm font-semibold text-brand">
-                {o.name} · {c.documentType}
+                {o.name} · {c.name ?? c.documentType}
+                {c.name && (
+                  <span className="ml-2 font-mono text-xs font-normal text-slate-400">
+                    ({c.documentType})
+                  </span>
+                )}
               </h2>
               <form action={deleteDocTypeConfig}>
                 <input type="hidden" name="id" value={c.id} />
@@ -110,6 +116,7 @@ export default async function KonfiguracePage() {
               <form action={upsertDocTypeConfig} className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
                 <input type="hidden" name="organizationId" value={o.id} />
                 <input type="hidden" name="documentType" value={c.documentType} />
+                <input name="name" defaultValue={c.name ?? ""} placeholder="Název" className={inp} />
                 <label className="flex items-center gap-1">
                   <input type="checkbox" name="requireCommentOnReject" defaultChecked={c.requireCommentOnReject} /> komentář u reject
                 </label>
