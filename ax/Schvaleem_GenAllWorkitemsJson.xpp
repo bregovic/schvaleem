@@ -77,13 +77,25 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         return _vba.AccountNum;
     }
 
-    // Částka faktury = součet řádků v MĚNĚ DOKLADU.
-    // (Nepoužíváme dispTotalAmountToPay()/calcTotals – ty jdou přes totals
-    //  formulář a v dávce padají na převodu do MST: „K načtení směnného kurzu
-    //  je nutné určit měnu…", navíc zaplaví Infolog. Součet LineAmount nepřevádí.)
+    // „Celkem k úhradě" v MĚNĚ DOKLADU (vč. DPH) = conPeek(calcTotals(), 10),
+    // což je přesně dispTotalAmountToPay(). Voláme ji ale jen když faktura MÁ
+    // měnu a ParmId – jinak by převod na účetní měnu (MST) uvnitř spadl na
+    // „nutné určit měnu, ze které se převádí" a zaplavil Infolog. Pro takové
+    // (rozpracované) záznamy a jako pojistka při výjimce použijeme součet řádků.
     real viiAmount(VendInvoiceInfoTable _t)
     {
         VendInvoiceInfoLine line;
+        if (_t.CurrencyCode && _t.ParmId)
+        {
+            try
+            {
+                return conPeek(_t.calcTotals(), 10);
+            }
+            catch
+            {
+                // fallback níže (chybějící kurz apod.)
+            }
+        }
         select sum(LineAmount) from line
             where line.ParmId     == _t.ParmId
                && line.TableRefId == _t.TableRefId;
