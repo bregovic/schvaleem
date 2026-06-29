@@ -21,7 +21,6 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     DialogField dfPending;
     DialogField dfExact;
 
-    DataArea    dataArea;
     str         dir;
     str         fileName;
     str         stamp;
@@ -106,8 +105,8 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         return line.LineAmount;
     }
 
-    // ---- Zpracování jedné společnosti -----------------------------------------
-    void doInCompany()
+    // ---- Zpracování všech workitemů (WorkflowWorkItemTable je GLOBÁLNÍ) -------
+    void processWorkitems()
     {
         WorkflowWorkItemTable        wfWorkItem;
         WorkflowTrackingStatusTable  wfStatus;
@@ -152,6 +151,9 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
             docTypeName = tableId2name(tid);
             docLabel    = wfStatus.Document ? wfStatus.Document : docTypeName;
 
+            // Doklad je v per-company tabulce → načti ho v JEHO společnosti.
+            changeCompany(wfStatus.ContextCompanyId)
+            {
             try
             {
                 // -------- Přijatá faktura --------
@@ -233,6 +235,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                 // jeden vadný doklad nezhodí celý běh – necháme prázdné values
                 valuesJson = '{' + #NL + #I4 + '}';
             }
+            } // konec changeCompany
 
             obj =
                 #I2 + '{' + #NL
@@ -280,22 +283,9 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     exactAmount  = dfExact.value();
     fromDateTime = DateTimeUtil::newDateTime(fromDate, 0);
 
-    // ---- Smyčka přes všechny (nevirtuální) společnosti -------------------------
-    while select dataArea
-        where dataArea.isVirtual == NoYes::No
-    {
-        changeCompany(dataArea.Id)
-        {
-            try
-            {
-                doInCompany();
-            }
-            catch
-            {
-                error(strFmt("Chyba ve společnosti %1", dataArea.Id));
-            }
-        }
-    }
+    // ---- WorkflowWorkItemTable je GLOBÁLNÍ → projdou se jednou (bez changeCompany).
+    //      Doklad k jednotlivému workitemu se načte v jeho společnosti uvnitř.
+    processWorkitems();
 
     // ---- Výstup ----------------------------------------------------------------
     if (!itemCount)
