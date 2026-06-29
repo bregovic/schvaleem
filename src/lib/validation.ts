@@ -9,6 +9,17 @@ export const ingestWorkitemSchema = z.object({
   recordId: z.string().optional(),
   assigneeUserId: z.string().min(1, "Pole 'assigneeUserId' je povinné."),
   values: z.record(z.string(), z.unknown()).default({}),
+  // Metadata workflow (volitelné)
+  documentTypeName: z.string().optional(),
+  documentLabel: z.string().optional(),
+  originator: z.string().optional(),
+  trackingStatus: z.string().optional(),
+  createdDateTime: z.string().optional(),
+  // Metadata workitemu (volitelné)
+  subject: z.string().optional(),
+  description: z.string().optional(),
+  dueDateTime: z.string().optional(),
+  workitemStatus: z.string().optional(),
 });
 
 // PATCH /api/workitems/{id} – ERP potvrdí převzetí (smazat) nebo dokončení bez uživatele.

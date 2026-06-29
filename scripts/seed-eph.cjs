@@ -187,7 +187,7 @@ const COMPANIES = [
     await c.query(
       `INSERT INTO "DataArea"(id,code,name,"organizationId") VALUES($1,$2,$3,$4)
        ON CONFLICT(code) DO UPDATE SET name=EXCLUDED.name,"organizationId"=EXCLUDED."organizationId"`,
-      [rid("da"), code, name, org],
+      [rid("da"), code.toUpperCase(), name, org],
     );
   }
 

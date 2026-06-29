@@ -178,7 +178,15 @@ model Workflow {
   values         Json // hodnoty dokumentu (kontrakt s ERP)
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
-  createdAt      DateTime      @default(now())
+
+  // Metadata workflow z ERP (WorkflowTrackingStatusTable)
+  documentTypeName String? // textový název typu, např. "Faktury dodavatele"
+  label            String? // popis dokladu ("Číslo faktury: 2026006, …")
+  originator       String? // kdo workflow inicioval
+  trackingStatus   String? // stav workflow v ERP
+  erpCreatedAt     DateTime? // createdDateTime z ERP
+
+  createdAt DateTime @default(now())
 
   workitems Workitem[]
   documents Document[]
@@ -196,6 +204,12 @@ model Workitem {
   dataAreaCode      String
   assigneeErpUserId String // userId z ERP, kdo má schválit
   status            WorkitemStatus @default(PENDING)
+
+  // Metadata workitemu z ERP (WorkflowWorkItemTable)
+  subject     String? // Subject – co se má udělat
+  description String? // delší popis úkolu
+  dueAt       DateTime? // DueDateTime – termín
+  erpStatus   String? // Status workitemu v ERP
 
   action          String? // kód provedené akce (z ActionConfig)
   comment         String?

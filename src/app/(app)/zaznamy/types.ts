@@ -12,6 +12,10 @@ export type ApprovalItem = {
   dataArea: string;
   dataAreaName: string | null;
   createdAt: string;
+  subject: string | null;
+  originator: string | null;
+  dueAt: string | null; // ISO
+  overdue: boolean;
   deferred: boolean;
   previewFields: PreviewFieldC[];
   checks: CheckOutcomeC[];

@@ -14,6 +14,16 @@ function fmt(d: Date | null) {
   }).format(d);
 }
 
+// ERP časy (dueAt apod.) ukládáme jako UTC wall-clock → zobrazit v UTC beze změny.
+function fmtErp(d: Date | null) {
+  if (!d) return "–";
+  return new Intl.DateTimeFormat("cs-CZ", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(d);
+}
+
 export default async function WorkitemDetail({
   params,
 }: {
@@ -64,6 +74,28 @@ export default async function WorkitemDetail({
           </>
         )}
       </p>
+
+      {(workitem.subject ||
+        workitem.description ||
+        workitem.dueAt ||
+        workitem.workflow.originator ||
+        workitem.workflow.label) && (
+        <section className="mb-6 rounded-lg bg-white p-4 text-sm ring-1 ring-slate-200">
+          <h2 className="mb-2 text-sm font-semibold text-slate-600">Zadání</h2>
+          {workitem.subject && <p className="font-medium text-brand">{workitem.subject}</p>}
+          {workitem.description && <p className="mt-1 text-slate-600">{workitem.description}</p>}
+          {workitem.workflow.label && (
+            <p className="mt-1 text-slate-500">Doklad: {workitem.workflow.label}</p>
+          )}
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-slate-500">
+            {workitem.dueAt && <span>Termín: {fmtErp(workitem.dueAt)}</span>}
+            {workitem.workflow.originator && <span>Zadal: {workitem.workflow.originator}</span>}
+            {workitem.workflow.documentTypeName && (
+              <span>Typ: {workitem.workflow.documentTypeName}</span>
+            )}
+          </div>
+        </section>
+      )}
 
       {display.checks.length > 0 && (
         <section className="mb-6 rounded-lg bg-white p-4 ring-1 ring-slate-200">

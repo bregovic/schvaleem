@@ -34,6 +34,9 @@ export default async function ZaznamyPage() {
     configs.map((c) => [`${c.organizationId}:${c.documentType}`, c.name]),
   );
 
+  const now = Date.now();
+  const SOON = 2 * 24 * 60 * 60 * 1000; // 2 dny
+
   const items: ApprovalItem[] = await Promise.all(
     workitems.map(async (w) => {
       const d = await resolveWorkflowDisplay(w.workflow);
@@ -47,10 +50,20 @@ export default async function ZaznamyPage() {
         (w.workflow.organizationId &&
           typeName.get(`${w.workflow.organizationId}:${w.workflow.documentType}`)) ||
         w.workflow.documentType;
+
+      // Titulek: konfigurované TITLE pole > Subject z ERP > popis dokladu > výchozí
+      const title = d.hasTitle ? d.title : w.subject || w.workflow.label || d.title;
+
+      const dueMs = w.dueAt ? w.dueAt.getTime() : null;
+      const overdue = dueMs !== null && dueMs < now;
+      const dueSoon = dueMs !== null && dueMs < now + SOON;
+      const priority: "high" | "normal" =
+        d.priority === "high" || overdue || dueSoon ? "high" : "normal";
+
       return {
         id: w.id,
         org: w.workflow.organization?.name ?? "Nezařazené",
-        title: d.title,
+        title,
         amount: d.amount,
         currency: d.currency,
         documentType: w.workflow.documentType,
@@ -58,20 +71,25 @@ export default async function ZaznamyPage() {
         dataArea: w.dataAreaCode,
         dataAreaName: areaName.get(w.dataAreaCode) ?? null,
         createdAt: w.createdAt.toISOString(),
+        subject: w.subject,
+        originator: w.workflow.originator,
+        dueAt: w.dueAt ? w.dueAt.toISOString() : null,
+        overdue,
         deferred: !!w.deferredAt,
         previewFields: d.previewFields.map((f) => ({ label: f.label, value: f.value })),
         checks: d.checks,
         suggestedAction: d.suggestedAction,
-        priority: d.priority,
+        priority,
         requireCommentOnReject: d.rules.requireCommentOnReject,
         approveBlocked,
       };
     }),
   );
 
-  // Nejstarší první; odložené na konec.
+  // Odložené na konec; pak priorita (vysoká dřív); pak nejstarší první.
   items.sort((a, b) => {
     if (a.deferred !== b.deferred) return a.deferred ? 1 : -1;
+    if (a.priority !== b.priority) return a.priority === "high" ? -1 : 1;
     return a.createdAt.localeCompare(b.createdAt);
   });
 

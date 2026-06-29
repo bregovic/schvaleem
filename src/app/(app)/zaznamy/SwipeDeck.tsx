@@ -12,6 +12,14 @@ import { amountLabel, type ApprovalItem } from "./types";
 
 type Action = "APPROVE" | "REJECT" | "DEFER";
 
+function fmtDate(iso: string) {
+  return new Intl.DateTimeFormat("cs-CZ", {
+    dateStyle: "short",
+    timeStyle: "short",
+    timeZone: "UTC", // ERP časy ukládáme jako UTC wall-clock
+  }).format(new Date(iso));
+}
+
 export function SwipeDeck({
   queue,
   onDecision,
@@ -144,6 +152,17 @@ export function SwipeDeck({
           <p className="text-sm text-slate-500">
             {item.documentTypeName} · {item.dataAreaName ?? item.dataArea}
           </p>
+          {(item.dueAt || item.originator) && (
+            <p className="mt-1 text-xs">
+              {item.dueAt && (
+                <span className={item.overdue ? "font-medium text-red-600" : "text-amber-600"}>
+                  termín {fmtDate(item.dueAt)}
+                  {item.overdue ? " (po termínu)" : ""}
+                </span>
+              )}
+              {item.originator && <span className="text-slate-400"> · od {item.originator}</span>}
+            </p>
+          )}
           {amt && <p className="mt-3 text-3xl font-bold text-brand">{amt}</p>}
 
           {/* zvolená preview pole */}

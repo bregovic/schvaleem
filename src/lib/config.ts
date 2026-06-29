@@ -18,6 +18,7 @@ export type CheckOutcome = {
 
 export type WorkflowDisplay = {
   title: string;
+  hasTitle: boolean; // byl titulek určen polem s rolí TITLE?
   amount: string | null;
   currency: string | null;
   fields: DisplayField[]; // pole pro detail (bez skrytých)
@@ -78,6 +79,7 @@ export async function resolveWorkflowDisplay(
   let title = workflow.recordId
     ? `${workflow.documentType} · ${workflow.recordId}`
     : workflow.documentType;
+  let hasTitle = false;
   let amount: string | null = null;
   let currency: string | null = null;
   const fields: DisplayField[] = [];
@@ -95,8 +97,10 @@ export async function resolveWorkflowDisplay(
   if (config && config.fields.length > 0) {
     for (const f of config.fields) {
       const value = asText(values[f.jsonKey]);
-      if (f.role === "TITLE" && value) title = value;
-      else if (f.role === "AMOUNT") amount = value || null;
+      if (f.role === "TITLE" && value) {
+        title = value;
+        hasTitle = true;
+      } else if (f.role === "AMOUNT") amount = value || null;
       else if (f.role === "CURRENCY") currency = value || null;
       if (f.role !== "HIDDEN") {
         const df: DisplayField = { key: f.jsonKey, label: f.label, value, role: f.role };
@@ -127,6 +131,7 @@ export async function resolveWorkflowDisplay(
 
   return {
     title,
+    hasTitle,
     amount,
     currency,
     fields,

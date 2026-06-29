@@ -61,23 +61,44 @@ Jeden workitem na volání. Obsah workflow se dedupuje podle `workflowId` + `dat
 
 ```json
 {
-  "workflowId": "WF-1001",
-  "workitemId": "WI-5001",
-  "dataArea": "CZ01",
-  "documentType": "VendInvoice",
-  "recordId": "INV-777",
-  "assigneeUserId": "jnovak",
-  "values": { "Vendor": "ACME s.r.o.", "Amount": "15000", "Currency": "CZK" }
+  "workflowId": "{4BF7E299-816C-4473-BB11-0137A3BA7B72}",
+  "workitemId": "5637953134",
+  "dataArea": "ei",
+  "documentType": "1425",
+  "recordId": "5638055142",
+  "assigneeUserId": "FrysovaM",
+
+  "documentTypeName": "Faktury dodavatele",
+  "documentLabel": "Číslo faktury: 2026006, Mandátní smlouva…",
+  "originator": "JakuboV",
+  "trackingStatus": "Čekající",
+  "createdDateTime": "11.06.2026 17:27:09",
+
+  "subject": "Zkontrolovat DPH na přijaté faktuře 2606012168",
+  "description": "Proveďte kontrolu DPH na přijaté faktuře…",
+  "dueDateTime": "19.06.2026 15:57:00",
+  "workitemStatus": "Čekající",
+
+  "values": { "Číslo faktury": "2606012168", "Fakturovaná částka": "6 660,00", "Měna": "CZK" }
 }
 ```
 
-- `workflowId` – id workflow instance z ERP
-- `workitemId` – id workitemu z ERP (jedinečné; opakované odeslání je idempotentní)
-- `dataArea` – `dataAreaId` z ERP (firma)
-- `documentType` – typ dokladu; podle něj se hledá konfigurace zobrazení/pravidel
-- `recordId` – recId zdrojového dokladu (volitelné)
-- `assigneeUserId` – `userId` z ERP, kdo má schválit
-- `values` – hodnoty dokumentu (libovolný JSON objekt)
+Povinná pole (mapování na AX tabulky):
+
+| pole | AX zdroj |
+| --- | --- |
+| `workflowId` | WorkflowTrackingStatusTable.**RootCorrelationId** |
+| `workitemId` | WorkflowWorkItemTable.**RecId** (jedinečné; opakování je idempotentní) |
+| `dataArea` | **ContextCompanyId** (firma; porovnává se case-insensitive) |
+| `documentType` | **ContextTableId** (podle něj se hledá konfigurace) |
+| `recordId` | RecId dokladu (volitelné) |
+| `assigneeUserId` | WorkflowWorkItemTable.**UserId** – kdo má schválit |
+| `values` | data schvalovaného dokladu (libovolný JSON; běží na nich kontroly a mapování polí) |
+
+Volitelná metadata (zobrazí se schvalovateli, neovlivňují kontrakt): `documentTypeName`,
+`documentLabel`, `originator`, `trackingStatus`, `createdDateTime` (workflow);
+`subject` (= nadpis úkolu), `description`, `dueDateTime` (termín → priorita), `workitemStatus`
+(workitem). Datum přijímáme jako ISO i český formát `dd.MM.yyyy HH:mm:ss`.
 
 **Odpověď 201:** `{ "workflowId": "...", "workitemId": "...", "status": "stored" }`
 **Idempotentní 200:** stejné, navíc `"duplicate": true`.
