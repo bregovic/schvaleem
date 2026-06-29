@@ -173,6 +173,8 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                 if (tid == tableNum(VendInvoiceInfoTable))
                 {
                     select firstOnly vii where vii.RecId == recId;
+                    if (!vii.RecId)
+                        select firstOnly vii where vii.RecId == wfStatus.ContextRecId;
                     vt = VendTable::find(vii.InvoiceAccount);
                     select firstOnly vba
                         where vba.VendAccount == vt.AccountNum
@@ -211,6 +213,8 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                 else if (tid == tableNum(CzVendAdvanceInvoiceTable))
                 {
                     select firstOnly adv where adv.RecId == recId;
+                    if (!adv.RecId)
+                        select firstOnly adv where adv.RecId == wfStatus.ContextRecId;
                     vt = VendTable::find(adv.InvoiceAccount);
                     select firstOnly vba
                         where vba.VendAccount == vt.AccountNum
@@ -238,6 +242,8 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                 else if (tid == tableNum(TrvRequisitionTable))
                 {
                     select firstOnly trv where trv.RecId == recId;
+                    if (!trv.RecId)
+                        select firstOnly trv where trv.RecId == wfStatus.ContextRecId;
                     empName = HcmWorker::worker2Name(trv.CreatingWorker);
 
                     docTypeName = 'Cestovní žádanka';
