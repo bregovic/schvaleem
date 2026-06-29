@@ -6,7 +6,7 @@ import { changeOwnPassword, type PasswordState } from "../actions";
 const initial: PasswordState = {};
 
 const inp =
-  "rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30";
+  "rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30";
 
 export function PasswordForm() {
   const [state, formAction, pending] = useActionState(changeOwnPassword, initial);
@@ -36,7 +36,7 @@ export function PasswordForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-1 rounded-md bg-brand px-4 py-2 font-medium text-white hover:bg-brand/90 disabled:opacity-60"
+        className="mt-1 rounded-md bg-accent px-4 py-2 font-medium text-white hover:bg-accent/90 disabled:opacity-60"
       >
         {pending ? "Ukládám…" : "Změnit heslo"}
       </button>

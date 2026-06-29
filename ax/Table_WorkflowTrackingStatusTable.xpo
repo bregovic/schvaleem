@@ -1,0 +1,867 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: DBT
+
+; Microsoft Dynamics AX Table : WorkflowTrackingStatusTable unloaded
+; --------------------------------------------------------------------------------
+  TABLEVERSION 1
+  
+  TABLE #WorkflowTrackingStatusTable
+    EnforceFKRelation 0
+    PROPERTIES
+      Name                #WorkflowTrackingStatusTable
+      Label               #@SYS110274
+      TitleField1         #CorrelationId
+      TitleField2         #TrackingStatus
+      SecurityKey         #BasicTables
+      CacheLookup         #NotInTTS
+      CreateRecIdIndex    #Yes
+      SaveDataPerCompany  #No
+      TableGroup          #Framework
+      PrimaryIndex        #RecId
+      ClusterIndex        #RecId
+      ReplacementKey      #CorrelationIdx
+      ModifiedDateTime    #Yes
+      CreatedDateTime     #Yes
+      OccEnabled          #No
+      DeveloperDocumentation  #@SYS123297
+      Origin              #{2C1B0854-0000-1000-4A90-595C0BF9A253}
+      LegacyId            #2132
+    ENDPROPERTIES
+    
+    FIELDS
+      FIELD #ConfigurationName
+        STRING
+        PROPERTIES
+          Name                #ConfigurationName
+          Label               #@SYS110684
+          HelpText            #@SYS110685
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{737C4B97-5043-4CA3-863B-54C595D0F9E4}
+          LegacyId            #21
+          ExtendedDataType    #WorkflowConfigurationName
+          StringSize          #60
+        ENDPROPERTIES
+        
+      FIELD #ConfigurationNumber
+        STRING
+        PROPERTIES
+          Name                #ConfigurationNumber
+          HelpText            #@SYS121923
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{2C799F9E-EECE-451A-835D-0477F7341070}
+          LegacyId            #19
+          ExtendedDataType    #WorkflowSequenceNumber
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #ConfigurationVersionId
+        STRING
+        PROPERTIES
+          Name                #ConfigurationVersionId
+          HelpText            #@SYS121924
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{8EE265BB-7AD4-4D98-9FFE-BC27353B6BB7}
+          LegacyId            #20
+          ExtendedDataType    #WorkflowConfigurationVersionId
+        ENDPROPERTIES
+        
+      FIELD #ContextCompanyId
+        STRING
+        PROPERTIES
+          Name                #ContextCompanyId
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{4B884033-8B9C-42E8-9E60-51298979539C}
+          LegacyId            #4
+          ExtendedDataType    #CompanyId
+          StringSize          #4
+        ENDPROPERTIES
+        
+      FIELD #ContextRecId
+        INT64
+        PROPERTIES
+          Name                #ContextRecId
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{81142CEB-D305-4441-8BA6-E487E0475EAF}
+          LegacyId            #6
+          ExtendedDataType    #WorkflowContextRecId
+        ENDPROPERTIES
+        
+      FIELD #ContextTableId
+        INT
+        PROPERTIES
+          Name                #ContextTableId
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{D0B9F246-AB10-4843-A90A-2DC3935E5F01}
+          LegacyId            #5
+          ExtendedDataType    #WorkflowContextTableId
+        ENDPROPERTIES
+        
+      FIELD #CorrelationId
+        GUID
+        PROPERTIES
+          Name                #CorrelationId
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{6E49C798-BABE-4088-9CFA-AC9725967E2A}
+          LegacyId            #2
+          ExtendedDataType    #WorkflowCorrelationId
+        ENDPROPERTIES
+        
+      FIELD #Document
+        STRING
+        PROPERTIES
+          Name                #Document
+          Label               #@SYS110677
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{56FFAB15-E44B-496B-A858-76922D01D040}
+          ExtendedDataType    #TableCaption
+          StringSize          #255
+        ENDPROPERTIES
+        
+      FIELD #DocumentType
+        STRING
+        PROPERTIES
+          Name                #DocumentType
+          Label               #@SYS110874
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{B9B17D4A-24C7-4ED5-A3F4-8A9483EEA84E}
+          ExtendedDataType    #TableLabel
+          StringSize          #250
+        ENDPROPERTIES
+        
+      FIELD #InstanceNumber
+        STRING
+        PROPERTIES
+          Name                #InstanceNumber
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{EC4BCB55-BC15-4B0E-81A6-1AC3C999A2E8}
+          LegacyId            #18
+          ExtendedDataType    #WorkflowInstanceNumber
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #Originator
+        STRING
+        PROPERTIES
+          Name                #Originator
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{32C916E8-88D3-4EF2-B3F1-155A0F2ACFE4}
+          LegacyId            #7
+          ExtendedDataType    #WorkflowUser
+          StringSize          #8
+        ENDPROPERTIES
+        
+      FIELD #Owner
+        STRING
+        PROPERTIES
+          Name                #Owner
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{37A821FF-2258-4DCB-ACAA-6F6CDC23A04B}
+          LegacyId            #8
+          ExtendedDataType    #WorkflowOwner
+          StringSize          #8
+        ENDPROPERTIES
+        
+      FIELD #ParentCorrelationId
+        GUID
+        PROPERTIES
+          Name                #ParentCorrelationId
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{5B7C9B7A-1CE2-4605-9B01-DF5756B00C0B}
+          LegacyId            #10
+          ExtendedDataType    #WorkflowCorrelationId
+        ENDPROPERTIES
+        
+      FIELD #RootCorrelationId
+        GUID
+        PROPERTIES
+          Name                #RootCorrelationId
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{67B0DF46-7FCA-450B-8CFE-1D1FBB353578}
+          LegacyId            #1
+          ExtendedDataType    #WorkflowCorrelationId
+        ENDPROPERTIES
+        
+      FIELD #SubWorkflowId
+        GUID
+        PROPERTIES
+          Name                #SubWorkflowId
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{31AE06D7-E70C-4971-B404-5FA3F72E7470}
+          LegacyId            #17
+          ExtendedDataType    #WorkflowSubWorkflowId
+        ENDPROPERTIES
+        
+      FIELD #TrackingStatus
+        ENUM
+        PROPERTIES
+          Name                #TrackingStatus
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{296E1414-7C64-4E49-A3CC-F794BEE7ABE8}
+          LegacyId            #3
+          EnumType            #WorkflowTrackingStatus
+        ENDPROPERTIES
+        
+      FIELD #WorkflowType
+        ENUM
+        PROPERTIES
+          Name                #WorkflowType
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{491C1798-A7CB-4C2E-9463-3206F06C7260}
+          LegacyId            #12
+          EnumType            #WorkflowTrackingStatusWorkflowType
+        ENDPROPERTIES
+        
+      FIELD #WorkflowVersionTable
+        INT64
+        PROPERTIES
+          Name                #WorkflowVersionTable
+          Table               #WorkflowTrackingStatusTable
+          Origin              #{EB326B68-130D-42FF-88B8-0EA2F37C3D32}
+          LegacyId            #11
+          ExtendedDataType    #RefRecId
+        ENDPROPERTIES
+        
+    ENDFIELDS
+    GROUPS
+      GROUP #AutoReport
+        PROPERTIES
+          Name                #AutoReport
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #CorrelationId
+          #TrackingStatus
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #AutoIdentification
+        PROPERTIES
+          Name                #AutoIdentification
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #CorrelationId
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #System
+        PROPERTIES
+          Name                #System
+          Label               #@SYS4278
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #RootCorrelationId
+          #ParentCorrelationId
+          #CorrelationId
+          #TrackingStatus
+          #ContextCompanyId
+          #ContextTableId
+          #ContextRecId
+          #Originator
+          #Owner
+          #SubWorkflowId
+          #InstanceNumber
+          #ConfigurationNumber
+          #ConfigurationVersionId
+          #ConfigurationName
+          #WorkflowVersionTable
+          #WorkflowType
+          #Document
+          #DocumentType
+        ENDGROUPFIELDS
+      ENDGROUP
+    ENDGROUPS
+    
+    INDICES
+      #RootCorrelationIdx
+      PROPERTIES
+        Name                #RootCorrelationIdx
+        Origin              #{2B120001-0854-1000-852F-9DA41D401104}
+        LegacyId            #1
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #RootCorrelationId
+      ENDINDEXFIELDS
+      
+      #CorrelationIdx
+      PROPERTIES
+        Name                #CorrelationIdx
+        AllowDuplicates     #No
+        AlternateKey        #Yes
+        Origin              #{2B0E0002-0854-1000-562E-11042966C586}
+        LegacyId            #2
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #CorrelationId
+      ENDINDEXFIELDS
+      
+      #DocumentIdx
+      PROPERTIES
+        Name                #DocumentIdx
+        Origin              #{2B0B0003-0854-1000-F721-5DD97F656E74}
+        LegacyId            #3
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #ContextCompanyId
+        #ContextTableId
+        #ContextRecId
+      ENDINDEXFIELDS
+      
+      #ParentCorrelationIdx
+      PROPERTIES
+        Name                #ParentCorrelationIdx
+        Origin              #{2B140004-0854-1000-F051-58429CA41D40}
+        LegacyId            #4
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #ParentCorrelationId
+      ENDINDEXFIELDS
+      
+      #WorkflowVersionTableIdx
+      PROPERTIES
+        Name                #WorkflowVersionTableIdx
+        Origin              #{C17C939C-74B1-4F2D-BF01-747398C7936C}
+        LegacyId            #5
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #WorkflowVersionTable
+      ENDINDEXFIELDS
+      
+      #OriginatorIdx
+      PROPERTIES
+        Name                #OriginatorIdx
+        Origin              #{BB1BF021-0FE3-481A-A993-6C8E5EE2700D}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #Originator
+        #ContextRecId
+        #ContextTableId
+        #TrackingStatus
+      ENDINDEXFIELDS
+      
+      #DocumentRecIdIdx
+      PROPERTIES
+        Name                #DocumentRecIdIdx
+        Origin              #{508ACE60-34CB-4320-952B-16265403DF89}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #ContextRecId
+        #ContextTableId
+      ENDINDEXFIELDS
+      
+    ENDINDICES
+    FULLTEXTINDICES
+    ENDFULLTEXTINDICES
+    REFERENCES
+      REFERENCE #Company
+        PROPERTIES
+          Name                #Company
+          Table               #CompanyInfo
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Aggregation
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #ContextCompanyId
+            RelatedField        #DataArea
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #Correlation
+        PROPERTIES
+          Name                #Correlation
+          Table               #SysWorkflowTable
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ExactlyOne
+          RelationshipType    #Aggregation
+          RelatedTableRole    #SysWorkflowTable1
+          Role                #WorkflowTrackingStatusTable
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #CorrelationId
+            RelatedField        #WorkflowCorrelationId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #DataArea
+        PROPERTIES
+          Name                #DataArea
+          Table               #DataArea
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Aggregation
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #ContextCompanyId
+            RelatedField        #id
+            SourceEDT           #CompanyId
+          ENDPROPERTIES
+          
+          REFERENCETYPE EXTERNFIXED
+          PROPERTIES
+            Table               #DataArea
+            RelatedField        #isVirtual
+            SourceEDT           #CompanyId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #Originator
+        PROPERTIES
+          Name                #Originator
+          Table               #UserInfo
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Aggregation
+          RelatedTableRole    #UserInfo1
+          Role                #WorkflowTrackingStatusTable
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #Originator
+            RelatedField        #id
+            SourceEDT           #WorkflowUser
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #Owner
+        PROPERTIES
+          Name                #Owner
+          Table               #UserInfo
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #UserInfo2
+          Role                #WorkflowTrackingStatusTable
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #Owner
+            RelatedField        #id
+            SourceEDT           #WorkflowOwner
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #ParentCorrelation
+        PROPERTIES
+          Name                #ParentCorrelation
+          Table               #SysWorkflowTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ExactlyOne
+          RelationshipType    #Association
+          RelatedTableRole    #SysWorkflowTable2
+          Role                #WorkflowTrackingStatusTable
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #ParentCorrelationId
+            RelatedField        #ParentCorrelationId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #RootCorrelation
+        PROPERTIES
+          Name                #RootCorrelation
+          Table               #SysWorkflowTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ExactlyOne
+          RelationshipType    #Association
+          RelatedTableRole    #SysWorkflowTable3
+          Role                #WorkflowTrackingStatusTable
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #RootCorrelationId
+            RelatedField        #RootCorrelationId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #WorkflowTable
+        PROPERTIES
+          Name                #WorkflowTable
+          Table               #WorkflowTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          RelatedTableRole    #ConfigurationNumber
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #ConfigurationNumber
+            RelatedField        #SequenceNumber
+            SourceEDT           #WorkflowSequenceNumber
+          ENDPROPERTIES
+          
+          REFERENCETYPE EXTERNFIXED
+          PROPERTIES
+            Table               #WorkflowTable
+            RelatedField        #Type
+            SourceEDT           #WorkflowSequenceNumber
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #WorkflowTable1
+        PROPERTIES
+          Name                #WorkflowTable1
+          Table               #WorkflowTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          RelatedTableRole    #InstanceNumber
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #InstanceNumber
+            RelatedField        #SequenceNumber
+            SourceEDT           #WorkflowInstanceNumber
+          ENDPROPERTIES
+          
+          REFERENCETYPE EXTERNFIXED
+          PROPERTIES
+            Table               #WorkflowTable
+            RelatedField        #Type
+            SourceEDT           #WorkflowInstanceNumber
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #WorkflowVersion
+        PROPERTIES
+          Name                #WorkflowVersion
+          Table               #WorkflowVersionTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #WorkflowVersionTable
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+    ENDREFERENCES
+    
+    DELETEACTIONS
+      #WorkflowTrackingTable
+      PROPERTIES
+        Table               #WorkflowTrackingTable
+        DeleteAction        #Cascade
+      ENDPROPERTIES
+      
+    ENDDELETEACTIONS
+    
+    METHODS
+      SOURCE #getElapsedTime
+        #public display WorkflowStatusElapsedTime getElapsedTime()
+        #{
+        #    WorkflowTrackingTable           workflowTrackingTable;
+        #    int64                           createdTime;
+        #    int64                           completedTime;
+        #    utcdatetime                     submittedDateTime;
+        #    int64                           days;
+        #    int64                           hours;
+        #    int64                           minutes;
+        #    int                             secondsInDay = 86400;
+        #    int                             secondsInHour = 3600;
+        #    int                             secondsInMinute = 60;
+        #    WorkflowStatusElapsedTime       elapsedtime;
+        #
+        #    select firstonly CreatedDateTime from workflowTrackingTable
+        #        order by CreatedDateTime asc, RecId asc
+        #        where  workflowTrackingTable.WorkflowTrackingStatusTable    == this.RecId
+        #            && (workflowTrackingTable.TrackingContext == WorkflowTrackingContext::Workflow
+        #                || workflowTrackingTable.TrackingContext == WorkflowTrackingContext::LineItemWorkflow)
+        #            && (workflowTrackingTable.TrackingType == WorkflowTrackingType::Submission
+        #                || workflowTrackingTable.TrackingType == WorkflowTrackingType::Creation
+        #                || workflowTrackingTable.TrackingType == WorkflowTrackingType::SubmitOnBehalf);
+        #
+        #    createdTime = DateTimeUtil::getDifference( DateTimeUtil::applyTimeZoneOffset(DateTimeUtil::utcNow(), DateTimeUtil::getUserPreferredTimeZone()),
+        #                                        DateTimeUtil::applyTimeZoneOffset(workflowTrackingTable.CreatedDateTime, DateTimeUtil::getUserPreferredTimeZone()));
+        #    submittedDateTime = workflowTrackingTable.CreatedDateTime;
+        #
+        #
+        #    select firstonly CreatedDateTime from workflowTrackingTable
+        #        order by CreatedDateTime desc, RecId desc
+        #        where  workflowTrackingTable.WorkflowTrackingStatusTable    == this.RecId
+        #            && (workflowTrackingTable.TrackingContext == WorkflowTrackingContext::Workflow
+        #                || workflowTrackingTable.TrackingContext == WorkflowTrackingContext::LineItemWorkflow)
+        #            && (workflowTrackingTable.TrackingType == WorkflowTrackingType::Cancellation
+        #                || workflowTrackingTable.TrackingType == WorkflowTrackingType::Completion
+        #                || workflowTrackingTable.TrackingType == WorkflowTrackingType::Fault
+        #                || workflowTrackingTable.TrackingType == WorkflowTrackingType::Unrecoverable);
+        #
+        #    completedTime = DateTimeUtil::getDifference( DateTimeUtil::applyTimeZoneOffset(workflowTrackingTable.CreatedDateTime, DateTimeUtil::getUserPreferredTimeZone()),
+        #                                        DateTimeUtil::applyTimeZoneOffset(submittedDateTime, DateTimeUtil::getUserPreferredTimeZone()));
+        #
+        #    if(completedTime > 0)
+        #    {
+        #        createdTime = completedTime;
+        #    }
+        #
+        #    days = createdTime / secondsInDay;
+        #    hours = (createdTime mod secondsInDay) / secondsInHour;
+        #    minutes = (createdTime mod secondsInHour) / secondsInMinute;
+        #
+        #    if (days == 0)
+        #    {
+        #        elapsedtime = strfmt("@SYS110879", hours, minutes);
+        #    }
+        #    else
+        #        elapsedtime = strfmt("@SYS110878", days, minutes);
+        #
+        #    return elapsedtime;
+        #}
+        #
+        #
+      ENDSOURCE
+      SOURCE #getSubmitterUserName
+        #public display WorkflowStatusUserName getSubmitterUserName()
+        #{
+        #    WorkflowTrackingTable workflowTrackingTable;
+        #
+        #    select firstonly user from workflowTrackingTable
+        #        order by CreatedDateTime desc, RecId desc
+        #        where  workflowTrackingTable.WorkflowTrackingStatusTable   ==   this.RecId
+        #            && workflowTrackingTable.TrackingContext == WorkflowTrackingContext::Workflow
+        #            && (workflowTrackingTable.TrackingType == WorkflowTrackingType::Submission ||
+        #                workflowTrackingTable.TrackingType == WorkflowTrackingType::SubmitOnBehalf);
+        #
+        #
+        #    return SysWorkflowHelper::getDirPartyNameFromUserId(workflowTrackingTable.User);
+        #}
+        #
+        #
+      ENDSOURCE
+      SOURCE #versionTable
+        #WorkflowVersionTable versionTable()
+        #{
+        #    return WorkflowVersionTable::findRecId(this.WorkflowVersionTable);
+        #}
+      ENDSOURCE
+      SOURCE #exist
+        #/// <summary>
+        #/// Indicates whether the specified record in the <c>WorkflowTrackingStatus</c> table exists.
+        #/// </summary>
+        #/// <param name="_correlationId">
+        #/// The record ID of the <c>SysWorkflowInstanceTable</c> record.
+        #/// </param>
+        #/// <returns>
+        #/// true if the record exists; otherwise, false.
+        #/// </returns>
+        #public static boolean exist(
+        #    WorkflowCorrelationId  _correlationId)
+        #{
+        #    if (!_correlationId)
+        #        return false;
+        #
+        #    return (select firstonly RecId from workflowTrackingStatusTable
+        #            where workflowTrackingStatusTable.CorrelationId == _correlationId).RecId != 0;
+        #}
+      ENDSOURCE
+      SOURCE #findByContext
+        #//INC29072_WFOwner, 27/02/2016, NEW
+        #static WorkflowTrackingStatusTable findByContext(
+        #    TableId   _contextTableId,
+        #    RecId     _contextRecId,
+        #    boolean   _forUpdate = false)
+        #{
+        #    WorkflowTrackingStatusTable workflowTrackingStatusTable;
+        #;
+        #
+        #    if (_contextTableId && _contextRecId)
+        #    {
+        #        if (_forUpdate)
+        #        {
+        #            workflowTrackingStatusTable.selectForUpdate(_forUpdate);
+        #        }
+        #
+        #        select firstonly workflowTrackingStatusTable
+        #            where workflowTrackingStatusTable.ContextTableId == _contextTableId
+        #               && workflowTrackingStatusTable.ContextRecId   == _contextRecId;
+        #    }
+        #
+        #    return workflowTrackingStatusTable;
+        #}
+      ENDSOURCE
+      SOURCE #findByCorrelation
+        #/// <summary>
+        #/// Finds the specified record in the <c>WorkflowTrackingStatusTable</c> table.
+        #/// </summary>
+        #/// <param name="_correlationId">
+        #/// The record ID of the <c>WorkflowTrackingStatusTable</c> record to find.
+        #/// </param>
+        #/// <param name="_forUpdate">
+        #/// A Boolean value that indicates whether to read the record for update; optional.
+        #/// </param>
+        #/// <param name="_concurrencyModel">
+        #/// The concurrency model option to use when reading the record; optional
+        #/// </param>
+        #/// <returns>
+        #/// A record in the <c>WorkflowTrackingStatusTable</c> table otherwise, an empty record.
+        #/// </returns>
+        #public static WorkflowTrackingStatusTable findByCorrelation(
+        #    WorkflowCorrelationId _correlationId,
+        #    boolean _forUpdate = false,
+        #    ConcurrencyModel _concurrencyModel = ConcurrencyModel::Auto)
+        #{
+        #    WorkflowTrackingStatusTable record;
+        #    ;
+        #
+        #    if (_correlationId)
+        #    {
+        #        if (_forUpdate)
+        #        {
+        #            record.selectForUpdate(_forUpdate);
+        #            if (_concurrencyModel != ConcurrencyModel::Auto)
+        #            {
+        #                record.concurrencyModel(_concurrencyModel);
+        #            }
+        #        }
+        #        record.selectLocked(_forUpdate);
+        #
+        #        select firstonly record
+        #        order by CorrelationId
+        #        where
+        #            record.CorrelationId == _correlationId;
+        #    }
+        #
+        #    return record;
+        #}
+      ENDSOURCE
+      SOURCE #findRecId
+        #/// <summary>
+        #/// Finds the specified record in the <c>WorkflowTrackingStatusTable</c> table.
+        #/// </summary>
+        #/// <param name="_recId">
+        #/// The record ID of the <c>WorkflowTrackingStatusTable</c> record to find.
+        #/// </param>
+        #/// <param name="_forUpdate">
+        #/// A Boolean value that indicates whether to read the record for update; optional.
+        #/// </param>
+        #/// <returns>
+        #/// A record in the <c>WorkflowTrackingStatusTable</c> table; otherwise, an empty record.
+        #/// </returns>
+        #static WorkflowTrackingStatusTable findRecId(   recId       _recId,
+        #                                                boolean     _forUpdate = false )
+        #{
+        #    WorkflowTrackingStatusTable statusTable;
+        #    ;
+        #
+        #    if (_recId)
+        #    {
+        #        if (_forUpdate)
+        #        {
+        #            statusTable.selectForUpdate(_forUpdate);
+        #        }
+        #
+        #        select firstonly statusTable
+        #            where statusTable.RecId == _recId;
+        #    }
+        #
+        #    return statusTable;
+        #}
+      ENDSOURCE
+      SOURCE #getWorkflowTrackingComments
+        #//INC29072_WFOwner, 27/02/2016, NEW
+        #//INC30671, 25/03/2016, UPD
+        #public static server WorkflowTrackingCommentTable getWorkflowTrackingComments(
+        #    CompanyId _contextCompanyId,
+        #    TableId   _contextTableId,
+        #    RecId     _contextRecId)
+        #{
+        #    WorkflowTrackingStatusTable    wfTrackingStatusTable;
+        #    WorkflowTrackingTable          wfTrackingTable;
+        #    WorkflowTrackingCommentTable   wfCommentTableOrig,
+        #                                   wfCommentTableTemp;
+        #;
+        #    if (_contextCompanyId && _contextTableId && _contextRecId)
+        #    {
+        #        //BP Deviation documented
+        #        wfCommentTableTemp.setTmp();
+        #
+        #        while select wfCommentTableOrig
+        #            order by CreatedDateTime desc
+        #            exists join wfTrackingTable
+        #                where wfCommentTableOrig.WorkflowTrackingTable    == wfTrackingTable.RecId
+        #                    exists join wfTrackingStatusTable
+        #                        where wfTrackingStatusTable.ContextCompanyId == _contextCompanyId
+        #                           && wfTrackingStatusTable.ContextTableId   == _contextTableId
+        #                           && wfTrackingStatusTable.ContextRecId     == _contextRecId
+        #                           && wfTrackingStatusTable.RecId            == wfTrackingTable.WorkflowTrackingStatusTable
+        #        {
+        #            if (wfCommentTableOrig.Comment) //memo
+        #            {
+        #                buf2Buf(wfCommentTableOrig, wfCommentTableTemp);
+        #                wfCommentTableTemp.overwriteSystemfields(true);
+        #                wfCommentTableTemp.(fieldNum(WorkflowTrackingCommentTable, createdDateTime)) = wfCommentTableOrig.createdDateTime;
+        #                wfCommentTableTemp.insert();
+        #            }
+        #        }
+        #    }
+        #
+        #    return wfCommentTableTemp;
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDTABLE
+  
+
+***Element: END

@@ -32,3 +32,6 @@ next-env.d.ts
 
 # project notes / secrets that lived here
 /data.txt
+
+# vygenerovaný testovací výstup z X++ jobu
+/ax/schvaleem_workitems*.json

@@ -53,7 +53,7 @@ export default async function WorkitemDetail({
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/zaznamy" className="text-sm text-slate-500 hover:underline">
+      <Link href="/zaznamy" className="text-sm text-muted hover:underline">
         ← Zpět ke schvalování
       </Link>
 
@@ -61,7 +61,7 @@ export default async function WorkitemDetail({
         <h1 className="text-2xl font-semibold text-brand">{display.title}</h1>
         <StatusBadge status={workitem.status} />
       </div>
-      <p className="mb-6 text-sm text-slate-500">
+      <p className="mb-6 text-sm text-muted">
         {workitem.workflow.organization?.name ?? "Nezařazené"} ·{" "}
         {workitem.workflow.documentType} · {workitem.dataAreaCode}
         {display.amount && (
@@ -80,14 +80,14 @@ export default async function WorkitemDetail({
         workitem.dueAt ||
         workitem.workflow.originator ||
         workitem.workflow.label) && (
-        <section className="mb-6 rounded-lg bg-white p-4 text-sm ring-1 ring-slate-200">
-          <h2 className="mb-2 text-sm font-semibold text-slate-600">Zadání</h2>
+        <section className="mb-6 rounded-lg bg-surface p-4 text-sm ring-1 ring-line">
+          <h2 className="mb-2 text-sm font-semibold text-muted">Zadání</h2>
           {workitem.subject && <p className="font-medium text-brand">{workitem.subject}</p>}
-          {workitem.description && <p className="mt-1 text-slate-600">{workitem.description}</p>}
+          {workitem.description && <p className="mt-1 text-muted">{workitem.description}</p>}
           {workitem.workflow.label && (
-            <p className="mt-1 text-slate-500">Doklad: {workitem.workflow.label}</p>
+            <p className="mt-1 text-muted">Doklad: {workitem.workflow.label}</p>
           )}
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-slate-500">
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-muted">
             {workitem.dueAt && <span>Termín: {fmtErp(workitem.dueAt)}</span>}
             {workitem.workflow.originator && <span>Zadal: {workitem.workflow.originator}</span>}
             {workitem.workflow.documentTypeName && (
@@ -98,8 +98,8 @@ export default async function WorkitemDetail({
       )}
 
       {display.checks.length > 0 && (
-        <section className="mb-6 rounded-lg bg-white p-4 ring-1 ring-slate-200">
-          <h2 className="mb-2 text-sm font-semibold text-slate-600">Automatické kontroly</h2>
+        <section className="mb-6 rounded-lg bg-surface p-4 ring-1 ring-line">
+          <h2 className="mb-2 text-sm font-semibold text-muted">Automatické kontroly</h2>
           <ul className="space-y-1 text-sm">
             {display.checks.map((c) => (
               <li key={c.label} className="flex items-center gap-2">
@@ -109,31 +109,31 @@ export default async function WorkitemDetail({
                       ? "text-green-600"
                       : c.ok === false
                         ? "text-red-600"
-                        : "text-slate-400"
+                        : "text-muted"
                   }
                 >
                   {c.ok === true ? "✓" : c.ok === false ? "✕" : "•"}
                 </span>
                 <span className="font-medium text-brand">{c.label}:</span>
-                <span className="text-slate-500">{c.message}</span>
+                <span className="text-muted">{c.message}</span>
               </li>
             ))}
           </ul>
         </section>
       )}
 
-      <section className="mb-6 overflow-hidden rounded-lg bg-white ring-1 ring-slate-200">
-        <h2 className="border-b border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-600">
+      <section className="mb-6 overflow-hidden rounded-lg bg-surface ring-1 ring-line">
+        <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
           Data dokumentu
         </h2>
         {visibleFields.length === 0 ? (
-          <p className="px-4 py-3 text-sm text-slate-400">Žádná data.</p>
+          <p className="px-4 py-3 text-sm text-muted">Žádná data.</p>
         ) : (
           <table className="w-full text-sm">
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {visibleFields.map((f) => (
                 <tr key={f.key}>
-                  <td className="w-1/3 px-4 py-2.5 font-medium text-slate-500">{f.label}</td>
+                  <td className="w-1/3 px-4 py-2.5 font-medium text-muted">{f.label}</td>
                   <td className="px-4 py-2.5 text-brand">{f.value || "–"}</td>
                 </tr>
               ))}
@@ -142,14 +142,14 @@ export default async function WorkitemDetail({
         )}
       </section>
 
-      <section className="mb-6 overflow-hidden rounded-lg bg-white ring-1 ring-slate-200">
-        <h2 className="border-b border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-600">
+      <section className="mb-6 overflow-hidden rounded-lg bg-surface ring-1 ring-line">
+        <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
           Dokumenty ({workitem.workflow.documents.length})
         </h2>
         {workitem.workflow.documents.length === 0 ? (
-          <p className="px-4 py-3 text-sm text-slate-400">Žádné PDF dokumenty.</p>
+          <p className="px-4 py-3 text-sm text-muted">Žádné PDF dokumenty.</p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {workitem.workflow.documents.map((d) => (
               <li key={d.id} className="px-4 py-3">
                 <div className="mb-2 flex items-center justify-between">
@@ -167,7 +167,7 @@ export default async function WorkitemDetail({
                 <iframe
                   src={`/dokument/${d.id}#view=FitH`}
                   title={d.filename}
-                  className="h-[70vh] w-full rounded-md border border-slate-200 bg-slate-50"
+                  className="h-[70vh] w-full rounded-md border border-line bg-surface-2"
                 />
               </li>
             ))}
@@ -176,14 +176,14 @@ export default async function WorkitemDetail({
       </section>
 
       {workitem.status === "PENDING" && isOwner ? (
-        <section className="rounded-lg bg-white p-4 ring-1 ring-slate-200">
-          <h2 className="mb-3 text-sm font-semibold text-slate-600">Rozhodnutí</h2>
+        <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
+          <h2 className="mb-3 text-sm font-semibold text-muted">Rozhodnutí</h2>
           <DecideForm workitemId={workitem.id} />
         </section>
       ) : (
-        <section className="rounded-lg bg-white p-4 text-sm ring-1 ring-slate-200">
-          <h2 className="mb-2 text-sm font-semibold text-slate-600">Rozhodnutí</h2>
-          <p className="text-slate-600">
+        <section className="rounded-lg bg-surface p-4 text-sm ring-1 ring-line">
+          <h2 className="mb-2 text-sm font-semibold text-muted">Rozhodnutí</h2>
+          <p className="text-muted">
             {workitem.action ?? workitem.status} ·{" "}
             <span className="text-brand">
               {workitem.decidedBy?.name ?? workitem.decidedBy?.email ?? "–"}
@@ -191,7 +191,7 @@ export default async function WorkitemDetail({
             · {fmt(workitem.decidedAt)}
           </p>
           {workitem.comment && (
-            <p className="mt-1 text-slate-600">Komentář: {workitem.comment}</p>
+            <p className="mt-1 text-muted">Komentář: {workitem.comment}</p>
           )}
         </section>
       )}

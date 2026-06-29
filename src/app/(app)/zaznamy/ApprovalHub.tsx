@@ -22,7 +22,7 @@ function agg(items: ApprovalItem[], keyFn: (i: ApprovalItem) => [string, string]
 
 export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
   const router = useRouter();
-  const [mode, setMode] = useState<"swipe" | "list">("swipe");
+  const [mode, setMode] = useState<"swipe" | "list">("list");
   const [fType, setFType] = useState<string | null>(null);
   const [fCompany, setFCompany] = useState<string | null>(null);
   const [queue, setQueue] = useState<ApprovalItem[]>(items);
@@ -30,6 +30,12 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
   const [comment, setComment] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+
+  // Výchozí režim podle zařízení: dotykový mobil → swipe, jinak seznam.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px), (pointer: coarse)");
+    setMode(mq.matches ? "swipe" : "list");
+  }, []);
 
   const filtered = useMemo(
     () =>
@@ -99,16 +105,38 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
 
   if (items.length === 0) {
     return (
-      <p className="rounded-2xl bg-white p-10 text-center text-slate-400 ring-1 ring-slate-200">
+      <p className="rounded-2xl bg-surface p-10 text-center text-muted ring-1 ring-line">
         Nemáš nic ke schválení. 🎉
       </p>
     );
   }
 
   const companyGroups = agg(filtered, (i) => [i.dataArea, i.dataAreaName ?? i.dataArea]);
+  const allFilteredSelected = filtered.length > 0 && filtered.every((i) => selected.has(i.id));
 
   return (
     <div>
+      {/* Hlavička */}
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h1 className="text-xl font-semibold tracking-tight text-fg">
+          Ke schválení <span className="text-muted">· {filtered.length}</span>
+        </h1>
+        <div className="flex items-center gap-1 rounded-full bg-surface-2 p-1 ring-1 ring-line">
+          <button
+            onClick={() => setMode("list")}
+            className={`rounded-full px-3 py-1 text-sm font-medium transition ${mode === "list" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
+          >
+            Seznam
+          </button>
+          <button
+            onClick={() => setMode("swipe")}
+            className={`rounded-full px-3 py-1 text-sm font-medium transition ${mode === "swipe" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
+          >
+            Swipe
+          </button>
+        </div>
+      </div>
+
       {/* Přehled / agregace */}
       <div className="mb-4 space-y-2">
         <Chips
@@ -129,90 +157,92 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
               setFType(null);
               setFCompany(null);
             }}
-            className="text-xs text-brand-accent hover:underline"
+            className="text-xs text-accent hover:underline"
           >
             Zrušit filtr ({filtered.length})
           </button>
         )}
       </div>
 
-      {/* Přepínač režimu */}
-      <div className="mb-4 flex items-center gap-2">
-        <button
-          onClick={() => setMode("swipe")}
-          className={`rounded-full px-3 py-1.5 text-sm font-medium ${mode === "swipe" ? "bg-brand text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}`}
-        >
-          Swipe
-        </button>
-        <button
-          onClick={() => setMode("list")}
-          className={`rounded-full px-3 py-1.5 text-sm font-medium ${mode === "list" ? "bg-brand text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}`}
-        >
-          Seznam
-        </button>
-        <span className="ml-auto text-sm text-slate-400">{filtered.length} položek</span>
-      </div>
-
-      {msg && <p className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{msg}</p>}
+      {msg && <p className="mb-3 rounded-md bg-red-500/15 px-3 py-2 text-sm text-red-300">{msg}</p>}
 
       {mode === "swipe" ? (
         <SwipeDeck queue={queue} onDecision={onDecision} onMoveToEnd={onMoveToEnd} pending={busy} />
       ) : (
         <div>
+          {/* Hromadný výběr – ovládání */}
+          <div className="mb-3 flex items-center gap-3 text-sm">
+            <label className="flex cursor-pointer items-center gap-2 text-muted">
+              <input
+                type="checkbox"
+                checked={allFilteredSelected}
+                onChange={(e) =>
+                  setSelected(e.target.checked ? new Set(filtered.map((i) => i.id)) : new Set())
+                }
+              />
+              Vybrat vše
+            </label>
+            {selected.size > 0 && (
+              <button onClick={() => setSelected(new Set())} className="text-accent hover:underline">
+                Zrušit výběr ({selected.size})
+              </button>
+            )}
+          </div>
+
           <div className="flex flex-col gap-4 pb-28">
             {companyGroups.map(([code, info]) => {
               const groupItems = filtered.filter((i) => i.dataArea === code);
               return (
-                <div key={code} className="overflow-hidden rounded-lg bg-white ring-1 ring-slate-200">
-                  <div className="border-b border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-brand">
+                <div key={code} className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
+                  <div className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-fg">
                     {info.label}{" "}
-                    <span className="font-normal text-slate-400">({info.count})</span>
+                    <span className="font-normal text-muted">({info.count})</span>
                   </div>
-                  <ul className="divide-y divide-slate-100">
+                  <ul className="divide-y divide-line">
                     {groupItems.map((it) => {
                       const amt = amountLabel(it);
                       const bad = it.checks.some((c) => c.ok === false);
+                      const sel = selected.has(it.id);
                       return (
-                        <li key={it.id} className="flex items-center gap-3 px-4 py-3">
-                          <input
-                            type="checkbox"
-                            checked={selected.has(it.id)}
-                            onChange={() => toggle(it.id)}
-                          />
+                        <li
+                          key={it.id}
+                          className={`flex items-center gap-3 px-4 py-3 transition ${sel ? "bg-accent/10" : "hover:bg-surface-2"}`}
+                        >
+                          <input type="checkbox" checked={sel} onChange={() => toggle(it.id)} />
                           <div className="min-w-0 flex-1">
-                            <p className="truncate font-medium text-brand">
+                            <p className="truncate font-medium text-fg">
                               {it.title}
                               {it.priority === "high" && (
-                                <span className="ml-2 rounded-full bg-orange-100 px-1.5 py-0.5 text-xs text-orange-700">
+                                <span className="ml-2 rounded-full bg-orange-500/20 px-1.5 py-0.5 text-xs text-orange-300">
                                   priorita
                                 </span>
                               )}
                               {bad && (
-                                <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-xs text-red-700">
+                                <span className="ml-1 rounded-full bg-red-500/20 px-1.5 py-0.5 text-xs text-red-300">
                                   kontrola
                                 </span>
                               )}
                               {it.deferred && (
-                                <span className="ml-1 rounded-full bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500">
+                                <span className="ml-1 rounded-full bg-surface-2 px-1.5 py-0.5 text-xs text-muted">
                                   odloženo
                                 </span>
                               )}
                               {it.docCount > 0 && (
-                                <span className="ml-1 rounded-full bg-brand-accent/10 px-1.5 py-0.5 text-xs text-brand-accent">
+                                <span className="ml-1 rounded-full bg-accent/15 px-1.5 py-0.5 text-xs text-accent">
                                   📎 {it.docCount}
                                 </span>
                               )}
                             </p>
-                            <p className="truncate text-xs text-slate-400">
+                            <p className="truncate text-xs text-muted">
                               {it.documentTypeName}
                               {it.previewFields.length > 0 &&
                                 " · " + it.previewFields.map((f) => `${f.label}: ${f.value}`).join(" · ")}
                             </p>
                           </div>
-                          {amt && <span className="whitespace-nowrap font-medium text-brand">{amt}</span>}
+                          {amt && <span className="whitespace-nowrap font-semibold text-fg">{amt}</span>}
                           <Link
                             href={`/zaznamy/${it.id}`}
-                            className="text-sm font-medium text-brand-accent hover:underline"
+                            className="text-sm font-medium text-accent hover:underline"
                           >
                             Detail
                           </Link>
@@ -227,14 +257,14 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
 
           {/* Hromadná lišta */}
           {selected.size > 0 && (
-            <div className="fixed inset-x-0 bottom-0 z-10 border-t border-slate-200 bg-white p-3 shadow-lg">
-              <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2">
-                <span className="text-sm font-medium text-slate-600">Vybráno {selected.size}</span>
+            <div className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface/95 p-3 backdrop-blur">
+              <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-1">
+                <span className="text-sm font-medium text-fg">Vybráno {selected.size}</span>
                 <input
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Komentář…"
-                  className="min-w-40 flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-accent"
+                  className="min-w-40 flex-1 rounded-md border border-line bg-surface-2 px-3 py-2 text-sm text-fg outline-none focus:border-accent"
                 />
                 <button onClick={() => bulk("DEFER")} disabled={busy} className="rounded-md bg-amber-500 px-3 py-2 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-50">
                   Odložit
@@ -268,16 +298,16 @@ function Chips({
   if (entries.length === 0) return null;
   return (
     <div>
-      <p className="mb-1 text-xs font-semibold uppercase text-slate-400">{title}</p>
+      <p className="mb-1 text-xs font-semibold uppercase text-muted">{title}</p>
       <div className="flex flex-wrap gap-1.5">
         {entries.map(([key, info]) => (
           <button
             key={key}
             onClick={() => onPick(key)}
-            className={`rounded-full px-2.5 py-1 text-sm font-medium ring-1 ${
+            className={`rounded-full px-2.5 py-1 text-sm font-medium ring-1 transition ${
               active === key
-                ? "bg-brand text-white ring-brand"
-                : "bg-white text-slate-600 ring-slate-200 hover:bg-slate-50"
+                ? "bg-accent text-white ring-accent"
+                : "bg-surface text-muted ring-line hover:text-fg"
             }`}
           >
             {info.label} <span className="opacity-70">({info.count})</span>

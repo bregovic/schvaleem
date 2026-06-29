@@ -1,0 +1,3572 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: FRM
+
+; Microsoft Dynamics AX Forms unloaded
+; --------------------------------------------------------------------------------
+FRMVERSION 12
+
+FORM #VendInvoiceInfoListPageCrossComp
+  PROPERTIES
+    Name                #VendInvoiceInfoListPageCrossComp
+    Origin              #{972EAC4E-5BA8-4281-99C5-9DDC076F6F64}
+  ENDPROPERTIES
+  
+  METHODS
+    SOURCE #classDeclaration
+      #public class FormRun extends ObjectRun
+      #{
+      #    PurchFormLetter_Invoice     purchFormLetter;
+      #    PurchEditLinesForm_Invoice  vendInvoiceListPageState;
+      #    DocumentStatus              documentStatus;
+      #    str                         gridDefaultAction;
+      #    boolean                     isLastInvoiceAdvance;
+      #    ParmId                      parmId;
+      #
+      #    // begin print variables
+      #    boolean                     printInvoice;
+      #    Printout                    printout;
+      #    boolean                     usePrintManagement;
+      #    boolean                     printSalesFormLetter;
+      #    boolean                     euVatValue;
+      #
+      #    CreateIFRSAdjustments       createIFRSAdjustments; // AQS
+      #
+      #    Map                         mapCheckResult;
+      #    ImageListAppl_Infolog       imageListApplCheck;
+      #    Set                         infoRecId;
+      #    Set                         setSendRecord;
+      #
+      #    // end print variables
+      #    // <GEERU><GEEU>
+      #    #ISOCountryRegionCodes
+      #    // </GEEU></GEERU>
+      #    // <GIN>
+      #    boolean                     isIN;
+      #    // </GIN>
+      #}
+    ENDSOURCE
+    SOURCE #adjustWorkflowWorkItemTableRanges
+      #private void adjustWorkflowWorkItemTableRanges()
+      #{
+      #    FormDataSource formDataSource;
+      #    QueryBuildDataSource qbdsWorkFlowWorkItemTable;
+      #    QueryBuildRange userIdRange;
+      #
+      #    formDataSource = this.dataSource();
+      #    qbdsWorkFlowWorkItemTable = formDataSource.query().dataSourceTable(tableNum(WorkflowWorkItemTable));
+      #    userIdRange = qbdsWorkFlowWorkItemTable.addRange(fieldNum(WorkflowWorkItemTable, UserId));
+      #    userIdRange.value(curUserId());
+      #    userIdRange.status(RangeStatus::Locked); //INC41888
+      #}
+    ENDSOURCE
+    SOURCE #allowEdits
+      #void allowEdits(boolean _allowEdits)
+      #{
+      #    //<INC41888>
+      #    SysDictTable    dictTable = new SysDictTable(tableNum(vendInvoiceInfoTable));
+      #    int i;
+      #
+      #    //ADPinfoMessages::addDebug(_allowEdits ? 'true' : 'false'); //todo remove
+      #
+      #    for(i = 1; i <= dictTable.fieldCnt(); i++)
+      #    {
+      #        if(vendInvoiceInfoTable_ds.object(dictTable.fieldCnt2Id(i)))
+      #            vendInvoiceInfoTable_ds.object(dictTable.fieldCnt2Id(i)).allowEdit(_allowEdits);
+      #    }
+      #
+      #    vendInvoiceInfoTable_ds.allowEdit(true);
+      #    //</INC41888>
+      #
+      #    //INC41888 vendInvoiceInfoTable_ds .allowEdit(_allowEdits);
+      #}
+    ENDSOURCE
+    SOURCE #allowEditsForHeader
+      #void allowEditsForHeader()
+      #{
+      #
+      #    boolean isControlEnable = !(vendInvoiceInfoTable.RequestStatus == VendInvoiceRequestStatus::InReview || vendInvoiceInfoTable.RequestStatus == VendInvoiceRequestStatus::Rejected);
+      #
+      #    vendInvoiceInfoTable_ds.allowDelete(isControlEnable);
+      #
+      #    if (vendInvoiceListPageState.invoiceHeaderEditFull(vendInvoiceInfoTable))
+      #    {
+      #        element.allowEdits(true);
+      #        element.enableHeaderActions(true);
+      #    }
+      #    else if (vendInvoiceListPageState.invoiceHeaderEditPartial(vendInvoiceInfoTable))
+      #    {
+      #        element.allowEdits(true);
+      #        element.enableHeaderActions(true);
+      #    }
+      #    else
+      #    {
+      #        element.allowEdits(false);
+      #        element.enableHeaderActions(false);
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #allowEnable
+      #void allowEnable()
+      #{
+      #    boolean    enableButtons;
+      #    ;
+      #
+      #    if (vendInvoiceInfoTable_ds.getFirst())
+      #    {
+      #        enableButtons = true;
+      #    }
+      #
+      #    //Enable/Disable any non-new related buttons
+      #    variances.enabled(enableButtons);
+      #    actions.enabled(enableButtons);
+      #    manages.enabled(enableButtons);
+      #    view.enabled(enableButtons);
+      #    attachmentsGroup.enabled(enableButtons);
+      #    exportToExcel.enabled(enableButtons);
+      #}
+      #
+    ENDSOURCE
+    SOURCE #applyAssignedToMe
+      #public void applyAssignedToMe()
+      #{
+      #    FormDataSource          formDataSource;
+      #    QueryBuildDataSource    qbdsVendInvoiceInfoTable;
+      #    QueryBuildDataSource    qbdsWorkFlowWorkItemTable;
+      #    QueryBuildDataSource    qbdsSysWorkflowTable;
+      #    QueryBuildDataSource    qbdsSysWorkflowTable2;
+      #    QueryBuildRange         rangeId;
+      #    QueryBuildRange         rangeStatus;
+      #    QueryBuildRange         rangeAssignee;
+      #    QueryBuildRange         rangeCorrelationId;
+      #    QueryBuildRange         parentCorrelationId;
+      #
+      #    this.adjustWorkflowWorkItemTableRanges();
+      #
+      #    formDataSource = this.dataSource();
+      #    qbdsVendInvoiceInfoTable = formDataSource.query().dataSourceTable(tableNum(VendInvoiceInfoTable));
+      #
+      #    // where SysWorkflowTable exists by RecId and TableId
+      #    qbdsSysWorkflowTable = qbdsVendInvoiceInfoTable.addDataSource(tableNum(SysWorkflowTable),'S');
+      #    qbdsSysWorkflowTable.joinMode(JoinMode::ExistsJoin);
+      #    qbdsSysWorkflowTable.addLink(fieldNum(VendInvoiceInfoTable, RecId), fieldNum(SysWorkflowTable,ContextRecId));
+      #    qbdsSysWorkflowTable.addLink(fieldNum(VendInvoiceInfoTable, TableId), fieldNum(SysWorkflowTable,ContextTableId));
+      #
+      #    // Add SysWorkflowTable2 to result when it is a child of SysWorkflowTable1
+      #    qbdsSysWorkflowTable2 = qbdsSysWorkflowTable.addDataSource(tableNum(SysWorkflowTable),'S2');
+      #    qbdsSysWorkflowTable2.joinMode(JoinMode::OuterJoin);
+      #    parentCorrelationId = qbdsSysWorkflowTable2.addRange(fieldNum(SysWorkflowTable, WorkflowCorrelationId));
+      #    parentCorrelationId.value(strFmt( '((S.WorkflowCorrelationId == S2.ParentCorrelationId))'));
+      #    parentCorrelationId.status(RangeStatus::Hidden);
+      #
+      #    // work item is related to either of the 2 SysWorkflowTable result sets
+      #    qbdsWorkFlowWorkItemTable = qbdsSysWorkflowTable.addDataSource(tableNum(WorkflowWorkItemTable));
+      #    qbdsWorkFlowWorkItemTable.joinMode(JoinMode::ExistsJoin);
+      #    rangeCorrelationId = qbdsWorkFlowWorkItemTable.addRange(fieldNum(WorkflowWorkItemTable, CorrelationId));
+      #    rangeCorrelationId.value(strFmt( '((%1 == %2) || (%1 == %3))',
+      #                            fieldStr(WorkflowWorkItemTable, CorrelationId),
+      #                            'S.WorkflowCorrelationId',
+      #                            'S2.WorkflowCorrelationId' ) );
+      #    rangeCorrelationId.status(RangeStatus::Hidden);
+      #
+      #     // pending work items only
+      #    rangeStatus = qbdsWorkFlowWorkItemTable.addRange(fieldNum(WorkflowWorkItemTable, Status));
+      #    rangeStatus.value(queryValue(WorkflowWorkItemStatus::Pending));
+      #    rangeStatus.status(RangeStatus::Locked);
+      #
+      #    // assigned to current user only
+      #    rangeAssignee = qbdsWorkFlowWorkItemTable.addRange(fieldNum(WorkflowWorkItemTable, UserId));
+      #    rangeAssignee.value(queryValue(curUserId()));
+      #    rangeAssignee.status(RangeStatus::Locked);
+      #
+      #    //The Id-range is only used to lock the query from the UI
+      #    rangeId = qbdsWorkFlowWorkItemTable.addRange(fieldNum(WorkflowWorkItemTable, Id));
+      #    rangeId.status(RangeStatus::Locked);
+      #    rangeId.enabled(false);
+      #
+      #    //<CDR201114,LD,20200611,VendInvoiceAssignedToMeCrossComp_Approval_fix/ WorkflowApprovalAllMulti.visible(true);
+      #    ItemToApprove.visible(true);
+      #    Post.visible(false); //INC41966
+      #
+      #    vendInvoiceInfoTable_DS.executeQuery();
+      #}
+    ENDSOURCE
+    SOURCE #applyAssignedToMeCrossCompany
+      #//INC41888
+      #public void applyAssignedToMeCrossCompany()
+      #{
+      #    //<CDR201114,LD,20200611,VendInvoiceAssignedToMeCrossComp_Approval_fix/ WorkflowApprovalAllMulti.visible(true);
+      #    ItemToApprove.visible(true);
+      #    Post.visible(false); //INC41966
+      #}
+    ENDSOURCE
+    SOURCE #applyAssignedToMyQueues
+      #public void applyAssignedToMyQueues()
+      #{
+      #    FormDataSource          formDataSource;
+      #    QueryBuildDataSource    qbdsVendInvoiceInfoTable;
+      #    QueryBuildDataSource    qbdsWorkFlowItemTable;
+      #    QueryBuildDataSource    qbdsWorkflowWorkItemQueue;
+      #    QueryBuildDataSource    qbdsWorkflowWorkItemQueueAssignee;
+      #    QueryBuildDataSource    qbdsWorkflowQueueDocumentCommonFields;
+      #    QueryBuildRange         rangeId;
+      #    QueryBuildRange         rangeStatus;
+      #    QueryBuildRange         rangeAssignee;
+      #    QueryBuildRange         rangeWorkflowQueueDocument;
+      #
+      #    formDataSource = this.dataSource();
+      #    qbdsVendInvoiceInfoTable = formDataSource.query().dataSourceTable(tableNum(VendInvoiceInfoTable));
+      #    qbdsWorkflowQueueDocumentCommonFields = qbdsVendInvoiceInfoTable.addDataSource(tableNum(WorkflowQueueDocumentCommonFields));
+      #
+      #    qbdsWorkflowQueueDocumentCommonFields.joinMode(JoinMode::ExistsJoin);
+      #
+      #    // set the join where clause values
+      #    rangeWorkflowQueueDocument = qbdsWorkflowQueueDocumentCommonFields.addRange(fieldNum(VendInvoiceInfoTable, RecId));
+      #    rangeWorkflowQueueDocument.status(RangeStatus::Hidden);
+      #    rangeWorkflowQueueDocument.value(strFmt('((%1 == %2) || (%3 == %2) && (%4 == %5) || (%6 == %5))',
+      #                                    fieldStr(WorkflowQueueDocumentCommonFields, RefRecId),
+      #                                    'VendInvoiceInfoTable.RecId',
+      #                                    fieldStr(WorkflowQueueDocumentCommonFields, ParentRefRecId),
+      #                                    fieldStr(WorkflowQueueDocumentCommonFields, RefTableId),
+      #                                    'VendInvoiceInfoTable.TableId',
+      #                                    fieldStr(WorkflowQueueDocumentCommonFields, ParentRefTableId)));
+      #
+      #    // set the rest of the exist join links
+      #    qbdsWorkFlowItemTable = qbdsWorkflowQueueDocumentCommonFields.addDataSource(tableNum(WorkflowWorkItemTable));
+      #    qbdsWorkFlowItemTable.joinMode(JoinMode::ExistsJoin);
+      #    qbdsWorkFlowItemTable.addLink(fieldNum(WorkflowQueueDocumentCommonFields, WorkflowWorkitem), fieldNum(WorkflowWorkItemTable, RecId));
+      #
+      #    qbdsWorkflowWorkItemQueue = qbdsWorkFlowItemTable.addDataSource(tableNum(WorkflowWorkItemQueue));
+      #    qbdsWorkflowWorkItemQueue.joinMode(JoinMode::ExistsJoin);
+      #
+      #    qbdsWorkflowWorkItemQueueAssignee = qbdsWorkflowWorkItemQueue.addDataSource(tableNum(WorkflowWorkItemQueueAssignee));
+      #    qbdsWorkflowWorkItemQueueAssignee.joinMode(JoinMode::ExistsJoin);
+      #    qbdsWorkflowWorkItemQueue.addLink(fieldNum(WorkflowWorkItemTable,Queue),fieldNum(WorkflowWorkItemQueue, RecId));
+      #    qbdsWorkflowWorkItemQueueAssignee.addLink(fieldNum(WorkflowWorkItemQueue,RecId),fieldNum(WorkflowWorkItemQueueAssignee, WorkitemQueue));
+      #
+      #    // pending work items only
+      #    rangeStatus = qbdsWorkFlowItemTable.addRange(fieldNum(WorkflowWorkItemTable, Status));
+      #    rangeStatus.value(queryValue(WorkflowWorkItemStatus::Pending));
+      #    rangeStatus.status(RangeStatus::Locked);
+      #
+      #    // assigned to current user only
+      #    rangeAssignee = qbdsWorkflowWorkItemQueueAssignee.addRange(fieldNum(WorkflowWorkItemQueueAssignee, User));
+      #    rangeAssignee.value(queryValue(curUserId()));
+      #    rangeAssignee.status(RangeStatus::Locked);
+      #
+      #    //The Id-range is only used to lock the query from the UI
+      #    rangeId = qbdsWorkFlowItemTable.addRange(fieldNum(WorkflowWorkItemTable, Id));
+      #    rangeId.status(RangeStatus::Locked);
+      #    rangeId.enabled(false);
+      #
+      #    Post.visible(false); //INC41966
+      #
+      #    vendInvoiceInfoTable_ds.executeQuery();
+      #}
+    ENDSOURCE
+    SOURCE #applyCompleteByMeCrossCompany
+      #//<CDR202385,LD,20201011,CDR202385_VsechnyFakturykMemuDokonceni/>
+      #public void applyCompleteByMeCrossCompany()
+      #{
+      #    Post.visible(false);
+      #}
+    ENDSOURCE
+    SOURCE #areWorkflowItemsToApprove
+      #//<CDR201114,LD,20200611,VendInvoiceAssignedToMeCrossComp_Approval_fix/>
+      #public boolean areWorkflowItemsToApprove()
+      #{
+      #    Common          common;
+      #    FormDataSource  fds = VendInvoiceInfoTable_ds;
+      #    int             counter;
+      #    boolean         ret;
+      #
+      #    for (common = fds.getFirst(); common.RecId != 0; common = fds.getNext())
+      #    {
+      #        if (ItemsToApprove::getToApprove(common))
+      #        {
+      #            counter ++;
+      #        }
+      #    }
+      #
+      #    return counter > 1 ? true : false;
+      #}
+    ENDSOURCE
+    SOURCE #canSubmitToWorkflow
+      #public boolean canSubmitToWorkflow()
+      #{
+      #    return vendInvoiceInfoTable.canSubmitToWorkflow();
+      #}
+    ENDSOURCE
+    SOURCE #cleanupPurchParmUpdate
+      #private void cleanupPurchParmUpdate()
+      #{
+      #    if (purchFormLetter && purchFormLetter.parmId() && parmId)
+      #    {
+      #        PurchParmUpdate::deleteWithoutUpdate(purchFormLetter.parmId());
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #close
+      #public void close()
+      #{
+      #    this.cleanupPurchParmUpdate();
+      #    super();
+      #
+      #}
+    ENDSOURCE
+    SOURCE #createListSendRecord
+      #public void createListSendRecord()
+      #{
+      #    VendInvoiceInfoTable    vendInvoiceInfoTableMarked;
+      #
+      #    setSendRecord = new Set(Types::Int64);
+      #
+      #    if (VendInvoiceInfoTable_DS.anyMarked())
+      #    {
+      #        for(vendInvoiceInfoTableMarked = getFirstSelection(VendInvoiceInfoTable_DS);
+      #            vendInvoiceInfoTableMarked;
+      #            vendInvoiceInfoTableMarked = VendInvoiceInfoTable_DS.getNext())
+      #        {
+      #            setSendRecord.add(vendInvoiceInfoTableMarked.RecId);
+      #        }
+      #    }
+      #    else
+      #    {
+      #        setSendRecord.add(vendInvoiceInfoTable.RecId);
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #editInvoiceFromPool
+      #void editInvoiceFromPool()
+      #{
+      #    VendInvoiceInfoTable            localvendInvoiceInfoTable;
+      #    Args                            args = new Args();
+      #
+      #    localVendInvoiceInfoTable = vendInvoiceInfoTable_ds.getFirst(true);
+      #
+      #    if (!localvendInvoiceInfoTable)
+      #    {
+      #        //No marked records, use selected record
+      #        localVendInvoiceInfoTable = vendInvoiceInfoTable;
+      #    }
+      #    args.caller(this);
+      #    args.record(localvendInvoiceInfoTable);
+      #    PurchFormLetter_ApproveJournal::newApprovalForDisplay(args);
+      #}
+    ENDSOURCE
+    SOURCE #editMarkupTrans
+      #/// <summary>
+      #/// Opens a form to edit <c>MarkupTrans</c> table records.
+      #/// </summary>
+      #/// <param name="_menuFunction">
+      #/// A menu function for the form to open.
+      #/// </param>
+      #/// <param name="_record">
+      #/// A record related to the <c>MarkupTrans</c> table records that are to be edited.
+      #/// </param>
+      #public void editMarkupTrans(MenuFunction _menuFunction, Common _record)
+      #{
+      #    Args args = new Args();
+      #
+      #    args.caller(this);
+      #    args.record(_record);
+      #    args.parm(_menuFunction.parameters());
+      #    _menuFunction.run(args);
+      #}
+    ENDSOURCE
+    SOURCE #enableButtonUpdateQtyAndPriceFromNfe_BR
+      #private void enableButtonUpdateQtyAndPriceFromNfe_BR(boolean _enabled)
+      #{
+      #    ButtonUpdateQtyAndPriceFromNfe_BR.enabled(_enabled);
+      #}
+    ENDSOURCE
+    SOURCE #enableButtonVendInvoiceXmlMatch_BR
+      #private void enableButtonVendInvoiceXmlMatch_BR(boolean _enabled)
+      #{
+      #    buttonVendInvoiceXmlMatch_BR.enabled(_enabled);
+      #}
+    ENDSOURCE
+    SOURCE #enableButtonViewReceivedXml_BR
+      #private void enableButtonViewReceivedXml_BR(boolean _enabled)
+      #{
+      #    buttonViewReceivedXML_BR.enabled(_enabled);
+      #}
+    ENDSOURCE
+    SOURCE #enableButtonViewVendInvoiceXmlMapping_BR
+      #private void enableButtonViewVendInvoiceXmlMapping_BR(boolean _enabled)
+      #{
+      #    VendInvoiceXmlMapping_BR.enabled(_enabled);
+      #}
+    ENDSOURCE
+    SOURCE #enableGridDefaultAction
+      #public void enableGridDefaultAction(boolean _enable)
+      #{
+      #    if (_enable)
+      #    {
+      #        grid.defaultAction(gridDefaultAction);
+      #    }
+      #    else
+      #    {
+      #        grid.defaultAction('');
+      #    }
+      #
+      #    buttonEditInvoice.enabled(_enable);
+      #}
+    ENDSOURCE
+    SOURCE #enableHeaderActions
+      #public void enableHeaderActions(boolean _enable)
+      #{
+      #    buttonPageParmTableMiscCharges.enabled(_enable && !isLastInvoiceAdvance);
+      #    buttonPageParmTableAllocate.enabled(_enable && !isLastInvoiceAdvance);
+      #    taxTransSource.enabled(_enable);
+      #    matchDetails.enabled(_enable && VendParameters::find().editUseInvoiceMatching() == NoYes::Yes && !isLastInvoiceAdvance);
+      #
+      #    // AQS+
+      #    Post.enabled(vendInvoiceInfoTable.RequestStatus == VendInvoiceRequestStatus::Approved);
+      #    VendInvoicePurchaseLedger_Create.enabled(_enable && vendInvoiceInfoTable.enableVendInvoicePurchaseLedger());
+      #    VendInvoicePurchaseLedger_Cancel.enabled(_enable && vendInvoiceInfoTable.enableVendInvoicePurchaseLedger(true));
+      #    // AQS-
+      #}
+    ENDSOURCE
+    SOURCE #enableXmlButtons_BR
+      #private void enableXmlButtons_BR(boolean _enableXmlMatchingButtons)
+      #{
+      #    element.enableButtonVendInvoiceXmlMatch_BR(_enableXmlMatchingButtons);
+      #    element.enableButtonViewReceivedXml_BR(_enableXmlMatchingButtons);
+      #    element.enableButtonViewVendInvoiceXmlMapping_BR(_enableXmlMatchingButtons);
+      #    element.enableButtonUpdateQtyAndPriceFromNfe_BR(_enableXmlMatchingButtons);
+      #}
+    ENDSOURCE
+    SOURCE #forceUpdateWorkflowControls
+      #//<CDR201114,LD,20200611,VendInvoiceAssignedToMeCrossComp_Approval_fix/>
+      #public boolean forceUpdateWorkflowControls()
+      #{
+      #    return true;
+      #}
+    ENDSOURCE
+    SOURCE #getIfrsVariables
+      #// AQS
+      #public container getIfrsVariables()
+      #{
+      #    return [createIFRSAdjustments];
+      #}
+    ENDSOURCE
+    SOURCE #getPrintVariables
+      #/// <summary>
+      #/// Gets the print management variables.
+      #/// </summary>
+      #/// <returns>
+      #/// A container with the printOut, printFormLetter, printReplySheet, printPriceAmount and usePrintManagement variable values.
+      #/// </returns>
+      #public container getPrintVariables()
+      #{
+      #    return [printInvoice, printout, usePrintManagement, printSalesFormLetter, euVatValue
+      #            // <GEERU>
+      #            ,purchFormLetter.printFacture_RU()
+      #            ,purchFormLetter.printAcceptanceReport_RU()
+      #            ,purchFormLetter.printInventBaileeReport_RU()
+      #            // </GEERU>
+      #            // <GIN>
+      #            ,purchFormLetter.printExciseFormLetter_IN()
+      #            ,purchFormLetter.printExciseInvoiceAddress_IN()
+      #            // </GIN>
+      #    ];
+      #}
+    ENDSOURCE
+    SOURCE #hasMappingIssuesBetweenNfeXmlxViLines_BR
+      #/// <summary>
+      #/// Indicates if the vendor invoice lines could be completely mapped against the NF-e received XML lines
+      #/// </summary>
+      #/// <returns>
+      #/// True if the it was NOT possible to completely map the lines; false otherwise
+      #/// </returns>
+      #public boolean hasMappingIssuesBetweenNfeXmlxViLines_BR()
+      #{
+      #    EFDocAccessKey_BR              accessKey       = vendInvoiceInfoTable.vendInvoiceInfoTable_W().AccessKey_BR;
+      #    EFDocumentReceivedXmlView_BR   receivedXmlView = EFDocumentReceivedXmlView_BR::findByAccessKey(accessKey);
+      #    EFDocRecXmlMappingValidator_BR mapValidator    = EFDocRecXmlMappingValidator_BR::construct(receivedXmlView, VendInvoiceInfoTable);
+      #
+      #    return !mapValidator.allItemsAreMappedBetweenXmlAndVendorInv();
+      #}
+    ENDSOURCE
+    SOURCE #init
+      #public void init()
+      #{
+      #    VendParameters  vendParameters;
+      #    PurchParameters purchParameters;
+      #    boolean         isFrenchRegulatoryEnabled = PublicSectorUtils::isFrenchRegulatoryEnabled();
+      #
+      #    // <GBR>
+      #    boolean         enableXmlMatchingButtons;
+      #    // </GBR>
+      #
+      #    super();
+      #
+      #    FormSecurity::setFormDataSourceMaxAccessRight(this);
+      #    // remember what is the original default action, to re-enable it later once it is disabled
+      #    gridDefaultAction = grid.defaultAction();
+      #
+      #    switch (element.args().menuItemName())
+      #    {
+      #        case menuitemDisplayStr(VendInvoiceInfoListPage):
+      #            this.adjustWorkflowWorkItemTableRanges();
+      #            break;
+      #
+      #        case menuitemDisplayStr(VendInvoiceAssignedToMeListPage):
+      #            this.applyAssignedToMe();
+      #            break;
+      #
+      #        //<INC41888>
+      #        case menuitemDisplayStr(VendInvoiceAssignedToMeListPageCrossComp):
+      #            this.applyAssignedToMeCrossCompany();
+      #            break;
+      #        //</INC41888>
+      #
+      #        case menuitemDisplayStr(VendInvoiceAssignedToQueuesThatIBelongTo):
+      #            this.applyAssignedToMyQueues();
+      #            break;
+      #
+      #        //<CDR202385,LD,20201011,CDR202385_VsechnyFakturykMemuDokonceni>
+      #        case menuitemDisplayStr(VendInvoiceCompleteByMeListPageCrossComp):
+      #            this.applyCompleteByMeCrossCompany();
+      #            break;
+      #        //</CDR202385,LD,20201011,CDR202385_VsechnyFakturykMemuDokonceni>
+      #    }
+      #
+      #
+      #    vendParameters = VendParameters::find();
+      #    purchParameters = PurchParameters::find();
+      #
+      #    purchFormLetter = PurchFormLetter::construct(DocumentStatus::Invoice);
+      #    lastMatchVariance.visible((vendParameters && vendParameters.editUseInvoiceMatching()));
+      #
+      #    // <GBR>
+      #    enableXmlMatchingButtons = VendInvoiceInfoTable.isNfeNotIssuingNorReversing_BR();
+      #
+      #    element.enableXmlButtons_BR(enableXmlMatchingButtons);
+      #    // </GBR>>
+      #
+      #    matchApproved.visible(
+      #                (vendParameters && vendParameters.editUseInvoiceMatching()) &&
+      #                (vendParameters && vendParameters.PostInvoiceMatchDiscrepancies == InvoiceMatchPostingOption::RequireApproval)
+      #                );
+      #
+      #    //Enable match details if use invoice matcing is turned on
+      #    matchDetails.enabled(vendParameters.editUseInvoiceMatching() == NoYes::Yes);
+      #
+      #    //Enable policy violation if use invoice matcing is turned on
+      #    policyViolation.enabled(vendParameters.editUseInvoiceMatching() == NoYes::Yes);
+      #
+      #    //Enable match button if use invoice matcing is turned on & no PS duplicates allowed
+      #    autoMatch.enabled(
+      #            vendParameters.editUseInvoiceMatching() == NoYes::Yes &&
+      #            purchParameters.CheckPackingSlip == ReuseVoucher::NoDuplicate);
+      #
+      #    //make VendInvoiceGroup visible if the AP InvoiceGrouping feature is enabled.
+      #    vendInvoiceInfoTable_VendInvoiceGroup.visible(VendParameters::find().VendInvoiceGroupingEnable);
+      #    // Disable the from Product Receipt button when the commitments feature is enabled.
+      #    vendEditInvoiceFromPackingSlip.enabled(!isFrenchRegulatoryEnabled);
+      #    Maintain_PSN.visible(isFrenchRegulatoryEnabled);
+      #
+      #    documentStatus = purchFormLetter.documentStatus();
+      #    vendInvoiceListPageState = PurchEditLinesForm::construct(documentStatus);
+      #
+      #    // Hide/Show Reporting button group based on status of PowerView configuration
+      #    reporting.visible(SrsReportHelper::isPowerViewConfigured());
+      #
+      #    // Check Vendor
+      #    imageListApplCheck = new ImageListAppl_Infolog();
+      #    CheckResultStatus.imageList(imageListApplCheck.imageList());
+      #}
+    ENDSOURCE
+    SOURCE #initPrint
+      #private void initPrint()
+      #{
+      #    purchFormLetter.printFormLetter(printInvoice);
+      #    purchFormLetter.printout(printout);
+      #    purchFormLetter.usePrintManagement(usePrintManagement);
+      #    purchFormLetter.printSalesFormLetter(printSalesFormLetter);
+      #    purchFormLetter.printEUVatInvoice(euVatValue);
+      #}
+    ENDSOURCE
+    SOURCE #initPurchParmUpdate
+      #private void initPurchParmUpdate(boolean _forceInit)
+      #{
+      #    PurchParmUpdate purchParmUpdate;
+      #
+      #    if (_forceInit)
+      #    {
+      #        purchFormLetter.purchParmUpdate(null);
+      #        purchFormLetter.parmId('');
+      #    }
+      #
+      #    if (purchFormLetter.parmId() != '')
+      #    {
+      #        purchParmUpdate = PurchParmUpdate::find(parmId, true);
+      #
+      #        if (purchParmUpdate)
+      #        {
+      #            purchFormLetter.purchParmUpdate(purchParmUpdate);
+      #            return;
+      #        }
+      #    }
+      #
+      #    purchFormLetter.initNewPurchParmUpdate();
+      #    parmId = purchFormLetter.parmId();
+      #}
+      #
+    ENDSOURCE
+    SOURCE #postInvoice
+      #void postInvoice()
+      #{
+      #    VendInvoiceInfoTable localVendInvoiceInfoTable;
+      #    boolean isValidPercentageAllocation = true;
+      #
+      #    FormletterOutputContract    outputContractIfrs; // AQS
+      #    VendInvoiceJour             vendInvoiceJourIfrs; // AQS
+      #    GeneralJournalEntry         generalJournalEntryIfrs; // AQS
+      #    RecordSortedList            generalJournalEntryList; // AQS
+      #
+      #    for (localVendInvoiceInfoTable = vendInvoiceInfoTable_ds.getFirst(true) ? vendInvoiceInfoTable_ds.getFirst(true) : vendInvoiceInfoTable_ds.cursor(); localVendInvoiceInfoTable; localVendInvoiceInfoTable = vendInvoiceInfoTable_ds.getNext())
+      #    {
+      #        if(!strLTrim(localVendInvoiceInfoTable.Num))
+      #        {
+      #            checkFailed(strFmt(purchFormLetter.missingNumber(), localVendInvoiceInfoTable.PurchId));
+      #            continue;
+      #        }
+      #
+      #        //Check for the Invoice if the Invoice is from pool and create the PurchFormLetter Object accordingly
+      #        if (localVendInvoiceInfoTable.Ordering == DocumentStatus::ApproveJournal)
+      #        {
+      #            purchFormLetter = purchFormLetter_ApproveJournal::newApprovalFromSavedInvoice(localVendInvoiceInfoTable, null, true, true);
+      #        }
+      #        else
+      #        {
+      #            purchFormLetter = PurchFormLetter_Invoice::newFromSavedInvoice(localVendInvoiceInfoTable);
+      #        }
+      #
+      #        this.initPurchParmUpdate(true);
+      #        this.initPrint();
+      #        purchFormLetter.proforma(false);
+      #
+      #        purchFormLetter.createIFRSAdjustments(createIFRSAdjustments); // AQS
+      #
+      #        if (isConfigurationkeyEnabled(configurationKeyNum(PublicSector)))
+      #        {
+      #            isValidPercentageAllocation = VendInvoiceInfo_PaymentDisbursement::checkPercentageAllocation(VendInvoiceInfoTable::findRecId(localVendInvoiceInfoTable.RecId));
+      #        }
+      #
+      #        if (isValidPercentageAllocation)
+      #        {
+      #            purchFormLetter.update(localVendInvoiceInfoTable, localVendInvoiceInfoTable.Num);
+      #            this.initPurchParmUpdate(true);
+      #
+      #            // AQS+
+      #            outputContractIfrs = purchFormLetter.getOutputContract();
+      #
+      #            if (createIFRSAdjustments
+      #                && outputContractIfrs
+      #                && outputContractIfrs.parmJournal().TableId == tableNum(VendInvoiceJour))
+      #            {
+      #                vendInvoiceJourIfrs = VendInvoiceJour::findRecId(outputContractIfrs.parmJournal().RecId);
+      #
+      #                if (vendInvoiceJourIfrs)
+      #                {
+      #                    if (! generalJournalEntryList)
+      #                    {
+      #                        generalJournalEntryList = new RecordSortedList(tableNum(GeneralJournalEntry));
+      #                        generalJournalEntryList.sortOrder(fieldnum(GeneralJournalEntry, RecId));
+      #                    }
+      #
+      #                    generalJournalEntryIfrs = GeneralJournalEntry::findByReferenceNumberAccountingDate(vendInvoiceJourIfrs.LedgerVoucher, vendInvoiceJourIfrs.InvoiceDate);
+      #                    generalJournalEntryList.ins(generalJournalEntryIfrs);
+      #                }
+      #            }
+      #            // AQS-
+      #        }
+      #    }
+      #
+      #    purchFormLetter.createLedgerJournalIFRSAdjustment(generalJournalEntryList, true); // AQS
+      #
+      #    vendInvoiceInfoTable_ds.research();
+      #}
+    ENDSOURCE
+    SOURCE #printInvoice
+      #void printInvoice()
+      #{
+      #    VendInvoiceInfoTable            localVendInvoiceInfoTable;
+      #
+      #    for (localVendInvoiceInfoTable = vendInvoiceInfoTable_ds.getFirst(true) ? vendInvoiceInfoTable_ds.getFirst(true) : vendInvoiceInfoTable_ds.cursor(); localVendInvoiceInfoTable; localVendInvoiceInfoTable = vendInvoiceInfoTable_ds.getNext())
+      #    {
+      #        if(!strLTrim(localVendInvoiceInfoTable.Num))
+      #        {
+      #            checkFailed(strFmt(purchFormLetter.missingNumber(), localVendInvoiceInfoTable.PurchId));
+      #            continue;
+      #        }
+      #
+      #        if (localVendInvoiceInfoTable.Ordering == DocumentStatus::ApproveJournal)
+      #        {
+      #            purchFormLetter = purchFormLetter_ApproveJournal::newApprovalFromSavedInvoice(localVendInvoiceInfoTable, null, true, true);
+      #            this.initPurchParmUpdate(true);
+      #            this.initPrint();
+      #            PurchParmUpdate::setProformaValue(ParmId, true);
+      #        }
+      #        else
+      #        {
+      #            purchFormLetter = PurchFormLetter_Invoice::newFromSavedInvoice(localVendInvoiceInfoTable);
+      #            this.initPurchParmUpdate(true);
+      #            this.initPrint();
+      #        }
+      #        purchFormLetter.proforma(true);
+      #        purchFormLetter.update(localVendInvoiceInfoTable, localVendInvoiceInfoTable.Num);
+      #    }
+      #    vendInvoiceInfoTable_ds.research();
+      #}
+    ENDSOURCE
+    SOURCE #refresh
+      #/// <summary>
+      #/// Refreshes the VendInvoiceInfoTable table data source.
+      #/// </summary>
+      #/// <remarks>
+      #/// Called by child forms when closing due to possibly changed data contained in this table.
+      #/// </remarks>
+      #public void refresh(boolean _value = false)
+      #{
+      #    int pos;
+      #    ;
+      #
+      #    // The saved invoice could have been changed so update the grid while retaining the current selected row for the user.
+      #    pos = vendInvoiceInfoTable_ds.getPosition();
+      #    vendInvoiceInfoTable_ds.research();
+      #    vendInvoiceInfoTable_ds.setPosition(pos);
+      #}
+    ENDSOURCE
+    SOURCE #refreshAfterWorkflowSubmit
+      #public void refreshAfterWorkflowSubmit()
+      #{
+      #    vendInvoiceInfoTable_ds.research();
+      #}
+    ENDSOURCE
+    SOURCE #run
+      #public void run()
+      #{
+      #    super();
+      #
+      #    //ADPinfoMessages::addDebug(VendInvoiceInfoTable_ds.allowEdit() ? '.true' : '.false'); //todo remove
+      #}
+    ENDSOURCE
+    SOURCE #runBase
+      #PurchFormLetter runBase()
+      #{
+      #    return purchFormLetter;
+      #}
+    ENDSOURCE
+    SOURCE #setButtonAccess
+      #void setButtonAccess()
+      #{
+      #    element.allowEnable();
+      #    element.setButtonAccessMultiSelect();
+      #}
+    ENDSOURCE
+    SOURCE #setButtonAccessMultiSelect
+      #void setButtonAccessMultiSelect()
+      #{
+      #    VendInvoiceInfoTable        vendInvoiceInfoTableLocal;
+      #    boolean                     shouldBeEnabled = true;
+      #    boolean                     recordsMarked = false;
+      #    PurchInvoiceType            previousPurchInvoiceType;
+      #    DocumentStatus              previousDocumentStatus;
+      #    LedgerJournalTransRefRecId  previousPoolId;
+      #    boolean                     inWorkflowReviewOrRejected = false;
+      #
+      #    // <GBR>
+      #    boolean                 enableXmlMatchingButtons;
+      #    // </GBR>
+      #
+      #    // go through all marked records
+      #    vendInvoiceInfoTableLocal = vendInvoiceInfoTable_ds.getFirst(1, false);
+      #
+      #    if (!vendInvoiceInfoTableLocal)
+      #    {
+      #        //No marked records, use selected record
+      #        vendInvoiceInfoTableLocal = vendInvoiceInfoTable;
+      #    }
+      #
+      #    shouldBeEnabled = true;
+      #    inWorkflowReviewOrRejected = false;
+      #    while (vendInvoiceInfoTableLocal && (shouldBeEnabled || !inWorkflowReviewOrRejected))
+      #    {
+      #        // if two rows of different Invoice Type (pool, std or Adv Inv) or a row is Workflow in Review or Rejected
+      #        // break out of the loop
+      #        // loop since the buttons are to be disabled if even one selection requires it
+      #
+      #        // disables the edit button when in case of multiple invoices, the invoice types are different
+      #        if (recordsMarked && (previousPurchInvoiceType != vendInvoiceInfoTableLocal.InvoiceType || previousDocumentStatus != vendInvoiceInfoTableLocal.Ordering || previousPoolId != vendInvoiceInfoTableLocal.PoolRecId))
+      #        {
+      #            shouldBeEnabled = false;
+      #        }
+      #
+      #        if(vendInvoiceInfoTableLocal.Ordering == DocumentStatus::ApproveJournal)
+      #        {
+      #            previousPoolId = vendInvoiceInfoTableLocal.PoolRecId;
+      #        }
+      #
+      #        if ((vendInvoiceInfoTableLocal.RequestStatus == VendInvoiceRequestStatus::InReview || vendInvoiceInfoTableLocal.RequestStatus == VendInvoiceRequestStatus::Rejected))
+      #        {
+      #            inWorkflowReviewOrRejected = true;
+      #        }
+      #
+      #        previousPurchInvoiceType = vendInvoiceInfoTableLocal.InvoiceType; //assigns invoice type for checking the invoice type difference
+      #
+      #        previousDocumentStatus   =  vendInvoiceInfoTableLocal.Ordering;
+      #
+      #        recordsMarked = true;
+      #
+      #        vendInvoiceInfoTableLocal = vendInvoiceInfoTable_ds.getNext();
+      #    }
+      #
+      #    if (recordsMarked)
+      #    {
+      #        post.enabled(shouldBeEnabled);
+      #        element.enableGridDefaultAction(shouldBeEnabled);
+      #        printProForma.enabled(shouldBeEnabled);
+      #        vendInvoiceInfoTable_ds.allowDelete(shouldBeEnabled && !inWorkflowReviewOrRejected);
+      #        //Enable match details if use invoice matching is turned on
+      #        matchDetails.enabled(VendParameters::find().editUseInvoiceMatching() == NoYes::Yes);
+      #        //Enable match button if use invoice matching is turned on & no PS duplicates allowed
+      #        autoMatch.enabled(
+      #            VendParameters::find().editUseInvoiceMatching() == NoYes::Yes &&
+      #            PurchParameters::find().CheckPackingSlip == ReuseVoucher::NoDuplicate);
+      #
+      #        // <GBR>
+      #        enableXmlMatchingButtons = VendInvoiceInfoTable.isNfeNotIssuingNorReversing_BR();
+      #
+      #        element.enableXmlButtons_BR(enableXmlMatchingButtons);
+      #        // </GBR>
+      #    }
+      #    else
+      #    {
+      #        post.enabled(false);
+      #        printProForma.enabled(false);
+      #        vendInvoiceInfoTable_ds.allowDelete(false);
+      #        element.enableGridDefaultAction(false);
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #setCheckResult
+      #public void setCheckResult(Map _mapCheckResult)
+      #{
+      #    mapCheckResult = _mapCheckResult;
+      #    infoRecId = new Set(Types::Int64);
+      #
+      #    VendInvoiceInfoTable_DS.first();
+      #    VendInvoiceInfoTable_DS.executeQuery();
+      #}
+    ENDSOURCE
+    SOURCE #setIfrsVariables
+      #// AQS
+      #public void setIfrsVariables(CreateIFRSAdjustments _createIFRSAdjustments)
+      #{
+      #    createIFRSAdjustments = _createIFRSAdjustments;
+      #}
+    ENDSOURCE
+    SOURCE #setPrintVariables
+      #/// <summary>
+      #/// Sets the print management variables.
+      #/// </summary>
+      #/// <param name="_printInvoice">
+      #/// A boolean value, to indicate if an invoice report will be printed.
+      #/// </param>
+      #/// <param name="_printout">
+      #/// An enum value, to indicate if information before the system is updated should be printed,
+      #/// or else if information after the system was updated should be printed.
+      #/// </param>
+      #/// <param name="_usePrintManagement">
+      #/// A boolean value, to indicate if print management will be used.
+      #/// </param>
+      #/// <param name="_printSalesFormLetter">
+      #/// A boolean value, to indicate if sales form letter will be printed.
+      #/// </param>
+      #/// <param name="_euVatValue">
+      #/// A boolean value, to indicate if intra-community invoice will be printed.
+      #/// </param>
+      #/// <param name="_printFacture">
+      #/// A boolean value, to indicate if a facture will be printed.
+      #/// </param>
+      #/// <param name="_printAcceptance">
+      #/// A boolean value, to indicate if an acceptance report will be printed.
+      #/// </param>
+      #/// <param name="_printInventBailee">
+      #/// A boolean value, to indicate if an acceptance report in store will be printed.
+      #/// </param>
+      #/// <param name="_printExciseInvoice">
+      #/// A boolean value, to indicate if an excise invoice report will be printed.
+      #/// </param>
+      #/// <param name="_exciseInvoiceAddress">
+      #/// An enum value, to indicate whether a company address or warehouse address
+      #/// will be printed.
+      #/// </param>
+      #public void setPrintVariables(  boolean         _printInvoice,
+      #                                Printout        _printout,
+      #                                boolean         _usePrintManagement,
+      #                                boolean         _printSalesFormLetter,
+      #                                // <GEERU>
+      #                                boolean         _euVatValue,
+      #                                boolean         _printFacture = false,
+      #                                boolean         _printAcceptance = false,
+      #                                boolean         _printInventBailee = false
+      #                                // <GIN>
+      #                                ,boolean        _printExciseInvoice = false
+      #                                ,ExciseInvoiceAddressType_IN _exciseInvoiceAddress = ExciseInvoiceAddressType_IN::WarehouseAddress
+      #                                // </GIN>
+      #                                )
+      #                                // </GEERU>
+      #{
+      #    printInvoice = _printInvoice;
+      #    printout = _printout;
+      #    usePrintManagement = _usePrintManagement;
+      #    printSalesFormLetter = _printSalesFormLetter;
+      #    euVatValue = _euVatValue;
+      #    // <GEERU>
+      #    if (SysCountryRegionCode::isLegalEntityInCountryRegion([ #isoRU ]))
+      #    {
+      #        purchFormLetter.printFacture_RU(_printFacture);
+      #        purchFormLetter.printAcceptanceReport_RU(_printAcceptance);
+      #        purchFormLetter.printInventBaileeReport_RU(_printInventBailee);
+      #    }
+      #    // </GEERU>
+      #    // <GIN>
+      #    if (isIN)
+      #    {
+      #        purchFormLetter.printExciseFormLetter_IN(_printExciseInvoice);
+      #        purchFormLetter.printExciseInvoiceAddress_IN(_exciseInvoiceAddress);
+      #    }
+      #    // </GIN>
+      #}
+    ENDSOURCE
+    SOURCE #specQty
+      #// AQS
+      #PurchUpdate specQty(PurchUpdate _specQty = PurchUpdate::All)
+      #{
+      #    return purchFormLetter.recommendedSpecQty();
+      #}
+    ENDSOURCE
+    SOURCE #updateVendInvoiceLinesFromNfeXmlLines_BR
+      #/// <summary>
+      #/// Updates vendor invoice lines with the values from the NF-e received XML lines
+      #/// </summary>
+      #public void updateVendInvoiceLinesFromNfeXmlLines_BR()
+      #{
+      #    Args                     args;
+      #    MenuFunction             menuFunction;
+      #
+      #    menuFunction = new MenuFunction(menuitemActionStr(EFDocRecXmlUpdateVendorInvoiceLines_BR), MenuItemType::Action);
+      #
+      #    args = new Args(formStr(EFDocumentReceivedXMLViewer_BR));
+      #    args.record(vendInvoiceInfoTable);
+      #    menuFunction.run(args);
+      #}
+    ENDSOURCE
+  ENDMETHODS
+  OBJECTBANK
+    PROPERTIES
+      Query               #VendInvoiceInfoListPageCrossComp
+      Version             #550
+    ENDPROPERTIES
+    
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #VendInvoiceInfoTable
+          Table               #VendInvoiceInfoTable
+          AllowCheck          #No
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+          DATAFIELD TransDate
+            PROPERTIES
+              AllowAdd            #Yes
+            ENDPROPERTIES
+            
+            METHODS
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD Approved
+            PROPERTIES
+              AllowAdd            #Yes
+            ENDPROPERTIES
+            
+            METHODS
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD ParmJobStatus
+            PROPERTIES
+              AllowAdd            #Yes
+            ENDPROPERTIES
+            
+            METHODS
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD RequestStatus
+            PROPERTIES
+              AllowAdd            #Yes
+            ENDPROPERTIES
+            
+            METHODS
+            ENDMETHODS
+          ENDDATAFIELD
+          
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #validateWrite
+          #public boolean validateWrite()
+          #{
+          #    return true;
+          #}
+        ENDSOURCE
+        SOURCE #checkExist
+          #display ImageRes checkExist(VendInvoiceInfoTable _vendInvoiceInfoTable)
+          #{
+          #    ImageRes    res;
+          #    str         info;
+          #    Exception   status;
+          #
+          #    #resAppl;
+          #
+          #    if (mapCheckResult != null && (setSendRecord != null && setSendRecord.in(_vendInvoiceInfoTable.RecId)))
+          #    {
+          #        if (mapCheckResult.exists(_vendInvoiceInfoTable.RecId))
+          #        {
+          #            [info, status] = mapCheckResult.lookup(_vendInvoiceInfoTable.RecId);
+          #
+          #            switch(status)
+          #            {
+          #                case Exception::Error:
+          #                    res = imageListApplCheck.image(#ImageError);
+          #                    break;
+          #
+          #                case Exception::Warning :
+          #                    res = imageListApplCheck.image(#ImageWarning);
+          #                    break;
+          #
+          #                case Exception::Info :
+          #                    res = imageListApplCheck.image(#Image_OK);
+          #                    break;
+          #
+          #                default :
+          #                    res = imageListApplCheck.image(#Image_NotOK);
+          #            }
+          #        }
+          #        else
+          #        {
+          #            if(VendTable::find(_vendInvoiceInfoTable.InvoiceAccount).VATNum)
+          #            {
+          #                res = imageListApplCheck.image(#ImageInfo);
+          #            }
+          #            else
+          #            {
+          #                res = imageListApplCheck.image(#ImageInfo);
+          #            }
+          #        }
+          #         //ImageNote //ImageOK //ImageWarning //ImageInfo
+          #    }
+          #    else
+          #    {
+          #        res = -1;
+          #    }
+          #
+          #    return res;
+          #}
+          #
+        ENDSOURCE
+        SOURCE #init
+          #public void init()
+          #{
+          #    super();
+          #
+          #    vendInvoiceInfoTable_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoTable, displayPurchID));
+          #    vendInvoiceInfoTable_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoTable, packingSlipId));
+          #    vendInvoiceInfoTable_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoTable, checkIfVarianceApproved));
+          #    vendInvoiceInfoTable_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoTable, editIsVendorAdvance));
+          #    vendInvoiceInfoTable_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoTable, checkIfWorkflowCompletedIcon));
+          #    vendInvoiceInfoTable_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoTable, editIsReceipt)); // AQS
+          #    vendInvoiceInfoTable_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoTable, IsPoolRecId)); // AQS
+          #    vendInvoiceInfoTable_ds.cacheAddMethod(tableMethodStr(VendInvoiceInfoTable, dispTotalAmountToPay));
+          #
+          #    // <GEEU>
+          #    if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoLT, #isoLV]))
+          #    {
+          #        // Add fields to the query that are not actively fetched for the display.
+          #        this.query().dataSourceTable(tableNum(VendInvoiceInfoTable)).addSelectionField(fieldNum(VendInvoiceInfoTable, TransportationDocument));
+          #    }
+          #    // </GEEU>
+          #}
+        ENDSOURCE
+        SOURCE #markChanged
+          #public void markChanged()
+          #{
+          #    super();
+          #    element.setButtonAccess();
+          #}
+        ENDSOURCE
+        SOURCE #executeQuery
+          #public void executeQuery()  // <AQS> vlano INC32621
+          #{
+          #    Common          currentRecord;
+          #    RecId           recId;
+          #
+          #    currentRecord = vendInvoiceInfoTable_ds.cursor();
+          #    recId = currentRecord.RecId;
+          #
+          #    super();
+          #
+          #    vendInvoiceInfoTable_ds.findValue(fieldNum(vendInvoiceInfoTable, RecId), int642str(recId));
+          #
+          #
+          #    element.setButtonAccess();
+          #}
+        ENDSOURCE
+        SOURCE #delete
+          #public void delete()
+          #{
+          #    boolean   allowDelete = true;
+          #
+          #    if (VendInvoiceInfoTable.RequestStatus == VendInvoiceRequestStatus::Approved)
+          #    {
+          #        if (Box::okCancel(strFmt("@SYS4009816",VendInvoiceInfoTable.Num),DialogButton::Cancel) == DialogButton::Cancel)
+          #        {
+          #            allowDelete = false;
+          #        }
+          #    }
+          #
+          #    if (allowDelete)
+          #    {
+          #        super();
+          #    }
+          #
+          #    element.setButtonAccess();
+          #}
+        ENDSOURCE
+        SOURCE #active
+          #public int active()
+          #{
+          #    int ret;
+          #    boolean isAdvance;
+          #
+          #    ret = super();
+          #
+          #    if (!this.anyMarked())
+          #    {
+          #        element.setButtonAccess();
+          #    }
+          #
+          #    // AQS - need to refresh header anyway...
+          #    // AQS if (vendInvoiceListPageState.initInvoiceHeaderState(vendInvoiceInfoTable))
+          #    {
+          #        element.allowEditsForHeader();
+          #    }
+          #
+          #    //checks to see if current invoice is prepayment, if so disables the Misc charges buttons
+          #    isAdvance = vendInvoiceInfoTable.isAdvance();
+          #
+          #    if (isLastInvoiceAdvance != isAdvance)
+          #    {
+          #        isLastInvoiceAdvance = isAdvance;
+          #
+          #        element.enableHeaderActions(true);
+          #    }
+          #
+          #    buttonErrorLog.enabled(vendInvoiceInfoTable.Log != '');
+          #    return ret;
+          #}
+        ENDSOURCE
+        SOURCE #editToApprove
+          #//INC41888
+          #public edit ToApprove editToApprove(
+          #    boolean _set,
+          #    VendInvoiceInfoTable _vendInvoiceInfoTable,
+          #    ToApprove _value
+          #)
+          #{
+          #    if(_set)
+          #    {
+          #        ItemsToApprove::setToApprove(_vendInvoiceInfoTable, _value);
+          #        return _value;
+          #    }
+          #
+          #    return ItemsToApprove::getToApprove(_vendInvoiceInfoTable);
+          #}
+        ENDSOURCE
+      ENDMETHODS
+      LINKTYPES
+        DATASOURCE
+          PROPERTIES
+            Name                #VendInvoiceInfoTable
+            ParentDataSource    #PurchTable
+          ENDPROPERTIES
+          
+        DATASOURCE
+          PROPERTIES
+            Name                #VendInvoiceInfoTable
+            ParentDataSource    #VendTable
+          ENDPROPERTIES
+          
+        DATASOURCE
+          PROPERTIES
+            Name                #VendInvoiceInfoTable
+            ParentDataSource    #WorkflowWorkItemTable
+          ENDPROPERTIES
+          
+        DATASOURCE
+          PROPERTIES
+            Name                #VendInvoiceInfoTable
+            ParentDataSource    #CompanyInfo
+          ENDPROPERTIES
+          
+      ENDLINKTYPES
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #WorkflowWorkItemTable
+          Table               #WorkflowWorkItemTable
+          OnlyFetchActive     #Yes
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+      ENDMETHODS
+      LINKTYPES
+        DATASOURCE
+          PROPERTIES
+            Name                #WorkflowWorkItemTable
+            ParentDataSource    #VendInvoiceInfoTable
+          ENDPROPERTIES
+          
+      ENDLINKTYPES
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #VendTable
+          Table               #VendTable
+          AllowEdit           #No
+          AllowCreate         #No
+          AllowDelete         #No
+          OnlyFetchActive     #Yes
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #write
+          #public void write()
+          #{
+          #    //super();
+          #}
+        ENDSOURCE
+        SOURCE #validateWrite
+          #public boolean validateWrite()
+          #{
+          #    return true;
+          #}
+        ENDSOURCE
+      ENDMETHODS
+      LINKTYPES
+        DATASOURCE
+          PROPERTIES
+            Name                #VendTable
+            ParentDataSource    #VendInvoiceInfoTable
+          ENDPROPERTIES
+          
+        DATASOURCE
+          PROPERTIES
+            Name                #VendTable
+            ParentDataSource    #TaxVatReliabilityCurrent
+          ENDPROPERTIES
+          
+      ENDLINKTYPES
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #PurchTable
+          Table               #PurchTable
+          OnlyFetchActive     #Yes
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #write
+          #public void write()
+          #{
+          #    //super();
+          #}
+        ENDSOURCE
+        SOURCE #validateWrite
+          #public boolean validateWrite()
+          #{
+          #    return true;
+          #}
+        ENDSOURCE
+      ENDMETHODS
+      LINKTYPES
+        DATASOURCE
+          PROPERTIES
+            Name                #PurchTable
+            ParentDataSource    #VendInvoiceInfoTable
+          ENDPROPERTIES
+          
+      ENDLINKTYPES
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #TaxVatReliabilityCurrent
+          Table               #TaxVatReliabilityCurrent
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+      ENDMETHODS
+      LINKTYPES
+        DATASOURCE
+          PROPERTIES
+            Name                #TaxVatReliabilityCurrent
+            ParentDataSource    #VendTable
+          ENDPROPERTIES
+          
+      ENDLINKTYPES
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #CompanyInfo
+          Table               #CompanyInfo
+          OnlyFetchActive     #Yes
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #write
+          #public void write()
+          #{
+          #    //super();
+          #}
+        ENDSOURCE
+        SOURCE #validateWrite
+          #public boolean validateWrite()
+          #{
+          #    return true;
+          #}
+        ENDSOURCE
+      ENDMETHODS
+      LINKTYPES
+        DATASOURCE
+          PROPERTIES
+            Name                #CompanyInfo
+            ParentDataSource    #VendInvoiceInfoTable
+          ENDPROPERTIES
+          
+      ENDLINKTYPES
+    ENDDATASOURCE
+  ENDOBJECTBANK
+  
+  REFERENCEDATASOURCES
+  ENDREFERENCEDATASOURCES
+  
+  JOINS
+  ENDJOINS
+  
+  PARTREFERENCES
+    PARTREFERENCE #ContactFor
+      PROPERTIES
+        Name                #ContactFor
+        MenuItemName        #smmcontactslistpagecontactForPart
+        DataSource          #VendTable
+        DataSourceRelation  #VendTable.ContactPerson
+        ElementPosition     #357913941
+      ENDPROPERTIES
+      
+    ENDPARTREFERENCE
+    
+    PARTREFERENCE #Statistics
+      PROPERTIES
+        Name                #Statistics
+        MenuItemName        #vendtransinvoicePoolstatisticsFactBox
+        DataSource          #VendTable
+        DataSourceRelation  #selfLink
+        ElementPosition     #715827882
+      ENDPROPERTIES
+      
+    ENDPARTREFERENCE
+    
+    PARTREFERENCE #RelatedInformation
+      PROPERTIES
+        Name                #RelatedInformation
+        MenuItemName        #VendEditInvoiceRelatedInformation
+        DataSource          #PurchTable
+        IsLinked            #Yes
+        ElementPosition     #1073741823
+      ENDPROPERTIES
+      
+    ENDPARTREFERENCE
+    
+    PARTREFERENCE #PreviewPane
+      PROPERTIES
+        Name                #PreviewPane
+        MenuItemName        #VendInvoiceInfoListPagePreviewPaneCC
+        PartLocation        #PreviewPane
+        DataSource          #VendInvoiceInfoTable
+        DataSourceRelation  #VendInvoiceInfoTable.VendInvoiceInfoTable
+        ElementPosition     #1431655764
+      ENDPROPERTIES
+      
+    ENDPARTREFERENCE
+    
+    PARTREFERENCE #WorkflowPendingInfoPart
+      PROPERTIES
+        Name                #WorkflowPendingInfoPart
+        MenuItemName        #WorkflowPendingInfoPart
+        DataSource          #VendInvoiceInfoTable
+        IsLinked            #Yes
+        ElementPosition     #1789569705
+      ENDPROPERTIES
+      
+    ENDPARTREFERENCE
+    
+  ENDPARTREFERENCES
+  
+  DESIGN
+    PROPERTIES
+      Caption             #@SYS119251
+      UseCaptionFromMenuItem  #Yes
+      TitleDatasource     #VendInvoiceInfoTable
+      WindowType          #ContentPage
+      DataSource          #VendInvoiceInfoTable
+      WorkflowEnabled     #Yes
+      WorkflowDatasource  #VendInvoiceInfoTable
+      WorkflowType        #VendProcessInvoice
+      StatusBarStyle      #Simple
+      Style               #ListPage
+      NewRecordAction     #PurchaseOrderInvoice
+    ENDPROPERTIES
+    
+    CONTAINER
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #ActionPane
+          VerticalSpacing     #0
+          ElementPosition     #715827882
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #Financials
+          ElementPosition     #1073741823
+          HierarchyParent     #ActionPane
+          Caption             #@SYS80043
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #General
+          ElementPosition     #1789569705
+          HierarchyParent     #ActionPane
+          Caption             #@SYS114631
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #Invoice
+          ElementPosition     #715827882
+          HierarchyParent     #ActionPane
+          Caption             #@SYS318567
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #Review
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPane
+          Caption             #@SYS60543
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Accounting
+          ElementPosition     #613566756
+          HierarchyParent     #Financials
+          Caption             #@SYS314071
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Actions
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #General
+          Caption             #@SYS128905
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #AttachmentsGroup
+          AutoDeclaration     #Yes
+          ElementPosition     #1862270971
+          HierarchyParent     #Invoice
+          Caption             #@SYS316708
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Budget
+          ElementPosition     #920350134
+          HierarchyParent     #Financials
+          Caption             #@SYS80981
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Charges
+          AutoDeclaration     #Yes
+          ElementPosition     #1227133512
+          HierarchyParent     #Financials
+          Caption             #@SYS114608
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #History
+          ElementPosition     #1932735281
+          HierarchyParent     #Review
+          DataSource          #VendInvoiceInfoTable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #List
+          ElementPosition     #1610612730
+          HierarchyParent     #Invoice
+          Caption             #@SYS118440
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Maintain_PSN
+          AutoDeclaration     #Yes
+          ConfigurationKey    #PurchFrenchRegulatory_PSN
+          ElementPosition     #1879048189
+          HierarchyParent     #General
+          Caption             #@GLS223243
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Manages
+          AutoDeclaration     #Yes
+          ElementPosition     #805306365
+          HierarchyParent     #Invoice
+          Caption             #@SYS316703
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Matching
+          AutoDeclaration     #Yes
+          ElementPosition     #858993458
+          HierarchyParent     #Review
+          Caption             #@SYS88145
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #New
+          Width               #Column width
+          ElementPosition     #536870910
+          HierarchyParent     #Invoice
+          Caption             #@SYS2055
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #OverviewDelivery
+          ElementPosition     #1252698790
+          HierarchyParent     #Invoice
+          Caption             #@SYS4508
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Process
+          ElementPosition     #1029002577
+          HierarchyParent     #Invoice
+          Caption             #@SYS152420
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Project
+          ElementPosition     #1840700268
+          HierarchyParent     #Financials
+          Caption             #@SYS334314
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Reporting
+          AutoDeclaration     #Yes
+          ElementPosition     #2013265917
+          HierarchyParent     #Invoice
+          Caption             #@sys4000774
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Summary
+          AlignControl        #Yes
+          ElementPosition     #1711276026
+          HierarchyParent     #Invoice
+          Caption             #@SYS114681
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Tax
+          ElementPosition     #1533916890
+          HierarchyParent     #Financials
+          Caption             #@SYS333961
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Validation
+          ElementPosition     #1288490187
+          HierarchyParent     #Review
+          Caption             #@SYS40295
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Variances
+          AutoDeclaration     #Yes
+          ElementPosition     #1610612733
+          HierarchyParent     #General
+          Caption             #@SYS342635
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #VendInvoiceXmlMatch_BR
+          CountryRegionCodes  #BR
+          ElementPosition     #2040109463
+          HierarchyParent     #Review
+          Caption             #@SYS4010108
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #View
+          AutoDeclaration     #Yes
+          ElementPosition     #1717986916
+          HierarchyParent     #Review
+          Caption             #@SYS311143
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #WorkflowButtonGroup
+          ElementPosition     #2087831322
+          HierarchyParent     #Invoice
+          Caption             #@SYS108665
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GRID
+        PROPERTIES
+          Name                #Grid
+          AutoDeclaration     #Yes
+          Width               #Column width
+          Height              #Column height
+          VerticalSpacing     #0
+          ElementPosition     #1431655764
+          DataSource          #VendInvoiceInfoTable
+          DefaultAction       #PostInvoice
+          DefaultActionLabel  #@SYS122402
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #mouseDblClick
+            #public int mouseDblClick(int _x, int _y, int _button, boolean _Ctrl, boolean _Shift)
+            #{
+            #    int ret;
+            #
+            #    /*<CDR232612,ldan,2023_06_08,RolePredschvalovatelFaktur_rozsireni>
+            #    ret = super(_x, _y, _button, _Ctrl, _Shift);
+            #
+            #    if(buttonEditInvoice.visible() && buttonEditInvoice.enabled()) //INC41888
+            #        buttonEditInvoice.clicked(); // nefunguje defaulAction na gridu.... nevím proč MTi
+            #    </CDR232612,ldan,2023_06_08,RolePredschvalovatelFaktur_rozsireni>*/
+            #
+            #    PostInvoice.clicked(); //<CDR232612,ldan,2023_06_08,RolePredschvalovatelFaktur_rozsireni/>
+            #
+            #    return ret;
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUBUTTON
+        PROPERTIES
+          Name                #PrinterSettings
+          HelpText            #@SYS329846
+          ElementPosition     #1288490187
+          HierarchyParent     #Variances
+          Text                #@SYS128923
+          NormalImage         #10700
+          ImageLocation       #EmbeddedResource
+          KeyTip              #@SYS138430
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    boolean isEnabled;
+            #
+            #    super();
+            #
+            #    isEnabled = purchFormLetter.printFormLetter();
+            #    buttonPrintFormletter.enabled(isEnabled);
+            #    buttonPrintFormletterCopy.enabled(isEnabled);
+            #    printEUVatButton.enabled(purchFormLetter.printEUVatInvoice());
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REFERENCEGROUP
+        PROPERTIES
+          Name                #VendTable_Party
+          AllowEdit           #No
+          HelpText            #@SYS135592
+          ElementPosition     #814562760
+          HierarchyParent     #Grid
+          DataSource          #VendTable
+          ReferenceField      #Party
+          Label               #@SYS8079
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REFERENCEGROUP
+        PROPERTIES
+          Name                #WorkflowWorkItemTable_Queue
+          Visible             #No
+          AllowEdit           #No
+          ElementPosition     #2073432480
+          HierarchyParent     #Grid
+          DataSource          #WorkflowWorkItemTable
+          ReferenceField      #Queue
+          Label               #@SYS191581
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #buttonErrorLog
+          AutoDeclaration     #Yes
+          Enabled             #No
+          HelpText            #@SYS128915
+          ElementPosition     #1431655764
+          HierarchyParent     #Validation
+          Text                #@SYS118003
+          NormalImage         #11263
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    super();
+            #
+            #    infolog.view(Info::infoStr2Con(vendInvoiceInfoTable.Log));
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #ButtonHeader_PerformBudgetCheck
+          AutoDeclaration     #Yes
+          HelpText            #@SYS326407
+          ConfigurationKey    #LedgerAdv2BudgetCtrl
+          ElementPosition     #1610612734
+          HierarchyParent     #Budget
+          Text                #@SYS317355
+          ButtonDisplay       #Text & Image above
+          NormalImage         #12313
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #public void clicked()
+            #{
+            #    if (vendInvoiceInfoTable)
+            #    {
+            #        // Submit to source document processor for an on-demand GL budget check
+            #        SourceDocumentProcessorFacade::submitOnDemandSourceDocumentImpl(vendInvoiceInfoTable);
+            #    }
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #ButtonPrintFormletter
+          AutoDeclaration     #Yes
+          HelpText            #@SYS85658
+          ElementPosition     #715827882
+          HierarchyParent     #PrinterSettings
+          Text                #@SYS14204
+          NormalImage         #7867
+          ImageLocation       #EmbeddedResource
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    super();
+            #
+            #    PurchFormLetter::callPrintersettingsFormletter(purchFormLetter, PrintSetupOriginalCopy::Original);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #ButtonPrintFormletterCopy
+          AutoDeclaration     #Yes
+          HelpText            #@SYS93924
+          ElementPosition     #1073741823
+          HierarchyParent     #PrinterSettings
+          Text                #@SYS135174
+          NormalImage         #7865
+          ImageLocation       #EmbeddedResource
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    super();
+            #
+            #    PurchFormLetter::callPrintersettingsFormletter(purchFormLetter, PrintSetupOriginalCopy::Copy);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #PendingInvoiceDetail
+          NeededPermission    #Manual
+          HelpText            #@SYS330537
+          ConfigurationKey    #LedgerBasic
+          SecurityKey         #VendMisc
+          ElementPosition     #1431655764
+          HierarchyParent     #View
+          Text                #@SYS119255
+          NormalImage         #10676
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #No
+          Big                 #Yes
+          Primary             #Yes
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    Args args;
+            #
+            #
+            #    args = new Args();
+            #
+            #    args.record(vendInvoiceInfoTable);
+            #    args.caller(element);
+            #
+            #    new MenuFunction(menuitemDisplayStr(VendUnpostedInvoiceJournal), MenuItemType::Display).run(args);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #PrintEUVatButton
+          AutoDeclaration     #Yes
+          HelpText            #@SYS55116
+          ElementPosition     #1431655764
+          HierarchyParent     #PrinterSettings
+          Text                #@SYS135175
+          NormalImage         #10603
+          ImageLocation       #EmbeddedResource
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    super();
+            #    PurchFormLetter::callPrintersettingsEUVatInvoice(purchFormLetter);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL CHECKBOX
+        PROPERTIES
+          Name                #ItemToApprove
+          AutoDeclaration     #Yes
+          Visible             #No
+          ElementPosition     #148102320
+          HierarchyParent     #Grid
+          BackgroundColor     #Window background
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #editToApprove
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #modified
+            #//<CDR201114,LD,20200611,VendInvoiceAssignedToMeCrossComp_Approval_fix/>
+            #public boolean modified()
+            #{
+            #    boolean ret;
+            #
+            #    ret = super();
+            #
+            #    element.updateWorkflowControls();
+            #
+            #    return ret;
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL CHECKBOX
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_Hold
+          AllowEdit           #No
+          VerticalSpacing     #0
+          ElementPosition     #1555074360
+          HierarchyParent     #Grid
+          BackgroundColor     #Window background
+          DataSource          #VendInvoiceInfoTable
+          DataField           #Hold
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL CHECKBOX
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_IsAdvance
+          Visible             #No
+          AllowEdit           #No
+          ElementPosition     #1925330160
+          HierarchyParent     #Grid
+          BackgroundColor     #Window background
+          Label               #@SYS333693
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #editIsVendorAdvance
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL CHECKBOX
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_M_prepaymentSettled
+          AllowEdit           #No
+          ElementPosition     #1481023200
+          HierarchyParent     #Grid
+          BackgroundColor     #Window background
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #prepaymentSettled
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #LastMatchVariance
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          ElementPosition     #1629125520
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataField           #LastMatchVariance
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #TaxVatReliabilityCurrent_TaxVATUnreliable
+          AllowEdit           #No
+          ElementPosition     #962665080
+          HierarchyParent     #Grid
+          DataSource          #TaxVatReliabilityCurrent
+          DataField           #TaxVATUnreliable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_RequestStatus
+          AllowEdit           #No
+          ElementPosition     #1777227840
+          HierarchyParent     #Grid
+          Label               #@SYS132110
+          DataSource          #VendInvoiceInfoTable
+          DataField           #RequestStatus
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #Attachments
+          HelpText            #@SYS330230
+          DisplayTarget       #Client
+          ElementPosition     #1431655764
+          HierarchyParent     #AttachmentsGroup
+          Text                #@SYS316708
+          NormalImage         #10442
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #No
+          Big                 #Yes
+          NeedsRecord         #Yes
+          Command             #2853
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #ButtonViewReceivedXML_BR
+          AutoDeclaration     #Yes
+          CountryRegionCodes  #BR
+          ElementPosition     #1431655763
+          HierarchyParent     #VendInvoiceXmlMatch_BR
+          Text                #@SYS72884
+          NormalImage         #12241
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #No
+          Big                 #Yes
+          NeedsRecord         #Yes
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    Args                     args;
+            #    MenuFunction             menuFunction;
+            #    EFDocAccessKey_BR        accessKey = VendInvoiceInfoTable.getAccessKey_BR();
+            #
+            #    super();
+            #
+            #    if (accessKey)
+            #    {
+            #        menuFunction = new MenuFunction(menuitemDisplayStr(EFDocumentReceivedXMLViewer_BR), MenuItemType::Display);
+            #
+            #        args = new Args(formStr(EFDocumentReceivedXMLViewer_BR));
+            #        args.parm(accessKey);
+            #        menuFunction.run(args);
+            #    }
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #Delete
+          AutoDeclaration     #Yes
+          NeededPermission    #Delete
+          HelpText            #@SYS330234
+          ElementPosition     #1717986916
+          HierarchyParent     #Manages
+          Text                #@SYS14425
+          NormalImage         #10121
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          SaveRecord          #No
+          MultiSelect         #Yes
+          Primary             #Yes
+          Command             #2832
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #ExportToExcel
+          AutoDeclaration     #Yes
+          ElementPosition     #1610612734
+          HierarchyParent     #List
+          NormalImage         #10156
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #Yes
+          Big                 #Yes
+          Command             #4436
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #Refresh
+          HelpText            #@sys315818
+          ElementPosition     #1073741822
+          HierarchyParent     #List
+          NormalImage         #11437
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Big                 #Yes
+          Command             #2875
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #SubLedger
+          HelpText            #@SYS343331
+          ElementPosition     #1610612733
+          HierarchyParent     #Accounting
+          Text                #@SYS135346
+          NormalImage         #10097
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #No
+          Big                 #Yes
+          NeedsRecord         #Yes
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    Args args = new Args();
+            #    MenuFunction menuFunction;
+            #
+            #    if (vendInvoiceInfoTable.RecId == 0.0)
+            #    {
+            #        throw error("@SYS136802");
+            #    }
+            #
+            #    args.caller(element);
+            #    args.record(vendInvoiceInfoTable);
+            #
+            #    menuFunction = new MenuFunction(menuitemDisplayStr(SubledgerJournalAccountEntries), MenuItemType::Display);
+            #    menuFunction.run(args);
+            #}
+            #
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_CashDiscBaseDate
+          Visible             #No
+          ElementPosition     #357913941
+          DataSource          #VendInvoiceInfoTable
+          DataField           #CashDiscBaseDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_DocumentDate
+          AllowEdit           #No
+          VerticalSpacing     #0
+          ElementPosition     #518358120
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataField           #DocumentDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DROPDIALOGBUTTON
+        PROPERTIES
+          Name                #creditSetup
+          HelpText            #@SYS329847
+          ElementPosition     #858993458
+          HierarchyParent     #Variances
+          Text                #@SYS128921
+          NormalImage         #10078
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MenuItemName        #VendEditInvoiceCreditDropDialog
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DROPDIALOGBUTTON
+        PROPERTIES
+          Name                #Post
+          AutoDeclaration     #Yes
+          NeededPermission    #Delete
+          HelpText            #@SYS330361
+          ElementPosition     #613566756
+          HierarchyParent     #Process
+          Text                #@SYS6098
+          NormalImage         #10285
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #Yes
+          Big                 #Yes
+          Primary             #Yes
+          MenuItemName        #VendEditInvoicePostDropDialog
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DROPDIALOGBUTTON
+        PROPERTIES
+          Name                #PrintProforma
+          AutoDeclaration     #Yes
+          HelpText            #@SYS328748
+          ElementPosition     #1610612733
+          HierarchyParent     #Actions
+          Text                #@SYS91576
+          NormalImage         #10700
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #Yes
+          Big                 #Yes
+          MenuItemName        #VendEditInvoicePrintDropDialog
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #AnalyzeData
+          ElementPosition     #1431655764
+          HierarchyParent     #Reporting
+          ShowShortCut        #No
+          Big                 #Yes
+          MenuItemType        #Action
+          MenuItemName        #CreatePowerViewReportVendCube
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #AutoMatch
+          AutoDeclaration     #Yes
+          ConfigurationKey    #PurchInvoiceMatching
+          ElementPosition     #1717986916
+          HierarchyParent     #Matching
+          NormalImage         #10080
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #Yes
+          Big                 #Yes
+          Primary             #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemType        #Action
+          MenuItemName        #VendInvoiceMatch
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #ButtonBatch
+          AutoDeclaration     #Yes
+          HelpText            #@SYS128911
+          ElementPosition     #1717986916
+          HierarchyParent     #Variances
+          Text                #@SYS128910
+          NormalImage         #10073
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #No
+          KeyTip              #@SYS24274
+          MenuItemType        #Action
+          MenuItemName        #BatchDialog
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #buttonEditInvoice
+          AutoDeclaration     #Yes
+          NeededPermission    #Update
+          HelpText            #@SYS330236
+          ElementPosition     #1145324610
+          HierarchyParent     #Manages
+          Text                #@SYS317438
+          NormalImage         #10040
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Big                 #Yes
+          Primary             #Yes
+          OpenMode            #Edit
+          CopyCallerQuery     #Yes
+          MenuItemType        #Action
+          MenuItemName        #PurchFormLetter_InvoiceAction
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    if (vendInvoiceInfoTable.RequestStatus == VendInvoiceRequestStatus::Approved)
+            #    {
+            #        if (Box::okCancel(strFmt("@SYS322632", vendInvoiceInfoTable.Num), DialogButton::Cancel) == DialogButton::Ok)
+            #        {
+            #            VendInvoiceInfoTable::resetRequestStatus(vendInvoiceInfoTable.RecId);
+            #        }
+            #        else
+            #        {
+            #            return;
+            #        }
+            #    }
+            #
+            #    if (vendInvoiceInfoTable.Ordering == DocumentStatus::ApproveJournal)
+            #    {
+            #        element.editInvoiceFromPool();
+            #    }
+            #    else
+            #    {
+            #        super();
+            #    }
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #ButtonHeader_BudgetCheckResults
+          AutoDeclaration     #Yes
+          HelpText            #@SYS301660
+          ConfigurationKey    #LedgerAdv2BudgetCtrl
+          ElementPosition     #1073741822
+          HierarchyParent     #Budget
+          Text                #@SYS128629
+          ButtonDisplay       #Text & Image above
+          Big                 #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemName        #BudgetCheckResults
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #buttonHeaderFiscalDocumentText_BR
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          CountryRegionCodes  #BR
+          HelpText            #@GLS63737
+          ElementPosition     #1789569705
+          HierarchyParent     #AttachmentsGroup
+          NormalImage         #10099
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Big                 #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemName        #FiscalDocumentText_BR
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #buttonPageParmTableAllocate
+          AutoDeclaration     #Yes
+          HelpText            #@SYS330359
+          ElementPosition     #1717986916
+          HierarchyParent     #Charges
+          Text                #@SYS313571
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10440
+          ImageLocation       #EmbeddedResource
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemType        #Action
+          MenuItemName        #MarkupAllocation
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #/// <summary>
+            #/// Responds when the <c>buttonPageParmTableAllocate</c> form button is clicked.
+            #/// </summary>
+            #void clicked()
+            #{
+            #    element.editMarkupTrans(this.menufunction(), vendInvoiceInfoTable);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #buttonPageParmTableMiscCharges
+          AutoDeclaration     #Yes
+          HelpText            #@SYS129049
+          ElementPosition     #858993458
+          HierarchyParent     #Charges
+          Text                #@SYS313570
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10639
+          ImageLocation       #EmbeddedResource
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemName        #MarkupTrans_HeadingPurchParm
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #/// <summary>
+            #/// Responds when the <c>buttonPageParmTableMiscCharges</c> form button is clicked.
+            #/// </summary>
+            #void clicked()
+            #{
+            #    if (VendInvoiceInfoSubTable::count(vendInvoiceInfoTable.ParmId, vendInvoiceInfoTable.TableRefId) > 1)
+            #    {
+            #        // more than one invoice, so edit the summary invoice
+            #        element.editMarkupTrans(this.menufunction(), vendInvoiceInfoTable);
+            #    }
+            #    else
+            #    {
+            #        // only one invoice, so edit it
+            #        element.editMarkupTrans(buttonSubTableMiscCharges.menufunction(),
+            #                                VendInvoiceInfoSubTable::find(vendInvoiceInfoTable.ParmId, vendInvoiceInfoTable.TableRefId, vendInvoiceInfoTable.PurchId));
+            #    }
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #buttonSubTableMiscCharges
+          AutoDeclaration     #Yes
+          Visible             #No
+          ElementPosition     #1288490187
+          HierarchyParent     #Charges
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10639
+          ImageLocation       #EmbeddedResource
+          MenuItemName        #MarkupTrans_HeadingPurchParmSub
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #ButtonUpdateQtyAndPriceFromNfe_BR
+          AutoDeclaration     #Yes
+          Enabled             #No
+          ElementPosition     #920350134
+          HierarchyParent     #Process
+          NormalImage         #7865
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #No
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemType        #Action
+          MenuItemName        #EFDocRecXmlVendInvUpdtFromNFeConfirm_BR
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    if (element.hasMappingIssuesBetweenNfeXmlxViLines_BR())
+            #    {
+            #        super();
+            #    }
+            #    else
+            #    {
+            #        element.updateVendInvoiceLinesFromNfeXmlLines_BR();
+            #    }
+            #
+            #    element.refresh();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #buttonVendInvoiceXmlMatch_BR
+          AutoDeclaration     #Yes
+          CountryRegionCodes  #BR
+          ElementPosition     #1073741822
+          HierarchyParent     #VendInvoiceXmlMatch_BR
+          NormalImage         #10493
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #No
+          Big                 #Yes
+          NeedsRecord         #Yes
+          MenuItemName        #VendInvoiceXmlMatch_BR
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #CheckVendorRegister
+          ElementPosition     #1227133512
+          HierarchyParent     #Process
+          NormalImage         #10864
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemType        #Action
+          MenuItemName        #CheckVendorRegister
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    element.createListSendRecord();
+            #
+            #    super();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #DocuShow
+          ElementPosition     #1789569705
+          HierarchyParent     #AttachmentsGroup
+          Big                 #Yes
+          MenuItemName        #DocuShow
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #MatchDetails
+          AutoDeclaration     #Yes
+          ConfigurationKey    #PurchInvoiceMatching
+          ElementPosition     #858993458
+          HierarchyParent     #Matching
+          Text                #@SYS135168
+          NormalImage         #10641
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #No
+          Big                 #Yes
+          Primary             #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemType        #Action
+          MenuItemName        #PurchInvoiceMatchingDetails
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #//BP deviation documented
+            #void clicked()
+            #{
+            #    super();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #MenuItemButton_DistributionsView
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #Accounting
+          ButtonDisplay       #Text & Image above
+          MultiSelect         #No
+          Big                 #Yes
+          Primary             #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemName        #AccountingDistributionsDocumentView
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #OneTimeVendorAndInvoice
+          ConfigurationKey    #PublicSector
+          ElementPosition     #1932735281
+          HierarchyParent     #New
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10884
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          OpenMode            #New
+          MenuItemName        #VendOneTimeVendInvoice
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #ParmTableTotals
+          AutoDeclaration     #Yes
+          HelpText            #@SYS330357
+          ElementPosition     #1431655764
+          HierarchyParent     #Summary
+          Text                #@SYS14107
+          NormalImage         #10832
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #No
+          Big                 #Yes
+          MenuItemName        #VendEditInvoiceTotals
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #// AQS
+            #void clicked()
+            #{
+            #    FormRun formRun;
+            #    Args args = new Args();
+            #
+            #    TaxExchangeRate::vatExchangeRateInfo_WBW(vendInvoiceInfoTable);     //WBW_0024_TaxExchange_check +
+            #    args.caller(element);
+            #    args.record(vendInvoiceInfoTable);
+            #    args.name(formStr(VendEditInvoiceTotals));
+            #
+            #    formRun = classfactory.formRunClass(args);
+            #    formRun.init();
+            #    formRun.run();
+            #    formRun.wait(false);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #PolicyViolation
+          AutoDeclaration     #Yes
+          HelpText            #@SYS319882
+          ElementPosition     #1288490187
+          HierarchyParent     #Matching
+          Text                #@SYS319871
+          NormalImage         #12200
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemType        #Action
+          MenuItemName        #VendInvoicePolicyViolation
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #PostInvoice
+          AutoDeclaration     #Yes
+          Visible             #No
+          ElementPosition     #1073741822
+          HierarchyParent     #Actions
+          Text                #@SYS6098
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #Yes
+          Big                 #Yes
+          Primary             #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemType        #Action
+          MenuItemName        #PurchFormLetter_InvoiceActionView
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    if (vendInvoiceInfoTable.Ordering == DocumentStatus::ApproveJournal)
+            #    {
+            #        element.editInvoiceFromPool();
+            #    }
+            #    else
+            #    {
+            #        super();
+            #    }
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #PrintOptions
+          AutoDeclaration     #Yes
+          ElementPosition     #1789569705
+          HierarchyParent     #PrinterSettings
+          NormalImage         #10701
+          ImageLocation       #EmbeddedResource
+          MenuItemType        #Action
+          MenuItemName        #PurchEditDocumentPrintSetup
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #/// <summary>
+            #/// Opens the PurchEditDocumentPrintSetup dialog passing along the <c>PurchFormLetter</c> object.
+            #/// </summary>
+            #
+            #void clicked()
+            #{
+            #    MenuFunction menuFunction;
+            #    Args args = new Args();
+            #
+            #
+            #    args.caller(element);
+            #    args.parmObject(purchFormLetter);
+            #
+            #    menuFunction = new MenuFunction(menuitemActionStr(PurchEditDocumentPrintSetup), MenuItemType::Action);
+            #    menuFunction.run(args);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #ProjBudgetDisplay
+          ElementPosition     #1431655764
+          HierarchyParent     #Project
+          NormalImage         #10001
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Big                 #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemName        #ProjBudgetDisplay
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #PurchaseOrderInvoice
+          AutoDeclaration     #Yes
+          ElementPosition     #858993458
+          HierarchyParent     #New
+          Text                #@SYS14204
+          NormalImage         #10884
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #No
+          Big                 #Yes
+          Primary             #Yes
+          OpenMode            #New
+          CopyCallerQuery     #Yes
+          MenuItemType        #Action
+          MenuItemName        #PurchFormLetter_NewInvoiceAction
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #SpecTransPurchSettledPrepayments
+          ElementPosition     #1789569705
+          HierarchyParent     #Summary
+          ButtonDisplay       #Text & Image above
+          NormalImage         #867
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemName        #SpecTransPurchSettledPrepayments
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #TaxTransSource
+          AutoDeclaration     #Yes
+          HelpText            #@SYS330360
+          ElementPosition     #1431655764
+          HierarchyParent     #Tax
+          Text                #@SYS114610
+          NormalImage         #10827
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #No
+          Big                 #Yes
+          KeyTip              #@SYS138429
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemName        #TaxTransSourceVendInvoice
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    PurchTotals_ParmTrans::showTax(menuitemDisplayStr(TaxTmpWorkVendInvoice), vendInvoiceInfoTable, PurchUpdate::All, AccountOrder::Account, element);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #TransportationDocument
+          ElementPosition     #1431655764
+          HierarchyParent     #OverviewDelivery
+          ButtonDisplay       #Text & Image above
+          Big                 #Yes
+          Primary             #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemName        #TransportationDocument
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VendDirectiveForm_PSN
+          HelpText            #@GLS223244
+          ConfigurationKey    #PurchFrenchRegulatory_PSN
+          ElementPosition     #1431655764
+          HierarchyParent     #Maintain_PSN
+          Text                #@GLS223211
+          ButtonDisplay       #Text & Image above
+          NormalImage         #10724
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Big                 #Yes
+          Primary             #Yes
+          MenuItemName        #VendDirectiveManagementForm_PSN
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VendEditInvoiceFromPackingSlip
+          AutoDeclaration     #Yes
+          HelpText            #@SYS320874
+          ElementPosition     #1717986916
+          HierarchyParent     #New
+          ButtonDisplay       #Text & Image left
+          MenuItemType        #Action
+          MenuItemName        #VendEditInvoiceFromPackingSlip
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VendEditInvoiceFromPurchaseOrder
+          HelpText            #@SYS320872
+          ElementPosition     #1288490187
+          HierarchyParent     #New
+          ButtonDisplay       #Text & Image left
+          MenuItemType        #Action
+          MenuItemName        #VendEditInvoiceFromPurchaseOrder
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VendInvoiceHoldHistory
+          ElementPosition     #1431655764
+          HierarchyParent     #History
+          Text                #@SPS1748
+          MultiSelect         #No
+          Big                 #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemName        #VendInvoiceHoldHistory
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VendInvoicePurchaseLedger_Cancel
+          AutoDeclaration     #Yes
+          ElementPosition     #1840700268
+          HierarchyParent     #Process
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10017
+          ImageLocation       #EmbeddedResource
+          MenuItemType        #Action
+          MenuItemName        #VendInvoicePurchaseLedger_Cancel
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VendInvoicePurchaseLedger_Create
+          AutoDeclaration     #Yes
+          ElementPosition     #1533916890
+          HierarchyParent     #Process
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10016
+          ImageLocation       #EmbeddedResource
+          MenuItemType        #Action
+          MenuItemName        #VendInvoicePurchaseLedger_Create
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VendInvoiceXmlMapping_BR
+          AutoDeclaration     #Yes
+          CountryRegionCodes  #BR
+          ElementPosition     #1789569704
+          HierarchyParent     #VendInvoiceXmlMatch_BR
+          NormalImage         #12028
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #No
+          Big                 #Yes
+          NeedsRecord         #Yes
+          MenuItemName        #VendInvoiceXmlMapping_BR
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #WorkflowApprovalAllMulti
+          AutoDeclaration     #Yes
+          Visible             #No
+          ElementPosition     #1431655764
+          HierarchyParent     #WorkflowButtonGroup
+          NormalImage         #11226
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #Yes
+          Big                 #Yes
+          DataSource          #VendInvoiceInfoTable
+          MenuItemType        #Action
+          MenuItemName        #WorkflowApprovalAllMulti
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #dispTotalAmountToPay
+          AllowEdit           #No
+          ElementPosition     #1332920880
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #dispTotalAmountToPay
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #CompanyInfo_NameAlias
+          AllowEdit           #No
+          ElementPosition     #444306960
+          HierarchyParent     #Grid
+          Label               #@SYS13342
+          DataSource          #CompanyInfo
+          DataField           #NameAlias
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #packingSlipId
+          Visible             #No
+          AllowEdit           #No
+          VerticalSpacing     #0
+          ElementPosition     #1851279000
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #packingSlipId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_CurrencyCode
+          AllowEdit           #No
+          VerticalSpacing     #0
+          ElementPosition     #1258869720
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataField           #CurrencyCode
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_Description
+          AllowEdit           #No
+          ElementPosition     #1110767400
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataField           #Description
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_Num
+          AllowEdit           #No
+          VerticalSpacing     #0
+          ElementPosition     #592409280
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataField           #Num
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_OrderAccount
+          Visible             #No
+          AllowEdit           #No
+          PreviewPartRef      #VendTableAccountNumEnhancedPreview
+          VerticalSpacing     #0
+          ElementPosition     #740511600
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataField           #OrderAccount
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_PurchId
+          AllowEdit           #No
+          PreviewPartRef      #VendInvoicePurchaseOrderEnhancedPreview
+          VerticalSpacing     #0
+          ElementPosition     #1184818560
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #displayPurchId
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #jumpRef
+            #public void jumpRef()
+            #{
+            #    vendInvoiceInfoTable_ds.object(fieldNum(VendInvoiceInfoTable, PurchId)).jumpRef();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_PurchName
+          Visible             #No
+          AllowEdit           #No
+          VerticalSpacing     #0
+          ElementPosition     #1036716240
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataField           #PurchName
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VendInvoiceInfoTable_VendInvoiceGroup
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          ElementPosition     #370255800
+          HierarchyParent     #Grid
+          DataSource          #VendInvoiceInfoTable
+          DataField           #VendInvoiceGroup
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VendTable_RegNum_W
+          Visible             #No
+          AllowEdit           #No
+          ElementPosition     #888613920
+          HierarchyParent     #Grid
+          DataSource          #VendTable
+          DataField           #RegNum_W
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL UTCDATETIMEEDIT
+        PROPERTIES
+          Name                #WorkflowWorkItemTable_createdDateTime
+          AllowEdit           #No
+          ElementPosition     #1999381320
+          HierarchyParent     #Grid
+          Label               #@SYS313046
+          DataSource          #WorkflowWorkItemTable
+          DataField           #createdDateTime
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL WINDOW
+        PROPERTIES
+          Name                #CheckResultStatus
+          AutoDeclaration     #Yes
+          Visible             #No
+          AllowEdit           #No
+          Width               #16
+          Height              #16
+          Skip                #Yes
+          AlignControl        #No
+          HelpText            #@AQS71
+          ElementPosition     #296204640
+          HierarchyParent     #Grid
+          BackStyle           #Transparent
+          ShowLabel           #No
+          Label               #@AQS73
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #checkExist
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL WINDOW
+        PROPERTIES
+          Name                #MatchApproved
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #14
+          Height              #14
+          VerticalSpacing     #0
+          Skip                #Yes
+          AlignControl        #No
+          ConfigurationKey    #PurchInvoiceMatching
+          ElementPosition     #1703176680
+          HierarchyParent     #Grid
+          Imagemode           #Size to fit
+          BackStyle           #Transparent
+          Label               #@SYS116197
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #checkIfVarianceApproved
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL WINDOW
+        PROPERTIES
+          Name                #RequestStatus
+          Visible             #No
+          AllowEdit           #No
+          Width               #16
+          Height              #16
+          Skip                #Yes
+          AlignControl        #No
+          HelpText            #@sys312692
+          ElementPosition     #222153480
+          HierarchyParent     #Grid
+          BackStyle           #Transparent
+          ShowLabel           #No
+          Label               #@SYS312683
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #checkIfWorkflowCompletedIcon
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+    ENDCONTAINER
+    
+  ENDDESIGN
+  
+  PERMISSIONS #Permissions
+    PROPERTIES
+    ENDPROPERTIES
+    
+    PERMISSIONSET #Read
+      PROPERTIES
+      ENDPROPERTIES
+      
+      FORM #Controls
+        CONTROL #PendingInvoiceDetail
+          PROPERTIES
+            Control             #PendingInvoiceDetail
+            EffectiveAccess     #Read
+            ManagedBy           #Manual
+          ENDPROPERTIES
+          
+        ENDCONTROL
+        
+    ENDFORM
+    
+  TABLES #Tables
+  ENDTABLES
+  
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Update
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+    CONTROL #PendingInvoiceDetail
+      PROPERTIES
+        Control             #PendingInvoiceDetail
+        EffectiveAccess     #Update
+        ManagedBy           #Manual
+      ENDPROPERTIES
+      
+    ENDCONTROL
+    
+ENDFORM
+
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Create
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+    CONTROL #PendingInvoiceDetail
+      PROPERTIES
+        Control             #PendingInvoiceDetail
+        EffectiveAccess     #Update
+        ManagedBy           #Manual
+      ENDPROPERTIES
+      
+    ENDCONTROL
+    
+ENDFORM
+
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Delete
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+    CONTROL #PendingInvoiceDetail
+      PROPERTIES
+        Control             #PendingInvoiceDetail
+        EffectiveAccess     #Update
+        ManagedBy           #Manual
+      ENDPROPERTIES
+      
+    ENDCONTROL
+    
+ENDFORM
+
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+ENDPERMISSIONS
+
+ENDFORM
+
+
+***Element: END

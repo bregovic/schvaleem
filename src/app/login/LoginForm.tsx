@@ -17,7 +17,7 @@ export function LoginForm() {
           name="email"
           required
           autoComplete="email"
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-base outline-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
+          className="rounded-md border border-line bg-surface px-3 py-2 text-base outline-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
         />
       </label>
 
@@ -28,7 +28,7 @@ export function LoginForm() {
           name="password"
           required
           autoComplete="current-password"
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-base outline-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
+          className="rounded-md border border-line bg-surface px-3 py-2 text-base outline-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30"
         />
       </label>
 
@@ -41,7 +41,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-md bg-brand px-4 py-2.5 font-medium text-white transition hover:bg-brand/90 disabled:opacity-60"
+        className="mt-2 rounded-md bg-accent px-4 py-2.5 font-medium text-white transition hover:bg-accent/90 disabled:opacity-60"
       >
         {pending ? "Přihlašuji…" : "Přihlásit se"}
       </button>

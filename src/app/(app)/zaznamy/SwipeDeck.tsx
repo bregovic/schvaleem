@@ -89,7 +89,7 @@ export function SwipeDeck({
 
   if (!item) {
     return (
-      <p className="rounded-2xl bg-white p-10 text-center text-slate-400 ring-1 ring-slate-200">
+      <p className="rounded-2xl bg-surface p-10 text-center text-muted ring-1 ring-line">
         Nic dalšího ke schválení. 🎉
       </p>
     );
@@ -100,12 +100,12 @@ export function SwipeDeck({
 
   return (
     <div className="mx-auto w-full max-w-md select-none">
-      <p className="mb-3 text-center text-xs text-slate-400">{queue.length} ve frontě</p>
+      <p className="mb-3 text-center text-xs text-muted">{queue.length} ve frontě</p>
 
       <div className="relative h-[26rem]">
         {/* karta v pozadí (peek) */}
         {next && (
-          <div className="absolute inset-x-2 top-3 h-full scale-[0.97] rounded-2xl bg-white opacity-60 ring-1 ring-slate-200" />
+          <div className="absolute inset-x-2 top-3 h-full scale-[0.97] rounded-2xl bg-surface opacity-60 ring-1 ring-line" />
         )}
 
         {/* horní karta */}
@@ -116,7 +116,7 @@ export function SwipeDeck({
           style={{ x, y, rotate }}
           onDragEnd={handleDragEnd}
           whileTap={{ cursor: "grabbing" }}
-          className="absolute inset-0 flex cursor-grab flex-col rounded-2xl bg-white p-5 shadow-lg ring-1 ring-slate-200"
+          className="absolute inset-0 flex cursor-grab flex-col rounded-2xl bg-surface p-5 shadow-lg ring-1 ring-line"
         >
           {/* overlay štítky podle směru tažení */}
           <motion.div style={{ opacity: okOpacity }} className="pointer-events-none absolute left-4 top-4 rotate-[-12deg] rounded-md border-2 border-green-500 px-3 py-1 text-lg font-bold text-green-600">
@@ -128,12 +128,12 @@ export function SwipeDeck({
           <motion.div style={{ opacity: deferOpacity }} className="pointer-events-none absolute inset-x-0 bottom-4 text-center text-base font-bold text-amber-600">
             ↓ ODLOŽIT
           </motion.div>
-          <motion.div style={{ opacity: endOpacity }} className="pointer-events-none absolute inset-x-0 top-4 text-center text-base font-bold text-slate-500">
+          <motion.div style={{ opacity: endOpacity }} className="pointer-events-none absolute inset-x-0 top-4 text-center text-base font-bold text-muted">
             ↑ NA KONEC
           </motion.div>
 
           <div className="flex items-start justify-between gap-2">
-            <span className="text-xs text-slate-400">{item.org}</span>
+            <span className="text-xs text-muted">{item.org}</span>
             <div className="flex items-center gap-1">
               {item.docCount > 0 && (
                 <span className="rounded-full bg-brand-accent/10 px-2 py-0.5 text-xs font-medium text-brand-accent">
@@ -146,7 +146,7 @@ export function SwipeDeck({
                 </span>
               )}
               {item.deferred && (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
+                <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
                   odloženo
                 </span>
               )}
@@ -154,7 +154,7 @@ export function SwipeDeck({
           </div>
 
           <h2 className="mt-1 line-clamp-2 text-xl font-semibold text-brand">{item.title}</h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted">
             {item.documentTypeName} · {item.dataAreaName ?? item.dataArea}
           </p>
           {(item.dueAt || item.originator) && (
@@ -165,7 +165,7 @@ export function SwipeDeck({
                   {item.overdue ? " (po termínu)" : ""}
                 </span>
               )}
-              {item.originator && <span className="text-slate-400"> · od {item.originator}</span>}
+              {item.originator && <span className="text-muted"> · od {item.originator}</span>}
             </p>
           )}
           {amt && <p className="mt-3 text-3xl font-bold text-brand">{amt}</p>}
@@ -175,7 +175,7 @@ export function SwipeDeck({
             <dl className="mt-3 space-y-0.5 text-sm">
               {item.previewFields.map((f) => (
                 <div key={f.label} className="flex justify-between gap-3">
-                  <dt className="text-slate-400">{f.label}</dt>
+                  <dt className="text-muted">{f.label}</dt>
                   <dd className="truncate text-brand">{f.value || "–"}</dd>
                 </div>
               ))}
@@ -194,7 +194,7 @@ export function SwipeDeck({
                       ? "bg-green-100 text-green-700"
                       : c.ok === false
                         ? "bg-red-100 text-red-700"
-                        : "bg-slate-100 text-slate-500"
+                        : "bg-surface-2 text-muted"
                   }`}
                 >
                   {c.ok === true ? "✓" : c.ok === false ? "✕" : "•"} {c.label}
@@ -223,7 +223,7 @@ export function SwipeDeck({
         onChange={(e) => setComment(e.target.value)}
         placeholder={needComment ? "Komentář je u zamítnutí povinný…" : "Komentář (volitelné)…"}
         className={`mt-4 w-full rounded-md border px-3 py-2 text-sm outline-none focus:border-brand-accent ${
-          needComment ? "border-red-400" : "border-slate-300"
+          needComment ? "border-red-400" : "border-line"
         }`}
       />
 
@@ -246,7 +246,7 @@ export function SwipeDeck({
         <button
           onClick={toEnd}
           disabled={pending}
-          className="rounded-xl bg-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-300 disabled:opacity-50"
+          className="rounded-xl bg-surface-2 py-3 text-sm font-semibold text-muted hover:bg-line disabled:opacity-50"
         >
           ↑ Na konec
         </button>

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
@@ -12,38 +11,29 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
-          <div className="flex items-center gap-6">
-            <Link href="/zaznamy" className="flex items-center">
-              <Image
-                src="/logo.png"
-                alt="schvaleem"
-                width={150}
-                height={44}
-                priority
-                className="h-8 w-auto"
-              />
+      <header className="sticky top-0 z-20 border-b border-line bg-surface/80 backdrop-blur">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 md:px-6">
+          <nav className="flex items-center gap-5 text-sm font-medium text-muted">
+            <Link href="/zaznamy" className="text-base font-semibold tracking-tight text-fg">
+              schvaleem
             </Link>
-            <nav className="flex items-center gap-4 text-sm font-medium text-slate-600">
-              <Link href="/zaznamy" className="hover:text-brand">
-                Záznamy
+            <Link href="/zaznamy" className="hover:text-fg">
+              Záznamy
+            </Link>
+            {user.role === "ADMIN" && (
+              <Link href="/sprava" className="hover:text-fg">
+                Správa
               </Link>
-              {user.role === "ADMIN" && (
-                <Link href="/sprava" className="hover:text-brand">
-                  Správa
-                </Link>
-              )}
-            </nav>
-          </div>
+            )}
+          </nav>
           <div className="flex items-center gap-3 text-sm">
-            <Link href="/ucet" className="text-slate-500 hover:text-brand">
+            <Link href="/ucet" className="text-muted hover:text-fg">
               {user.name ?? user.email}
             </Link>
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="rounded-md border border-slate-300 px-3 py-1.5 text-slate-700 transition hover:bg-slate-50"
+                className="rounded-md border border-line px-3 py-1.5 text-muted transition hover:bg-surface-2"
               >
                 Odhlásit
               </button>
@@ -51,7 +41,7 @@ export default async function AppLayout({
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+      <main className="w-full px-4 py-6 md:px-6 md:py-8">{children}</main>
     </div>
   );
 }

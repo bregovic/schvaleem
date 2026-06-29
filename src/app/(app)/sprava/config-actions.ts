@@ -179,8 +179,19 @@ export type ImportState = {
   created?: number;
   updated?: number;
   failed?: number;
+  docs?: number;
   messages?: string[];
 };
+
+// Z položky vytáhne odkazované názvy PDF z `documents` ("x.pdf" i {filename}).
+function referencedPdfNames(item: unknown): string[] {
+  if (!item || typeof item !== "object") return [];
+  const docs = (item as { documents?: unknown }).documents;
+  if (!Array.isArray(docs)) return [];
+  return docs
+    .map((d) => (typeof d === "string" ? d : (d as { filename?: string })?.filename))
+    .filter((n): n is string => typeof n === "string" && n.length > 0);
+}
 
 export async function importWorkitems(
   _prev: ImportState,
@@ -197,21 +208,54 @@ export async function importWorkitems(
     return { error: "Neplatný JSON." };
   }
 
+  // Nahraná PDF -> mapa název(lowercase) => Base64
+  const pdfMap = new Map<string, { filename: string; contentBase64: string }>();
+  for (const entry of formData.getAll("pdfs")) {
+    if (typeof entry === "string" || entry.size === 0) continue;
+    const base64 = Buffer.from(await entry.arrayBuffer()).toString("base64");
+    pdfMap.set(entry.name.toLowerCase(), { filename: entry.name, contentBase64: base64 });
+  }
+  const allPdfs = [...pdfMap.values()];
+
   const arr = Array.isArray(data) ? data : [data];
   let created = 0;
   let updated = 0;
   let failed = 0;
+  let docs = 0;
   const messages: string[] = [];
 
   for (let i = 0; i < arr.length; i++) {
-    const p = ingestWorkitemSchema.safeParse(arr[i]);
+    // `documents` ze vstupu řešíme tady (vstupní JSON nese jen názvy), proto ho
+    // před validací odstraníme a doplníme vlastní pole s Base64 z nahraných PDF.
+    const wanted = referencedPdfNames(arr[i]);
+    const item =
+      arr[i] && typeof arr[i] === "object"
+        ? { ...(arr[i] as Record<string, unknown>), documents: undefined }
+        : arr[i];
+
+    const p = ingestWorkitemSchema.safeParse(item);
     if (!p.success) {
       failed++;
       messages.push(`#${i + 1}: ${p.error.issues.map((x) => x.message).join(", ")}`);
       continue;
     }
+
+    // Navázat PDF: podle názvů z JSONu, jinak (žádné názvy) všechna nahraná.
+    let attach: { filename: string; contentBase64: string }[];
+    if (wanted.length > 0) {
+      attach = [];
+      for (const name of wanted) {
+        const hit = pdfMap.get(name.toLowerCase());
+        if (hit) attach.push(hit);
+        else messages.push(`#${i + 1}: PDF "${name}" nebylo nahráno.`);
+      }
+    } else {
+      attach = allPdfs;
+    }
+
     try {
-      const r = await ingestWorkitem(p.data);
+      const r = await ingestWorkitem({ ...p.data, documents: attach });
+      docs += attach.length;
       if (r.duplicate) updated++;
       else created++;
     } catch (e) {
@@ -221,5 +265,5 @@ export async function importWorkitems(
   }
 
   revalidatePath("/zaznamy");
-  return { ok: true, created, updated, failed, messages: messages.slice(0, 12) };
+  return { ok: true, created, updated, failed, docs, messages: messages.slice(0, 12) };
 }

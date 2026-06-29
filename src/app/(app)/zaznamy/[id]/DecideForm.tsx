@@ -24,7 +24,7 @@ export function DecideForm({ workitemId }: { workitemId: string }) {
         name="comment"
         rows={2}
         placeholder="Komentář…"
-        className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-accent"
+        className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent"
       />
       <div className="flex gap-3">
         <button

@@ -1,0 +1,1190 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: DBT
+
+; Microsoft Dynamics AX Table : WorkflowWorkItemTable unloaded
+; --------------------------------------------------------------------------------
+  TABLEVERSION 1
+  
+  TABLE #WorkflowWorkItemTable
+    EnforceFKRelation 0
+    PROPERTIES
+      Name                #WorkflowWorkItemTable
+      Label               #@SYS104364
+      TitleField1         #UserId
+      TitleField2         #Subject
+      TableContents       #Base data
+      SecurityKey         #BasicTables
+      CacheLookup         #NotInTTS
+      CreateRecIdIndex    #Yes
+      SaveDataPerCompany  #No
+      TableGroup          #Framework
+      PrimaryIndex        #RecId
+      ClusterIndex        #RecId
+      ReplacementKey      #WorkItemIdx
+      ModifiedDateTime    #Yes
+      DEL_modifiedTime    #Yes
+      ModifiedBy          #Yes
+      CreatedDateTime     #Yes
+      DEL_createdTime     #Yes
+      CreatedBy           #Yes
+      DeveloperDocumentation  #@SYS125295
+      Origin              #{2C150AA5-0000-1000-607E-AE9AB85DE975}
+      LegacyId            #2725
+    ENDPROPERTIES
+    
+    FIELDS
+      FIELD #ActivityId
+        GUID
+        PROPERTIES
+          Name                #ActivityId
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{E80A901B-698A-4CF3-9940-093056700956}
+          LegacyId            #19
+          ExtendedDataType    #WorkflowActivityInstanceId
+        ENDPROPERTIES
+        
+      FIELD #CommentId
+        GUID
+        PROPERTIES
+          Name                #CommentId
+          Table               #WorkflowWorkItemTable
+          Origin              #{5BDD4F69-9B73-413C-A3FD-D0570EB925D2}
+          LegacyId            #21
+          ExtendedDataType    #WorkflowWorkItemCommentId
+        ENDPROPERTIES
+        
+      FIELD #CompanyId
+        STRING
+        PROPERTIES
+          Name                #CompanyId
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{34560DF9-A8E5-4E23-ADCD-D70AFF8EDCC7}
+          LegacyId            #20
+          ExtendedDataType    #SelectableDataArea
+          StringSize          #4
+        ENDPROPERTIES
+        
+      FIELD #ConfigurationId
+        GUID
+        PROPERTIES
+          Name                #ConfigurationId
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{782B395D-47E9-4842-9D47-45315032F0FA}
+          LegacyId            #18
+          ExtendedDataType    #WorkflowConfigurationId
+        ENDPROPERTIES
+        
+      FIELD #Context
+        STRING
+        PROPERTIES
+          Name                #Context
+          Table               #WorkflowWorkItemTable
+          Origin              #{966B2F11-C4AB-4067-A449-24E2B7FDA56A}
+          LegacyId            #7
+          ExtendedDataType    #WorkflowWorkItemContext
+          StringSize          #255
+        ENDPROPERTIES
+        
+      FIELD #CorrelationId
+        GUID
+        PROPERTIES
+          Name                #CorrelationId
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{0B4E983D-70FD-49F7-85D3-6192D23DA7DE}
+          LegacyId            #2
+          ExtendedDataType    #WorkflowCorrelationId
+        ENDPROPERTIES
+        
+      FIELD #DataSourceName
+        STRING
+        PROPERTIES
+          Name                #DataSourceName
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{50546034-1BD9-4B5D-877C-F9D7F60F9D11}
+          LegacyId            #17
+          ExtendedDataType    #DataSourceName
+          StringSize          #40
+        ENDPROPERTIES
+        
+      FIELD #Description
+        STRING
+        PROPERTIES
+          Name                #Description
+          Table               #WorkflowWorkItemTable
+          Origin              #{5FD383BD-215D-48E6-B4FD-A74628187CE9}
+          LegacyId            #9
+          ExtendedDataType    #WorkflowStepInstruction
+          StringSize          #(Memo)
+        ENDPROPERTIES
+        
+      FIELD #DocumentClassId
+        INT
+        PROPERTIES
+          Name                #DocumentClassId
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{46A12FD1-3AF7-42B8-97B9-2CF18CB521B9}
+          LegacyId            #15
+          ExtendedDataType    #WorkflowDocumentClassId
+        ENDPROPERTIES
+        
+      FIELD #DueDateTime
+        DATETIME
+        PROPERTIES
+          Name                #DueDateTime
+          Table               #WorkflowWorkItemTable
+          Origin              #{B0E89ED8-6204-4889-A2EF-D66B50E5E6F8}
+          LegacyId            #23
+          ExtendedDataType    #WorkflowDueDateTime
+        ENDPROPERTIES
+        
+      FIELD #ElementId
+        GUID
+        PROPERTIES
+          Name                #ElementId
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{1AEF9E6A-E4A0-4818-BBB2-EE2D6F6621EC}
+          LegacyId            #24
+          ExtendedDataType    #WorkflowElementId
+        ENDPROPERTIES
+        
+      FIELD #EscalationLevel
+        INT
+        PROPERTIES
+          Name                #EscalationLevel
+          Table               #WorkflowWorkItemTable
+          Origin              #{4934A1A2-233B-4415-8D90-D402F3D5FC1F}
+          LegacyId            #22
+          ExtendedDataType    #WorkflowEscalationLevel
+        ENDPROPERTIES
+        
+      FIELD #Id
+        GUID
+        PROPERTIES
+          Name                #Id
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{CE769F34-24FF-4BD8-B8A4-384E01CCF414}
+          LegacyId            #1
+          ExtendedDataType    #WorkflowWorkItemInstanceId
+        ENDPROPERTIES
+        
+      FIELD #IsClaimed
+        ENUM
+        PROPERTIES
+          Name                #IsClaimed
+          Table               #WorkflowWorkItemTable
+          Origin              #{E85E226C-9795-4DA7-8046-A39A66A9C468}
+          LegacyId            #29
+          ExtendedDataType    #WorkflowWorkItemClaimed
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #IsRead
+        ENUM
+        PROPERTIES
+          Name                #IsRead
+          Table               #WorkflowWorkItemTable
+          Origin              #{BFD8841D-249F-49B2-AF78-39476709CDA0}
+          LegacyId            #25
+          ExtendedDataType    #WorkflowWorkItemIsRead
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #MenuItemName
+        STRING
+        PROPERTIES
+          Name                #MenuItemName
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{06FFA90B-D107-46D0-9503-09F5590AEA12}
+          LegacyId            #16
+          ExtendedDataType    #MenuItemNameDisplay
+          StringSize          #40
+        ENDPROPERTIES
+        
+      FIELD #NotificationId
+        INT64
+        PROPERTIES
+          Name                #NotificationId
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{DDE88AE2-80FF-4029-B470-B3B07A0931CD}
+          LegacyId            #14
+          ExtendedDataType    #EventInboxId
+        ENDPROPERTIES
+        
+      FIELD #OriginalCorrelationId
+        GUID
+        PROPERTIES
+          Name                #OriginalCorrelationId
+          Table               #WorkflowWorkItemTable
+          Origin              #{FD2BC966-0D50-42B4-AB73-45C22B5191F1}
+          ExtendedDataType    #WorkflowCorrelationId
+        ENDPROPERTIES
+        
+      FIELD #ParentCorrelationId
+        GUID
+        PROPERTIES
+          Name                #ParentCorrelationId
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{F70A0398-DA3C-489F-A7DD-4A994BC1A821}
+          LegacyId            #26
+          ExtendedDataType    #WorkflowCorrelationId
+        ENDPROPERTIES
+        
+      FIELD #Queue
+        INT64
+        PROPERTIES
+          Name                #Queue
+          Table               #WorkflowWorkItemTable
+          Origin              #{8EDAD35E-DF83-45D2-B6DB-2CE03748A717}
+          LegacyId            #33
+          ExtendedDataType    #WorkflowWorkItemQueueRef
+        ENDPROPERTIES
+        
+      FIELD #RefRecId
+        INT64
+        PROPERTIES
+          Name                #RefRecId
+          Mandatory           #Yes
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{567FAE26-0151-40C1-AB88-C9BF03097F55}
+          LegacyId            #4
+          ExtendedDataType    #RefRecId
+        ENDPROPERTIES
+        
+      FIELD #RefTableId
+        INT
+        PROPERTIES
+          Name                #RefTableId
+          Mandatory           #Yes
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{7F75E9A0-B2B5-4803-AA80-208823135948}
+          LegacyId            #5
+          ExtendedDataType    #RefTableId
+        ENDPROPERTIES
+        
+      FIELD #RootCorrelationId
+        GUID
+        PROPERTIES
+          Name                #RootCorrelationId
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{4A415155-A7F0-4BAD-B51D-7EB55B23DC67}
+          LegacyId            #10
+          ExtendedDataType    #WorkflowCorrelationId
+        ENDPROPERTIES
+        
+      FIELD #Status
+        ENUM
+        PROPERTIES
+          Name                #Status
+          Table               #WorkflowWorkItemTable
+          Origin              #{216EFC96-9F80-4570-B2D8-E0A9191A4F18}
+          LegacyId            #11
+          EnumType            #WorkflowWorkItemStatus
+        ENDPROPERTIES
+        
+      FIELD #StepId
+        GUID
+        PROPERTIES
+          Name                #StepId
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{A5964DC5-6499-476E-B6F1-5BAAB30B5C42}
+          LegacyId            #3
+          ExtendedDataType    #WorkflowActivityInstanceId
+        ENDPROPERTIES
+        
+      FIELD #Subject
+        STRING
+        PROPERTIES
+          Name                #Subject
+          Table               #WorkflowWorkItemTable
+          Origin              #{6B8661F1-074C-4ECF-9FE4-F4F17ABE6D67}
+          LegacyId            #6
+          ExtendedDataType    #WorkflowWorkItemSubject
+          StringSize          #128
+        ENDPROPERTIES
+        
+      FIELD #SubWorkflowId
+        GUID
+        PROPERTIES
+          Name                #SubWorkflowId
+          Visible             #No
+          Table               #WorkflowWorkItemTable
+          Origin              #{5DC57027-3F23-460F-A174-F8D050E6EA62}
+          LegacyId            #28
+          ExtendedDataType    #WorkflowSubWorkflowId
+        ENDPROPERTIES
+        
+      FIELD #Type
+        ENUM
+        PROPERTIES
+          Name                #Type
+          Table               #WorkflowWorkItemTable
+          Origin              #{177D0017-DC56-4348-B089-1ED99637F42A}
+          LegacyId            #12
+          EnumType            #WorkflowWorkItemType
+        ENDPROPERTIES
+        
+      FIELD #UserId
+        STRING
+        PROPERTIES
+          Name                #UserId
+          Table               #WorkflowWorkItemTable
+          Origin              #{AD3B31E9-ABCE-4EEB-947D-353239C77C03}
+          LegacyId            #8
+          ExtendedDataType    #WorkflowUser
+          StringSize          #8
+        ENDPROPERTIES
+        
+    ENDFIELDS
+    GROUPS
+      GROUP #AutoReport
+        PROPERTIES
+          Name                #AutoReport
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Subject
+          #Context
+          #UserId
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #AutoIdentification
+        PROPERTIES
+          Name                #AutoIdentification
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Id
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Comment
+        PROPERTIES
+          Name                #Comment
+          Label               #@SYS35300
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Escalation
+        PROPERTIES
+          Name                #Escalation
+          Label               #@SYS14021
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #EscalationLevel
+          #DueDateTime
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Status
+        PROPERTIES
+          Name                #Status
+          Label               #@SYS36398
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Status
+          #IsRead
+          #IsClaimed
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #System
+        PROPERTIES
+          Name                #System
+          Label               #@SYS4278
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Type
+          #CorrelationId
+          #ActivityId
+          #CommentId
+          #RootCorrelationId
+          #ParentCorrelationId
+          #SubWorkflowId
+          #OriginalCorrelationId
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #WorkItem
+        PROPERTIES
+          Name                #WorkItem
+          Label               #@SYS105389
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Subject
+          #Context
+          #Description
+          #UserId
+          #Queue
+        ENDGROUPFIELDS
+      ENDGROUP
+    ENDGROUPS
+    
+    INDICES
+      #WorkItemIdx
+      PROPERTIES
+        Name                #WorkItemIdx
+        AllowDuplicates     #No
+        AlternateKey        #Yes
+        Origin              #{2B0B0001-0AA5-1000-0A22-6CCF5B74656D}
+        LegacyId            #1
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #Id
+      ENDINDEXFIELDS
+      
+      #ActivityId
+      PROPERTIES
+        Name                #ActivityId
+        AllowDuplicates     #No
+        AlternateKey        #Yes
+        Origin              #{2B0A0002-0AA5-1000-F415-C67876697479}
+        LegacyId            #2
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #ActivityId
+      ENDINDEXFIELDS
+      
+      #Document
+      PROPERTIES
+        Name                #Document
+        Origin              #{2B080003-0AA5-1000-446F-63756D656E74}
+        LegacyId            #3
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #RefTableId
+        #RefRecId
+        #CompanyId
+        #UserId
+        #Status
+      ENDINDEXFIELDS
+      
+      #Status
+      PROPERTIES
+        Name                #Status
+        Origin              #{2B060004-0AA5-1000-5374-617475730000}
+        LegacyId            #4
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #Type
+        #Status
+        #DueDateTime
+      ENDINDEXFIELDS
+      
+      #RootCorrelationIdx
+      PROPERTIES
+        Name                #RootCorrelationIdx
+        Origin              #{2B120005-0AA5-1000-852F-9DA41D401104}
+        LegacyId            #5
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #RootCorrelationId
+      ENDINDEXFIELDS
+      
+      #CorrelationStepIdx
+      PROPERTIES
+        Name                #CorrelationStepIdx
+        Origin              #{2B120006-0AA5-1000-E21C-752460D8B052}
+        LegacyId            #6
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #CorrelationId
+        #StepId
+      ENDINDEXFIELDS
+      
+      #ElementIdx
+      PROPERTIES
+        Name                #ElementIdx
+        Origin              #{2B0A0007-0AA5-1000-D15A-C97F656E7449}
+        LegacyId            #7
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #ElementId
+      ENDINDEXFIELDS
+      
+      #Queue
+      PROPERTIES
+        Name                #Queue
+        Origin              #{2B05000A-0AA5-1000-5175-657565000000}
+        LegacyId            #10
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #Queue
+      ENDINDEXFIELDS
+      
+      #UserIdx
+      PROPERTIES
+        Name                #UserIdx
+        Origin              #{892C77B1-3D55-4115-9ED4-48D5E1FF0958}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #UserId
+      ENDINDEXFIELDS
+      
+    ENDINDICES
+    FULLTEXTINDICES
+    ENDFULLTEXTINDICES
+    REFERENCES
+      REFERENCE #Common
+        PROPERTIES
+          Name                #Common
+          Table               #Common
+          Validate            #No
+          EntityRelationshipRole  #@SYS124688
+          RelationshipType    #Link
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #RefTableId
+            RelatedField        #TableId
+          ENDPROPERTIES
+          
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #RefRecId
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #CompanyId
+            RelatedField        #dataAreaId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #EventInbox
+        PROPERTIES
+          Name                #EventInbox
+          Table               #EventInbox
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #NotificationId
+            RelatedField        #InboxId
+            SourceEDT           #EventInboxId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #UserInfo
+        PROPERTIES
+          Name                #UserInfo
+          Table               #UserInfo
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #UserId
+            RelatedField        #id
+            SourceEDT           #WorkflowUser
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #WorkflowElementTable
+        PROPERTIES
+          Name                #WorkflowElementTable
+          Table               #WorkflowElementTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ElementId
+            RelatedField        #ElementId
+            SourceEDT           #WorkflowElementId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #WorkflowVersionTable
+        PROPERTIES
+          Name                #WorkflowVersionTable
+          Table               #WorkflowVersionTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ConfigurationId
+            RelatedField        #ConfigurationId
+            SourceEDT           #WorkflowConfigurationId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #WorkflowWorkItem
+        PROPERTIES
+          Name                #WorkflowWorkItem
+          Table               #WorkflowWorkItemQueue
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #Queue
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #WorkflowWorkItemCommentTable
+        PROPERTIES
+          Name                #WorkflowWorkItemCommentTable
+          Table               #WorkflowWorkItemCommentTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #CommentId
+            RelatedField        #Id
+            SourceEDT           #WorkflowWorkItemCommentId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+    ENDREFERENCES
+    
+    DELETEACTIONS
+      #WorkflowNotificationStaging(WorkflowWorkItemTable)
+      PROPERTIES
+        Table               #WorkflowNotificationStaging
+        DeleteAction        #Cascade
+        Relation            #WorkflowWorkItemTable
+      ENDPROPERTIES
+      
+      #WorkflowQueueDocumentCommonFields(WorkflowWorkItem)
+      PROPERTIES
+        Table               #WorkflowQueueDocumentCommonFields
+        DeleteAction        #Cascade
+        Relation            #WorkflowWorkItem
+      ENDPROPERTIES
+      
+    ENDDELETEACTIONS
+    
+    METHODS
+      SOURCE #association
+        #/// <summary>
+        #///     Gets the association id for this work item (company, global, or other)
+        #/// </summary>
+        #/// <param name="_workItemTable">
+        #/// The work item to retrieve the association from
+        #/// </param>
+        #/// <returns>
+        #///     Returns the string Id of the association
+        #/// </returns>
+        #public display UnifiedWorkListAssociation association(WorkflowWorkItemTable _workItemTable)
+        #{
+        #    WorkflowTypeName                workflowTemplateName;
+        #    SysDictWorkflowType             dictWorkflowTemplate;
+        #    UnifiedWorkListAssociation      associationName;
+        #    WorkflowContext                 workflowContext;
+        #    QueryRun                        documentQueryRun;
+        #    Common                          documentRecord;
+        #    Common                          documentAssociationRecord;
+        #    SysDictTable                    dictTable;
+        #
+        #    workflowContext = WorkflowContext::newWorkflowContext(_workItemTable.CompanyId, _workItemTable.RefTableId, _workItemTable.RefRecId, _workItemTable.CorrelationId);
+        #    workflowTemplateName = _workItemTable.workflowVersionTable().workflowTable().TemplateName;
+        #    dictWorkflowTemplate = new SysDictWorkflowType(workflowTemplateName);
+        #
+        #    switch (dictWorkflowTemplate.associationType())
+        #    {
+        #        case WorkflowAssociationType::Company:
+        #            associationName = _workItemTable.CompanyId;
+        #            break;
+        #        case WorkflowAssociationType::Global:
+        #            associationName = '';
+        #            break;
+        #        case WorkflowAssociationType::Other:
+        #            documentQueryRun = SysWorkflowHelper::getDocumentQueryRun(workflowContext, workflowTemplateName);
+        #            documentRecord = documentQueryRun.get(_workItemTable.RefTableId);
+        #            documentAssociationRecord = documentQueryRun.get(tableName2id(dictWorkflowTemplate.associationTypeRelation()));
+        #            dictTable = new SysDictTable(tableName2id(dictWorkflowTemplate.associationTypeRelation()));
+        #            associationName = documentAssociationRecord.(dictTable.titleField1());
+        #            break;
+        #    }
+        #
+        #    return associationName;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #delete
+        #public void delete()
+        #{
+        #    ttsbegin;
+        #
+        #    if (this.NotificationId)
+        #    {
+        #        EventInbox::find(this.NotificationId, true).delete();
+        #    }
+        #
+        #    super();
+        #
+        #    ttscommit;
+        #}
+      ENDSOURCE
+      SOURCE #getMenuFunction
+        #MenuFunction getMenuFunction()
+        #{
+        #    return new MenuFunction(this.MenuItemName, MenuItemType::Display);
+        #}
+      ENDSOURCE
+      SOURCE #getRecord
+        #Common getRecord(boolean throwError = true)
+        #{
+        #    QueryRun                queryRun;
+        #    QueryBuildRange         queryBuildRange;
+        #    Query                   query;
+        #    WorkflowDocument        workflowDocument;
+        #    Common                  rec;
+        #    SysDictWorkflowType     dictWorkflowType;
+        #    ;
+        #
+        #    dictWorkflowType = new SysDictWorkflowType(this.workflowVersionTable().workflowTable().TemplateName);
+        #    workflowDocument = classfactory.createClass(className2Id(dictWorkflowType.document()));
+        #
+        #    query = workflowDocument.getQuery();
+        #    if (query)
+        #    {
+        #        queryBuildRange = SysQuery::findOrCreateRange(query.dataSourceNo(1), fieldNum(Common, RecId));
+        #        queryBuildRange.value(int642str(this.RefRecId));
+        #
+        #        queryRun = new QueryRun(query);
+        #
+        #        if (this.CompanyId)
+        #        {
+        #            changecompany(this.CompanyId)
+        #            {
+        #                queryRun.next();
+        #            }
+        #        }
+        #        else
+        #        {
+        #             queryRun.next();
+        #        }
+        #
+        #        rec = queryRun.get(this.RefTableId);
+        #
+        #        if (throwError && !rec.RecId)
+        #            throw error("@SYS35042");
+        #    }
+        #    else
+        #        throw error("@SYS96001");
+        #
+        #    return rec;
+        #}
+      ENDSOURCE
+      SOURCE #getSysWorkflowCorrelation
+        #SysWorkflowCorrelation getSysWorkflowCorrelation()
+        #{
+        #    WorkflowContext             workflowContext;
+        #    SysWorkflowConfigurationKey sysWorkflowConfigurationKey;
+        #    ;
+        #
+        #    // make sure to change company before reading the record
+        #    changecompany(this.CompanyId)
+        #    {
+        #        workflowContext = WorkflowContext::newSubWorkflowContext(
+        #            this.CompanyId,
+        #            this.RefTableId,
+        #            this.RefRecId,
+        #            this.RootCorrelationId,
+        #            this.ParentCorrelationId,
+        #            this.CorrelationId,
+        #            this.SubWorkflowId);
+        #
+        #        sysWorkflowConfigurationKey = SysWorkflowConfigurationKey::newWorkflowConfigurationKey(
+        #            this.workflowElementTable().workflowVersionTable().workflowTable().TemplateName,
+        #            this.workflowElementTable().workflowVersionTable().ConfigurationId);
+        #    }
+        #
+        #    return SysWorkflowCorrelation::newWorkflowCorrelation(workflowContext, sysWorkflowConfigurationKey);
+        #}
+      ENDSOURCE
+      SOURCE #getSysWorkflowElementActivityInstanceKey
+        #SysWorkflowActivityInstanceKey getSysWorkflowElementActivityInstanceKey()
+        #{
+        #    return SysWorkflowActivityInstanceKey::newWorkflowActivityInstanceKey(this.ElementId,
+        #                SysWorkflowInstanceKey::newWorkflowInstanceKey(this.CorrelationId));
+        #}
+      ENDSOURCE
+      SOURCE #getSysWorkItemActivityInstanceKey
+        #SysWorkflowActivityInstanceKey getSysWorkItemActivityInstanceKey()
+        #{
+        #    return SysWorkflowActivityInstanceKey::newWorkflowActivityInstanceKey(this.ActivityId,
+        #                SysWorkflowInstanceKey::newWorkflowInstanceKey(this.CorrelationId));
+        #}
+      ENDSOURCE
+      SOURCE #initFromWorkflowWorkItemTable
+        #void initFromWorkflowWorkItemTable(WorkflowWorkItemTable _workflowWorkItemTable)
+        #{
+        #    this.CorrelationId          = _workflowWorkItemTable.CorrelationId;
+        #    this.ElementId              = _workflowWorkItemTable.ElementId;
+        #    this.StepId                 = _workflowWorkItemTable.StepId;
+        #    this.RefRecId               = _workflowWorkItemTable.RefRecId;
+        #    this.RefTableId             = _workflowWorkItemTable.RefTableId;
+        #    this.Subject                = _workflowWorkItemTable.Subject;
+        #    this.Context                = _workflowWorkItemTable.Context;
+        #    this.UserId                 = _workflowWorkItemTable.UserId;
+        #    this.Description            = _workflowWorkItemTable.Description;
+        #    this.DueDateTime            = _workflowWorkItemTable.DueDateTime;
+        #    this.Status                 = _workflowWorkItemTable.Status;
+        #    this.EscalationLevel        = _workflowWorkItemTable.EscalationLevel;
+        #    this.CommentId              = _workflowWorkItemTable.CommentId;
+        #    this.NotificationId         = _workflowWorkItemTable.NotificationId;
+        #    this.DocumentClassId        = _workflowWorkItemTable.DocumentClassId;
+        #    this.MenuItemName           = _workflowWorkItemTable.MenuItemName;
+        #    this.DataSourceName         = _workflowWorkItemTable.DataSourceName;
+        #    this.ConfigurationId        = _workflowWorkItemTable.ConfigurationId;
+        #    this.CompanyId              = _workflowWorkItemTable.CompanyId;
+        #    this.Type                   = _workflowWorkItemTable.Type;
+        #    this.ActivityId             = _workflowWorkItemTable.ActivityId;
+        #    this.IsRead                 = _workflowWorkItemTable.IsRead;
+        #    this.RootCorrelationId      = _workflowWorkItemTable.RootCorrelationId;
+        #    this.ParentCorrelationId    = _workflowWorkItemTable.ParentCorrelationId;
+        #    this.SubWorkflowId          = _workflowWorkItemTable.SubWorkflowId;
+        #    this.IsClaimed              = _workflowWorkItemTable.IsClaimed;
+        #    this.Queue                  = _workflowWorkItemTable.Queue;
+        #    this.OriginalCorrelationId  = _workflowWorkItemTable.OriginalCorrelationId;
+        #}
+      ENDSOURCE
+      SOURCE #insert
+        #public void insert()
+        #{
+        #    SysWorkflowTable workflowTable;
+        #
+        #    //remove any special delimiters from the message
+        #    //special delimiters may have been introduced during workflow token replacement of %LinkToWeb% token for
+        #    //generating the necessary hyperlinks to be shown in the e-mail
+        #    this.Subject = SysEmailMessage::resolveUrls(this.Subject, false);
+        #
+        #    // do not remove the special delimeters [ ] from the description field if line level workflow is used
+        #    // because if the special delimeters are removed then the necessary hyperlinks to be shown in the e-mail will not shown properly
+        #    select firstonly Category from workflowTable
+        #        where workflowTable.ConfigurationId == this.ConfigurationId;
+        #    if (workflowTable.Category != WorkflowInstanceCategory::LineItemWorkflow)
+        #    {
+        #        this.Description = SysEmailMessage::resolveUrls(this.Description, false);
+        #    }
+        #    super();
+        #}
+      ENDSOURCE
+      SOURCE #queueAssignedDate
+        #/// <summary>
+        #///     Gets the date when this work item was assigned to the queue
+        #/// </summary>
+        #/// <param name="_workItemTable">
+        #/// The work item to retrieve the date from
+        #/// </param>
+        #/// <returns>
+        #///     The date work item was asssigned to the queue
+        #/// </returns>
+        #public display WorkflowWorkListQueueAssignedDate queueAssignedDate(WorkflowWorkItemTable _workItemTable)
+        #{
+        #    WorkflowTrackingTable               trackingTable;
+        #    WorkflowWorkListQueueAssignedDate   queueAssignedDateValue;
+        #
+        #    if (_workItemTable.Queue)
+        #    {
+        #        trackingTable = WorkflowTrackingTable::findByCorrelation(_workItemTable.CorrelationId,
+        #                WorkflowTrackingContext::WorkItem, WorkflowTrackingType::Creation);
+        #
+        #        if (trackingTable)
+        #        {
+        #            queueAssignedDateValue = DateTimeUtil::date(DateTimeUtil::applyTimeZoneOffset(trackingTable.CreatedDateTime, DateTimeUtil::getUserPreferredTimeZone()));
+        #        }
+        #    }
+        #
+        #    return queueAssignedDateValue;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #userName
+        #/// <summary>
+        #/// Display method to get the user's name based on the UserId.
+        #/// </summary>
+        #/// <returns>
+        #/// The <c>Name</c> value of the user.
+        #/// </returns>
+        #//BP Deviation documented
+        #public display Name userName()
+        #{
+        #    DirPartyName        partyName;
+        #
+        #    partyName = DirPersonUser::userId2Name(this.UserId);
+        #    if (!partyName)
+        #        partyName = (select firstonly Name from userInfo where userInfo.Id == this.UserId).Name;
+        #    if (!partyName)
+        #        partyName = this.UserId;
+        #    return partyName;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #workflowElementTable
+        #WorkflowElementTable workflowElementTable()
+        #{
+        #    WorkflowElementTable workflowElementTable;
+        #
+        #    workflowElementTable = WorkflowElementTable::find(this.ElementId);
+        #
+        #    return workflowElementTable;
+        #}
+      ENDSOURCE
+      SOURCE #workflowVersionTable
+        #WorkflowVersionTable workflowVersionTable()
+        #{
+        #    WorkflowVersionTable workflowVersionTable;
+        #
+        #    workflowVersionTable = WorkflowVersionTable::find(this.ConfigurationId);
+        #
+        #    return workflowVersionTable;
+        #}
+      ENDSOURCE
+      SOURCE #workflowWorkItemCommentTable
+        #WorkflowWorkItemCommentTable workflowWorkItemCommentTable()
+        #{
+        #    return WorkflowWorkItemCommentTable::find(this.CommentId);
+        #}
+      ENDSOURCE
+      SOURCE #exist
+        #static boolean exist(WorkflowWorkItemInstanceId workflowWorkItemId)
+        #{
+        #    if (!workflowWorkItemId)
+        #        return false;
+        #
+        #    return (select firstonly RecId from workflowWorkItemTable
+        #                where workflowWorkItemTable.Id == workflowWorkItemId).RecId != 0;
+        #}
+      ENDSOURCE
+      SOURCE #find
+        #static WorkflowWorkItemTable find(WorkflowWorkItemInstanceId  workflowWorkItemId,
+        #                       boolean                  _forUpdate = false,
+        #                       ConcurrencyModel         _concurrencyModel = ConcurrencyModel::Auto)
+        #{
+        #    WorkflowWorkItemTable    workflowWorkItem;
+        #    ;
+        #
+        #    if (workflowWorkItemId)
+        #    {
+        #        if (_forUpdate)
+        #        {
+        #            workflowWorkItem.selectForUpdate (_forUpdate);
+        #            if (_concurrencyModel != ConcurrencyModel::Auto)
+        #                workflowWorkItem.concurrencyModel(_concurrencyModel);
+        #        }
+        #        workflowWorkItem.selectLocked    (_forUpdate);
+        #
+        #        select firstonly workflowWorkItem
+        #            where workflowWorkItem.Id == workflowWorkItemId;
+        #    }
+        #
+        #    return workflowWorkItem;
+        #}
+      ENDSOURCE
+      SOURCE #findActivityInstanceId
+        #static WorkflowWorkItemTable findActivityInstanceId(WorkflowActivityInstanceId  workflowActivityInstanceId,
+        #                                                    boolean                     _forUpdate = false,
+        #                                                    ConcurrencyModel            _concurrencyModel = ConcurrencyModel::Auto)
+        #{
+        #    WorkflowWorkItemTable    workflowWorkItem;
+        #    ;
+        #
+        #    if (workflowActivityInstanceId)
+        #    {
+        #        if (_forUpdate)
+        #        {
+        #            workflowWorkItem.selectForUpdate (_forUpdate);
+        #            if (_concurrencyModel != ConcurrencyModel::Auto)
+        #                workflowWorkItem.concurrencyModel(_concurrencyModel);
+        #        }
+        #        workflowWorkItem.selectLocked    (_forUpdate);
+        #
+        #        select firstonly workflowWorkItem
+        #            where   workflowWorkItem.ActivityId == workflowActivityInstanceId;
+        #    }
+        #
+        #    return workflowWorkItem;
+        #}
+      ENDSOURCE
+      SOURCE #findByCorrelationId
+        #/// <summary>
+        #/// Gets a workflow work item record by its correlation id.
+        #/// </summary>
+        #/// <param name="_workflowCorrelationId">
+        #/// The correlation id of the workflow work item.
+        #/// </param>
+        #/// <param name="_forUpdate">
+        #/// Defines if <c>WorkflowWorkItemTable</c> record should be selected for
+        #/// update. Optional. Defaults to true.
+        #/// </param>
+        #/// <param name="_concurrencyModel">
+        #/// Optimistic or pessimistic concurrency model that should be used for the
+        #/// query. Optional. Defaults to <c>ConcurrencyModel::Auto</c>.
+        #/// </param>
+        #/// <returns>
+        #/// A record of the <c>WorkflowWorkItemTable</c> that has same correlation id
+        #/// within specified company.
+        #/// </returns>
+        #public static WorkflowWorkItemTable findByCorrelationId(WorkflowCorrelationId   _workflowCorrelationId,
+        #                                                        boolean                 _forUpdate               = false,
+        #                                                        ConcurrencyModel        _concurrencyModel        = ConcurrencyModel::Auto)
+        #{
+        #    WorkflowWorkItemTable   workflowWorkItemTable;
+        #
+        #    if (_workflowCorrelationId)
+        #    {
+        #        if (_forUpdate)
+        #        {
+        #            workflowWorkItemTable.selectForUpdate(_forUpdate);
+        #            if (_concurrencyModel != ConcurrencyModel::Auto)
+        #                workflowWorkItemTable.concurrencyModel(_concurrencyModel);
+        #        }
+        #        workflowWorkItemTable.selectLocked(_forUpdate);
+        #
+        #        select firstonly workflowWorkItemTable where
+        #            workflowWorkItemTable.CorrelationId == _workflowCorrelationId;
+        #    }
+        #
+        #    return workflowWorkItemTable;
+        #}
+      ENDSOURCE
+      SOURCE #findPendingActivityInstanceId
+        #static WorkflowWorkItemTable findPendingActivityInstanceId(
+        #    WorkflowActivityInstanceId  workflowActivityInstanceId,
+        #    boolean _forUpdate = false,
+        #    ConcurrencyModel _concurrencyModel = ConcurrencyModel::Auto)
+        #{
+        #    WorkflowWorkItemTable    workflowWorkItem;
+        #    ;
+        #
+        #    if (workflowActivityInstanceId)
+        #    {
+        #        if (_forUpdate)
+        #        {
+        #            workflowWorkItem.selectForUpdate (_forUpdate);
+        #            if (_concurrencyModel != ConcurrencyModel::Auto)
+        #                workflowWorkItem.concurrencyModel(_concurrencyModel);
+        #        }
+        #        workflowWorkItem.selectLocked    (_forUpdate);
+        #
+        #        select firstonly workflowWorkItem
+        #            where   workflowWorkItem.ActivityId == workflowActivityInstanceId &&
+        #                    workflowWorkItem.Status     == WorkflowWorkItemStatus::Pending;
+        #    }
+        #    return workflowWorkItem;
+        #}
+      ENDSOURCE
+      SOURCE #findRecId
+        #static WorkflowWorkItemTable findRecId(  recId  _recId,
+        #                                    boolean     _forUpdate = false )
+        #{
+        #    WorkflowWorkItemTable workflowWorkItem;
+        #    ;
+        #
+        #    if (_recId)
+        #    {
+        #        if (_forUpdate)
+        #        {
+        #            workflowWorkItem.selectForUpdate(_forUpdate);
+        #        }
+        #
+        #        select firstonly workflowWorkItem
+        #            where workflowWorkItem.RecId == _recId;
+        #    }
+        #
+        #    return workflowWorkItem;
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDTABLE
+  
+
+***Element: END

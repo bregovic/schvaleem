@@ -1,0 +1,2479 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: DBT
+
+; Microsoft Dynamics AX Table : VendBankAccount unloaded
+; --------------------------------------------------------------------------------
+  TABLEVERSION 1
+  
+  TABLE #VendBankAccount
+    EnforceFKRelation 0
+    PROPERTIES
+      Name                #VendBankAccount
+      Label               #@SYS24216
+      FormRef             #VendBankAccounts
+      TitleField1         #AccountID
+      TitleField2         #Name
+      ConfigurationKey    #LedgerBasic
+      SecurityKey         #VendTables
+      AOSAuthorization    #CreateReadUpdateDelete
+      CacheLookup         #Found
+      TableGroup          #Main
+      PrimaryIndex        #AccountIdx
+      ClusterIndex        #AccountIdx
+      ModifiedDateTime    #Yes
+      ModifiedBy          #Yes
+      CreatedDateTime     #Yes
+      CreatedBy           #Yes
+      DeveloperDocumentation  #@SYS127241
+      Origin              #{2C0F01E9-0000-1000-31C4-08489DEB8934}
+      LegacyId            #489
+    ENDPROPERTIES
+    
+    FIELDS
+      FIELD #AccountID
+        STRING
+        PROPERTIES
+          Name                #AccountID
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #VendBankAccount
+          Origin              #{65FCD388-375B-41F9-9330-9499BBC78B5E}
+          LegacyId            #1
+          ExtendedDataType    #VendBankAccountId
+          StringSize          #25
+        ENDPROPERTIES
+        
+      FIELD #AccountNum
+        STRING
+        PROPERTIES
+          Name                #AccountNum
+          AOSAuthorization    #Yes
+          Table               #VendBankAccount
+          Origin              #{C14DDCF4-37D8-45D9-A537-7CD372EF452F}
+          LegacyId            #8
+          ExtendedDataType    #BankAccount
+          StringSize          #35
+        ENDPROPERTIES
+        
+      FIELD #ActiveDate
+        DATETIME
+        PROPERTIES
+          Name                #ActiveDate
+          Table               #VendBankAccount
+          Origin              #{8C3449B9-F58E-4970-9DF4-82A4F3D5B545}
+          LegacyId            #51
+          ExtendedDataType    #VendBankAccountActiveDate
+        ENDPROPERTIES
+        
+      FIELD #BankAccountNameKana_JP
+        STRING
+        PROPERTIES
+          Name                #BankAccountNameKana_JP
+          HelpText            #@GLS64280
+          AOSAuthorization    #Yes
+          Table               #VendBankAccount
+          Origin              #{2A161F41-01E9-1000-D445-A155D88B03E3}
+          LegacyId            #8001
+          ExtendedDataType    #BankAccountNameKana_JP
+          StringSize          #40
+        ENDPROPERTIES
+        
+      FIELD #BankAccountType
+        ENUM
+        PROPERTIES
+          Name                #BankAccountType
+          Table               #VendBankAccount
+          CountryRegionContextField     #Location
+          Origin              #{2DB378C6-23B4-490B-A4FB-96980A737367}
+          LegacyId            #9
+          EnumType            #BankAccountType
+        ENDPROPERTIES
+        
+      FIELD #BankCIN
+        STRING
+        PROPERTIES
+          Name                #BankCIN
+          Table               #VendBankAccount
+          CountryRegionContextField     #Location
+          Origin              #{DB85D4A7-3BED-4E22-BA5B-93961891A478}
+          LegacyId            #2
+          ExtendedDataType    #BankCIN
+          StringSize          #1
+        ENDPROPERTIES
+        
+      FIELD #BankCodeType
+        ENUM
+        PROPERTIES
+          Name                #BankCodeType
+          Table               #VendBankAccount
+          Origin              #{E0D33A41-EB2A-40D4-981F-F000871DA4A2}
+          LegacyId            #47
+          EnumType            #BankCodeType
+        ENDPROPERTIES
+        
+      FIELD #BankConstantSymbol
+        INT64
+        PROPERTIES
+          Name                #BankConstantSymbol
+          Label               #@GLS108021
+          HelpText            #@GLS108074
+          Table               #VendBankAccount
+          CountryRegionCodes  #CZ
+          Origin              #{3E1A0931-8501-4712-BDF1-8A3274E6C227}
+          ExtendedDataType    #RefRecId
+        ENDPROPERTIES
+        
+      FIELD #BankContractAccount
+        STRING
+        PROPERTIES
+          Name                #BankContractAccount
+          Table               #VendBankAccount
+          Origin              #{D422B9D1-578D-4DAF-BD08-7A2D30C0387F}
+          LegacyId            #42
+          ExtendedDataType    #GiroContractAccount
+          StringSize          #11
+        ENDPROPERTIES
+        
+      FIELD #BankGroupID
+        STRING
+        PROPERTIES
+          Name                #BankGroupID
+          Table               #VendBankAccount
+          Origin              #{442EE3E7-F4ED-445E-874E-BA891E847716}
+          LegacyId            #35
+          ExtendedDataType    #BankGroupId
+        ENDPROPERTIES
+        
+      FIELD #BankIBAN
+        STRING
+        PROPERTIES
+          Name                #BankIBAN
+          AOSAuthorization    #Yes
+          Table               #VendBankAccount
+          Origin              #{472911FC-5D41-4287-9956-A506EFD935B8}
+          LegacyId            #48
+          ExtendedDataType    #BankIBAN
+          StringSize          #35
+        ENDPROPERTIES
+        
+      FIELD #CellularPhone
+        STRING
+        PROPERTIES
+          Name                #CellularPhone
+          Table               #VendBankAccount
+          Origin              #{325FA2BD-1BBA-46FC-83F9-B31AE415DFF6}
+          LegacyId            #24
+          ExtendedDataType    #PhoneMobile
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #ContactPerson
+        STRING
+        PROPERTIES
+          Name                #ContactPerson
+          HelpText            #@SYS13368
+          Table               #VendBankAccount
+          Origin              #{FEFABC4C-8952-4A9F-862A-7DA001100D39}
+          LegacyId            #18
+          ExtendedDataType    #PersonName
+          StringSize          #60
+        ENDPROPERTIES
+        
+      FIELD #CorrAccount_W
+        STRING
+        PROPERTIES
+          Name                #CorrAccount_W
+          AOSAuthorization    #Yes
+          Table               #VendBankAccount
+          Origin              #{2A0D3E82-01E9-1000-9AE8-8D4003BC706F}
+          LegacyId            #16002
+          ExtendedDataType    #BankCorrAccount_W
+          StringSize          #35
+        ENDPROPERTIES
+        
+      FIELD #CorrespBank_EE
+        STRING
+        PROPERTIES
+          Name                #CorrespBank_EE
+          Label               #@GLS108989
+          HelpText            #@GLS108990
+          GroupPrompt         #@SYS7439
+          Table               #VendBankAccount
+          CountryRegionCodes  #EE
+          Origin              #{2A0E3E91-01E9-1000-7EDA-97E03F53054D}
+          LegacyId            #16017
+          ExtendedDataType    #BankGroupId
+        ENDPROPERTIES
+        
+      FIELD #CorrespondentBankAccount_LT
+        STRING
+        PROPERTIES
+          Name                #CorrespondentBankAccount_LT
+          Table               #VendBankAccount
+          Origin              #{2A1B1F4C-01E9-1000-2B83-66046F8D5C00}
+          LegacyId            #8012
+          ExtendedDataType    #LtCorrespondentBankAccount
+          StringSize          #35
+        ENDPROPERTIES
+        
+      FIELD #CorrespondentBankAddress_LT
+        STRING
+        PROPERTIES
+          Name                #CorrespondentBankAddress_LT
+          Table               #VendBankAccount
+          Origin              #{2A1B1F46-01E9-1000-2B83-8146E75272A6}
+          LegacyId            #8006
+          ExtendedDataType    #LtCorrespondentBankAddress
+          StringSize          #250
+        ENDPROPERTIES
+        
+      FIELD #CorrespondentBankName_LT
+        STRING
+        PROPERTIES
+          Name                #CorrespondentBankName_LT
+          Table               #VendBankAccount
+          Origin              #{2A181F45-01E9-1000-265B-A6E5DAB5686B}
+          LegacyId            #8005
+          ExtendedDataType    #LtCorrespondentBankName
+          StringSize          #60
+        ENDPROPERTIES
+        
+      FIELD #CorrespondentBankSWIFT_LT
+        STRING
+        PROPERTIES
+          Name                #CorrespondentBankSWIFT_LT
+          Table               #VendBankAccount
+          Origin              #{2A191F47-01E9-1000-02B7-689314CBB678}
+          LegacyId            #8007
+          ExtendedDataType    #LtCorrespondentBankSWIFT
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #CurrencyCode
+        STRING
+        PROPERTIES
+          Name                #CurrencyCode
+          Table               #VendBankAccount
+          Origin              #{E98EE866-06CB-4C16-8461-E1CE5EE658A2}
+          LegacyId            #39
+          ExtendedDataType    #CurrencyCode
+          StringSize          #3
+        ENDPROPERTIES
+        
+      FIELD #CzConstantSymbol
+        STRING
+        PROPERTIES
+          Name                #CzConstantSymbol
+          Table               #VendBankAccount
+          Origin              #{776DD4FE-A477-46CC-AAB6-7D41926D2BC4}
+          ExtendedDataType    #CzConstantSymbol
+        ENDPROPERTIES
+        
+      FIELD #DirDunsNumber
+        INT64
+        PROPERTIES
+          Name                #DirDunsNumber
+          ConfigurationKey    #PublicSector
+          Table               #VendBankAccount
+          Origin              #{BEE12BF5-ADC3-4455-9E21-C0842EEB0002}
+          ExtendedDataType    #LogisticsDunsNumberRecId
+        ENDPROPERTIES
+        
+      FIELD #Email
+        STRING
+        PROPERTIES
+          Name                #Email
+          Table               #VendBankAccount
+          Origin              #{AC92EBA2-F827-40AC-915D-41843BD23F0C}
+          LegacyId            #19
+          ExtendedDataType    #Email
+          StringSize          #80
+        ENDPROPERTIES
+        
+      FIELD #ExchRate
+        REAL
+        PROPERTIES
+          Name                #ExchRate
+          Table               #VendBankAccount
+          Origin              #{B06CB484-1F6C-4661-AC73-2FD45430A54B}
+          LegacyId            #33
+          ExtendedDataType    #CrossExchRate
+        ENDPROPERTIES
+        
+      FIELD #ExchRateRef
+        STRING
+        PROPERTIES
+          Name                #ExchRateRef
+          Table               #VendBankAccount
+          Origin              #{9AA9FA66-D4CD-4659-9327-E3787D74419E}
+          LegacyId            #34
+          ExtendedDataType    #ExchRateRef
+          StringSize          #11
+        ENDPROPERTIES
+        
+      FIELD #ExpiryDate
+        DATETIME
+        PROPERTIES
+          Name                #ExpiryDate
+          Table               #VendBankAccount
+          Origin              #{2538FFCA-6BB7-4F04-AD67-6052CDD8F97C}
+          LegacyId            #50
+          ExtendedDataType    #VendBankAccountExpiryDate
+        ENDPROPERTIES
+        
+      FIELD #ForeignAccount_RU
+        STRING
+        PROPERTIES
+          Name                #ForeignAccount_RU
+          HelpText            #@GLS223928
+          Table               #VendBankAccount
+          CountryRegionCodes  #RU
+          Origin              #{E9EAFBE0-283E-4724-9DC6-AD29FFB548C0}
+          LegacyId            #8015
+          ExtendedDataType    #BankAccount
+          StringSize          #35
+        ENDPROPERTIES
+        
+      FIELD #ForeignBank_RU
+        STRING
+        PROPERTIES
+          Name                #ForeignBank_RU
+          HelpText            #@GLS223929
+          Table               #VendBankAccount
+          CountryRegionCodes  #RU
+          IgnoreEDTRelation   #Yes
+          RelationContext     #BankGroupForeign_RU
+          Origin              #{F1B964B2-D83C-4F6E-95EA-66313B848DBD}
+          LegacyId            #8014
+          ExtendedDataType    #BankGroupId
+        ENDPROPERTIES
+        
+      FIELD #ForeignSWIFT_RU
+        STRING
+        PROPERTIES
+          Name                #ForeignSWIFT_RU
+          Label               #@SYS9360
+          Table               #VendBankAccount
+          CountryRegionCodes  #RU
+          Origin              #{0B5BFD15-3FDB-441D-9F3B-7800C0ACFCF2}
+          LegacyId            #8016
+          ExtendedDataType    #SWIFTNo
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #IntermAccount_EE
+        STRING
+        PROPERTIES
+          Name                #IntermAccount_EE
+          Label               #@GLS108995
+          HelpText            #@GLS108996
+          GroupPrompt         #@SYS1996
+          Table               #VendBankAccount
+          CountryRegionCodes  #EE
+          Origin              #{2A103E94-01E9-1000-BA42-CFEF8D3B1D43}
+          LegacyId            #16020
+          ExtendedDataType    #BankAccount
+          StringSize          #35
+        ENDPROPERTIES
+        
+      FIELD #IntermBank_EE
+        STRING
+        PROPERTIES
+          Name                #IntermBank_EE
+          Label               #@GLS108993
+          HelpText            #@GLS108994
+          GroupPrompt         #@SYS7439
+          Table               #VendBankAccount
+          CountryRegionCodes  #EE
+          Origin              #{2A0D3E92-01E9-1000-E384-E23F52024D61}
+          LegacyId            #16018
+          ExtendedDataType    #BankGroupId
+        ENDPROPERTIES
+        
+      FIELD #IntermBankAccountId
+        STRING
+        PROPERTIES
+          Name                #IntermBankAccountId
+          Label               #@GLS113304
+          HelpText            #@GLS113305
+          Table               #VendBankAccount
+          CountryRegionCodes  #PL
+          Origin              #{BE898650-D4E9-413E-81EB-61C4AE6FA066}
+          ExtendedDataType    #VendBankAccountId
+          StringSize          #25
+        ENDPROPERTIES
+        
+      FIELD #IntermediateBankAccount_LT
+        STRING
+        PROPERTIES
+          Name                #IntermediateBankAccount_LT
+          Table               #VendBankAccount
+          Origin              #{2A1A1F4D-01E9-1000-3B8A-0CC44257F657}
+          LegacyId            #8013
+          ExtendedDataType    #LtIntermediateBankAccount
+          StringSize          #35
+        ENDPROPERTIES
+        
+      FIELD #IntermediateBankAddress_LT
+        STRING
+        PROPERTIES
+          Name                #IntermediateBankAddress_LT
+          Table               #VendBankAccount
+          Origin              #{2A1A1F49-01E9-1000-3BA5-4E3C086D9C31}
+          LegacyId            #8009
+          ExtendedDataType    #LtIntermediateBankAddress
+          StringSize          #250
+        ENDPROPERTIES
+        
+      FIELD #IntermediateBankName_LT
+        STRING
+        PROPERTIES
+          Name                #IntermediateBankName_LT
+          Table               #VendBankAccount
+          Origin              #{2A171F48-01E9-1000-96D8-ED2F6B63616A}
+          LegacyId            #8008
+          ExtendedDataType    #LtIntermediateBankName
+          StringSize          #60
+        ENDPROPERTIES
+        
+      FIELD #IntermediateBankSWIFT_LT
+        STRING
+        PROPERTIES
+          Name                #IntermediateBankSWIFT_LT
+          Table               #VendBankAccount
+          Origin              #{2A181F4A-01E9-1000-1D8E-9B6980B16E10}
+          LegacyId            #8010
+          ExtendedDataType    #LtIntermediateBankSWIFT
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #Location
+        INT64
+        PROPERTIES
+          Name                #Location
+          Visible             #No
+          Table               #VendBankAccount
+          Origin              #{6D541426-1FEC-41B9-BF9D-66F6BAA1306F}
+          LegacyId            #10
+          ExtendedDataType    #LogisticsLocationRecId
+        ENDPROPERTIES
+        
+      FIELD #LogisticsLocation
+        INT64
+        PROPERTIES
+          Name                #LogisticsLocation
+          Visible             #No
+          ConfigurationKey    #PublicSector
+          Table               #VendBankAccount
+          Origin              #{2A113E9B-01E9-1000-07D2-DADADE904334}
+          LegacyId            #16027
+          ExtendedDataType    #LogisticsLocationRecId
+        ENDPROPERTIES
+        
+      FIELD #LvDefaultBank
+        ENUM
+        PROPERTIES
+          Name                #LvDefaultBank
+          HelpText            #@GLS220785
+          Table               #VendBankAccount
+          Origin              #{2A0D0000-01E9-1000-8824-A6DA8BCA856C}
+          LegacyId            #16016
+          ExtendedDataType    #LVDefaultBank
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #MsgToBank
+        STRING
+        PROPERTIES
+          Name                #MsgToBank
+          Table               #VendBankAccount
+          Origin              #{0DE28967-14F5-4AD9-B6E6-70740B25FA1A}
+          LegacyId            #32
+          ExtendedDataType    #BankMsgToBank
+          StringSize          #255
+        ENDPROPERTIES
+        
+      FIELD #Name
+        STRING
+        PROPERTIES
+          Name                #Name
+          HelpText            #@SYS24871
+          Table               #VendBankAccount
+          Origin              #{760D77BA-C822-400E-A6C3-A07240B20DC5}
+          LegacyId            #3
+          ExtendedDataType    #Name
+          StringSize          #60
+        ENDPROPERTIES
+        
+      FIELD #Pager
+        STRING
+        PROPERTIES
+          Name                #Pager
+          Table               #VendBankAccount
+          Origin              #{A8A9F499-D9FE-492F-B8A4-68EEA5B1CE66}
+          LegacyId            #43
+          ExtendedDataType    #Pager
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #Phone
+        STRING
+        PROPERTIES
+          Name                #Phone
+          HelpText            #@SYS24869
+          Table               #VendBankAccount
+          Origin              #{41B44E45-3978-48A0-BF78-F9A36E8AE266}
+          LegacyId            #16
+          ExtendedDataType    #Phone
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #PhoneLocal
+        STRING
+        PROPERTIES
+          Name                #PhoneLocal
+          Table               #VendBankAccount
+          Origin              #{95E942BE-BF69-4696-951C-D07C1CFDC6CD}
+          LegacyId            #23
+          ExtendedDataType    #PhoneLocal
+        ENDPROPERTIES
+        
+      FIELD #RegistrationNum
+        STRING
+        PROPERTIES
+          Name                #RegistrationNum
+          Table               #VendBankAccount
+          Origin              #{C60E3073-9BDB-4D34-AC9A-A743C01EC306}
+          LegacyId            #15
+          ExtendedDataType    #BankRegNum
+          StringSize          #12
+        ENDPROPERTIES
+        
+      FIELD #RegistredInTaxOfficeFrom
+        DATETIME
+        PROPERTIES
+          Name                #RegistredInTaxOfficeFrom
+          Table               #VendBankAccount
+          Origin              #{CD318811-A3B9-4858-88BA-6946EF02B254}
+          ExtendedDataType    #FromDateTime
+        ENDPROPERTIES
+        
+      FIELD #RegistredInTaxOfficeTo
+        DATETIME
+        PROPERTIES
+          Name                #RegistredInTaxOfficeTo
+          Table               #VendBankAccount
+          Origin              #{5650731E-532F-45CA-8DC3-675DF9AB2EA8}
+          ExtendedDataType    #ToDateTime
+        ENDPROPERTIES
+        
+      FIELD #SMS
+        STRING
+        PROPERTIES
+          Name                #SMS
+          Table               #VendBankAccount
+          Origin              #{4A51D078-2B50-4D05-B7D3-89664C325207}
+          LegacyId            #44
+          ExtendedDataType    #SMS
+          StringSize          #80
+        ENDPROPERTIES
+        
+      FIELD #SpecificSymbol
+        STRING
+        PROPERTIES
+          Name                #SpecificSymbol
+          Table               #VendBankAccount
+          CountryRegionCodes  #CZ
+          Origin              #{E262E3BE-D811-431D-8757-0C44F13BD1CD}
+          ExtendedDataType    #SpecificSymbol
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #SWIFTNo
+        STRING
+        PROPERTIES
+          Name                #SWIFTNo
+          Table               #VendBankAccount
+          Origin              #{E8065630-6A7F-4723-8372-BABB40DEA5C7}
+          LegacyId            #31
+          ExtendedDataType    #SWIFTNo
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #TeleFax
+        STRING
+        PROPERTIES
+          Name                #TeleFax
+          HelpText            #@SYS24866
+          Table               #VendBankAccount
+          Origin              #{D9B53D89-3BE7-4D76-B62C-503F2D8651B0}
+          LegacyId            #17
+          ExtendedDataType    #TeleFax
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #Telex
+        STRING
+        PROPERTIES
+          Name                #Telex
+          Table               #VendBankAccount
+          Origin              #{03489AE2-1860-42FA-B13F-13E9602DE1F8}
+          LegacyId            #22
+          ExtendedDataType    #Telex
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #TransType_JP
+        ENUM
+        PROPERTIES
+          Name                #TransType_JP
+          Table               #VendBankAccount
+          Origin              #{2A0C1F42-01E9-1000-FBE4-C13AB7607970}
+          LegacyId            #8002
+          EnumType            #VendBankTransType_JP
+        ENDPROPERTIES
+        
+      FIELD #TypeOfAccount
+        ENUM
+        PROPERTIES
+          Name                #TypeOfAccount
+          Table               #VendBankAccount
+          CountryRegionContextField     #Location
+          Origin              #{69A915CD-4DDD-4549-BF94-DD15EDF2646A}
+          LegacyId            #49
+          EnumType            #TypeOfAccount
+        ENDPROPERTIES
+        
+      FIELD #URL
+        STRING
+        PROPERTIES
+          Name                #URL
+          Table               #VendBankAccount
+          Origin              #{9A565022-28EC-479A-9BCF-4A266DDA8444}
+          LegacyId            #21
+          ExtendedDataType    #URL
+          StringSize          #255
+        ENDPROPERTIES
+        
+      FIELD #VendAccount
+        STRING
+        PROPERTIES
+          Name                #VendAccount
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #VendBankAccount
+          Origin              #{15224B5D-A158-4B54-92E9-FA4944ED8C36}
+          LegacyId            #25
+          ExtendedDataType    #VendAccount
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #VendBankAccountVATReliableRegistred
+        ENUM
+        PROPERTIES
+          Name                #VendBankAccountVATReliableRegistred
+          Table               #VendBankAccount
+          Origin              #{03936046-6DC2-4FEE-91E9-3018C14D7FD9}
+          ExtendedDataType    #VendBankAccountVATReliableRegistred
+          EnumType            #UnknownNoYes
+        ENDPROPERTIES
+        
+      FIELD #VendDuns4Number
+        STRING
+        PROPERTIES
+          Name                #VendDuns4Number
+          ConfigurationKey    #PublicSector
+          Table               #VendBankAccount
+          Origin              #{2A0F3E9A-01E9-1000-D290-B7CE5225F1EC}
+          LegacyId            #16026
+          ExtendedDataType    #VendDUNS4Num
+          StringSize          #4
+        ENDPROPERTIES
+        
+      FIELD #VendPaymentTextCode
+        STRING
+        PROPERTIES
+          Name                #VendPaymentTextCode
+          Table               #VendBankAccount
+          Origin              #{56C99618-EBD2-44FC-8BCA-5168B2973C83}
+          LegacyId            #29
+          ExtendedDataType    #VendPaymTextCode
+        ENDPROPERTIES
+        
+    ENDFIELDS
+    GROUPS
+      GROUP #AutoReport
+        PROPERTIES
+          Name                #AutoReport
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #AccountID
+          #Name
+          #AccountNum
+          #TypeOfAccount
+          #RegistrationNum
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #AutoLookup
+        PROPERTIES
+          Name                #AutoLookup
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #AccountID
+          #AccountNum
+          #VendBankAccountVATReliableRegistred
+          #BankIBAN
+          #SWIFTNo
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Administration
+        PROPERTIES
+          Name                #Administration
+          Label               #@SYS9853
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #BankGroupID
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #BankAccountDetails
+        PROPERTIES
+          Name                #BankAccountDetails
+          Label               #@GLS60009
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #TransType_JP
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #BankConstantSymbol
+        PROPERTIES
+          Name                #BankConstantSymbol
+          Label               #@GLS107997
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #BankConstantSymbol
+          #SpecificSymbol
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #ContactInfo
+        PROPERTIES
+          Name                #ContactInfo
+          Label               #@SYS21663
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Phone
+          #PhoneLocal
+          #CellularPhone
+          #Pager
+          #TeleFax
+          #Email
+          #SMS
+          #URL
+          #Telex
+          #ContactPerson
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #CorrespondenceBank_EE
+        PROPERTIES
+          Name                #CorrespondenceBank_EE
+          Label               #@GLS108989
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #CorrespBank_EE
+          #CorrAccount_W
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #CorrespondentBank_LT
+        PROPERTIES
+          Name                #CorrespondentBank_LT
+          Label               #@GLS113356
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #CorrespondentBankName_LT
+          #CorrespondentBankAddress_LT
+          #CorrespondentBankSWIFT_LT
+          #CorrespondentBankAccount_LT
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Currency
+        PROPERTIES
+          Name                #Currency
+          Label               #@SYS7572
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #CurrencyCode
+          #LvDefaultBank
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Description
+        PROPERTIES
+          Name                #Description
+          Label               #@SYS7576
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Name
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Dummy
+        PROPERTIES
+          Name                #Dummy
+          Label               #@SYS79159
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #BankAccountNameKana_JP
+          #TransType_JP
+          #DirDunsNumber
+          #VendDuns4Number
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #ForeignBank_RU
+        PROPERTIES
+          Name                #ForeignBank_RU
+          Label               #@GLS223927
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ForeignBank_RU
+          #foreignBankName_RU
+          #ForeignAccount_RU
+          #ForeignSWIFT_RU
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Identification
+        PROPERTIES
+          Name                #Identification
+          Label               #@SYS5711
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #AccountID
+          #Name
+          #BankAccountNameKana_JP
+          #BankGroupID
+          #bankName_RU
+          #bankBIC_RU
+          #VendAccount
+          #BankCodeType
+          #DirDunsNumber
+          #VendDuns4Number
+          #RegistrationNum
+          #AccountNum
+          #BankCIN
+          #TypeOfAccount
+          #SWIFTNo
+          #editBankIBAN
+          #BankAccountType
+          #CorrAccount_W
+          #bankAccountOpenedIn_RU
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #InterimBank_EE
+        PROPERTIES
+          Name                #InterimBank_EE
+          Label               #@GLS108993
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #IntermBank_EE
+          #IntermAccount_EE
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #IntermediaryBank
+        PROPERTIES
+          Name                #IntermediaryBank
+          Label               #@GLS223733
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #IntermBankAccountId
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #IntermediateBank_LT
+        PROPERTIES
+          Name                #IntermediateBank_LT
+          Label               #@GLS113357
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #IntermediateBankName_LT
+          #IntermediateBankAddress_LT
+          #IntermediateBankSWIFT_LT
+          #IntermediateBankAccount_LT
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Overview
+        PROPERTIES
+          Name                #Overview
+          Label               #@SYS9039
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #currentBankAccountStatus
+          #AccountID
+          #Name
+          #BankGroupID
+          #RegistrationNum
+          #AccountNum
+          #BankCIN
+          #bankBIC_RU
+          #CorrAccount_W
+          #bankAccountOpenedIn_RU
+          #TypeOfAccount
+          #BankContractAccount
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Payment
+        PROPERTIES
+          Name                #Payment
+          Label               #@SYS828
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #VendPaymentTextCode
+          #MsgToBank
+          #ExchRateRef
+          #ExchRate
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #PaymentShow
+        PROPERTIES
+          Name                #PaymentShow
+          Label               #@SYS828
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #VendPaymentTextCode
+          #MsgToBank
+          #ExchRateRef
+          #editExchRate
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Status
+        PROPERTIES
+          Name                #Status
+          Label               #@SYS115073
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ActiveDate
+          #ExpiryDate
+          #currentBankAccountStatus
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #TaxOfficeRegistration
+        PROPERTIES
+          Name                #TaxOfficeRegistration
+          Label               #@WBW486
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #VendBankAccountVATReliableRegistred
+          #RegistredInTaxOfficeFrom
+          #RegistredInTaxOfficeTo
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #VendProfileBankInformation
+        PROPERTIES
+          Name                #VendProfileBankInformation
+          Label               #@SYS315075
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #AccountID
+          #Name
+          #BankCodeType
+          #RegistrationNum
+          #AccountNum
+          #ActiveDate
+          #ExpiryDate
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #VendProfileBankInformationDetails
+        PROPERTIES
+          Name                #VendProfileBankInformationDetails
+          Label               #@SYS315076
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #BankCIN
+          #TypeOfAccount
+          #SWIFTNo
+          #BankIBAN
+          #BankAccountType
+          #ContactPerson
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #VendProfileBankList
+        PROPERTIES
+          Name                #VendProfileBankList
+          Label               #@SYS315077
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Name
+          #AccountNum
+          #RegistrationNum
+          #ActiveDate
+          #ExpiryDate
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #VendProfileContactInfo
+        PROPERTIES
+          Name                #VendProfileContactInfo
+          Label               #@SYS21663
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Phone
+          #PhoneLocal
+          #CellularPhone
+          #Pager
+          #TeleFax
+          #Email
+          #SMS
+          #URL
+          #Telex
+        ENDGROUPFIELDS
+      ENDGROUP
+    ENDGROUPS
+    
+    INDICES
+      #AccountIdx
+      PROPERTIES
+        Name                #AccountIdx
+        AllowDuplicates     #No
+        Origin              #{2B0A0001-01E9-1000-CD51-C781756E7449}
+        LegacyId            #1
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #VendAccount
+        #AccountID
+      ENDINDEXFIELDS
+      
+      #RecIdIdx
+      PROPERTIES
+        Name                #RecIdIdx
+        AllowDuplicates     #No
+        AlternateKey        #Yes
+        Origin              #{BBF5D0A0-3C16-4122-9BA4-3E85DA754D87}
+        LegacyId            #2
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #RecId
+      ENDINDEXFIELDS
+      
+      #DirDunsNumberIdx
+      PROPERTIES
+        Name                #DirDunsNumberIdx
+        Origin              #{62CAC15B-F986-4589-8758-1DA9A11CFEC0}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #DirDunsNumber
+      ENDINDEXFIELDS
+      
+      #BankConstantSymbolIdx
+      PROPERTIES
+        Name                #BankConstantSymbolIdx
+        Origin              #{C573AC37-9292-4B06-B9D0-2221417AFBE5}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #BankConstantSymbol
+      ENDINDEXFIELDS
+      
+      #BankAccountNumIdx
+      PROPERTIES
+        Name                #BankAccountNumIdx
+        Origin              #{F3086700-2EB9-4414-843C-5150B8A64095}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #AccountNum
+      ENDINDEXFIELDS
+      
+      #RegistrationAccNumIdx
+      PROPERTIES
+        Name                #RegistrationAccNumIdx
+        ConfigurationKey    #Bank_CZ
+        Origin              #{8D4C123A-16F5-4B7F-8A65-5A6EDEA5E558}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #RegistrationNum
+        #AccountNum
+      ENDINDEXFIELDS
+      
+    ENDINDICES
+    FULLTEXTINDICES
+    ENDFULLTEXTINDICES
+    REFERENCES
+      REFERENCE #BankConstantSymbol
+        PROPERTIES
+          Name                #BankConstantSymbol
+          Table               #BankConstantSymbol
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroOne
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #BankConstantSymbol
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #BankGroup
+        PROPERTIES
+          Name                #BankGroup
+          Table               #BankGroup
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #BankGroup
+          Role                #VendBankAccount
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #BankGroupID
+            RelatedField        #BankGroupId
+            SourceEDT           #BankGroupId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #BankGroup_RU
+        PROPERTIES
+          Name                #BankGroup_RU
+          Table               #BankGroup
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #BankGroup_RU
+          Role                #VendBankAccount
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #BankGroupID
+            RelatedField        #BankGroupId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #BankGroupForeign_RU
+        PROPERTIES
+          Name                #BankGroupForeign_RU
+          Table               #BankGroup
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          RelatedTableRole    #BankGroupForeign_RU
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE EXTERNFIXED
+          PROPERTIES
+            Value               #2
+            Table               #BankGroup
+            RelatedField        #BankType_RU
+          ENDPROPERTIES
+          
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #ForeignBank_RU
+            RelatedField        #BankGroupId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #CorrespBank_EE
+        PROPERTIES
+          Name                #CorrespBank_EE
+          Table               #BankGroup
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #CorrespBank_EE
+          Role                #VendBankAccount
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #CorrespBank_EE
+            RelatedField        #BankGroupId
+            SourceEDT           #BankGroupId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #Currency
+        PROPERTIES
+          Name                #Currency
+          Table               #Currency
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #Currency
+          Role                #VendBankAccount
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #CurrencyCode
+            RelatedField        #CurrencyCode
+            SourceEDT           #CurrencyCode
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #DirDunsNumber
+        PROPERTIES
+          Name                #DirDunsNumber
+          Table               #DirDunsNumber
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          RelatedTableRole    #DirDunsNumber
+          Role                #DirDunsNumber_VendBankAccount
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #DirDunsNumber
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #IntermBank_EE
+        PROPERTIES
+          Name                #IntermBank_EE
+          Table               #BankGroup
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #InterimBank_EE
+          Role                #VendBankAccount
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #IntermBank_EE
+            RelatedField        #BankGroupId
+            SourceEDT           #BankGroupId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #IntermBankAccountId
+        PROPERTIES
+          Name                #IntermBankAccountId
+          Table               #VendBankAccount
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #IntermBankAccountId
+          Role                #IntermBankAccountId
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #IntermBankAccountId
+            RelatedField        #AccountID
+            SourceEDT           #VendBankAccountId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #Location_FK
+        PROPERTIES
+          Name                #Location_FK
+          Table               #LogisticsLocation
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #LogisticsLocation
+          Role                #LogisticsLocation_VendBankAccount
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #Location
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #LogisticsLocation
+        PROPERTIES
+          Name                #LogisticsLocation
+          Table               #LogisticsLocation
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #LogisticsLocationFK
+          Role                #LogisticsLocation_VendBankAccount
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #LogisticsLocation
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendBankAccount
+        PROPERTIES
+          Name                #VendBankAccount
+          Table               #VendBankAccount
+          Validate            #No
+          EntityRelationshipRole  #@SYS123434
+          RelationshipType    #Link
+          RelatedTableRole    #VendBankAccount
+          Role                #VendBankAccount_VendBankAccount
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #VendAccount
+            RelatedField        #VendAccount
+          ENDPROPERTIES
+          
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #AccountID
+            RelatedField        #AccountID
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendTable
+        PROPERTIES
+          Name                #VendTable
+          Table               #VendTable
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Composition
+          RelatedTableRole    #VendTable
+          Role                #VendBankAccount
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #VendAccount
+            RelatedField        #AccountNum
+            SourceEDT           #VendAccount
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+    ENDREFERENCES
+    
+    DELETEACTIONS
+    ENDDELETEACTIONS
+    
+    METHODS
+      SOURCE #account_BR
+        #// <GBR>
+        #//BP Deviation Documented
+        #display BankAccountNum_BR account_BR()
+        #{
+        #    return Bank_BR::parseAccount(this.AccountNum);
+        #}
+        #// </GBR>
+        #
+      ENDSOURCE
+      SOURCE #addressing
+        #//BP deviation documented
+        #display LogisticsAddressing addressing()
+        #{
+        #    ;
+        #    return LogisticsLocationEntity::location2PostalAddress(this.Location).Address;
+        #}
+      ENDSOURCE
+      SOURCE #agency_BR
+        #// <GBR>
+        #//BP Deviation Documented
+        #display BankAgency_BR agency_BR()
+        #{
+        #    return Bank_BR::parseAgency(this.AccountNum);
+        #}
+        #// </GBR>
+      ENDSOURCE
+      SOURCE #bankAccountNumDisp
+        #display BankAccount bankAccountNumDisp()        // INC40166
+        #{
+        #    BankAccount     bankAccount;
+        #
+        #    if (this.AccountNum)
+        #    {
+        #        bankAccount = this.AccountNum + '/' + this.RegistrationNum;
+        #    }
+        #    else if (this.BankIBAN)
+        #    {
+        #        bankAccount = this.dispBankIBAN();
+        #    }
+        #
+        #    return bankAccount;
+        #}
+      ENDSOURCE
+      SOURCE #bankAccountOpenedIn_RU
+        #//BP deviation documented
+        #public display BankAccountOpenedIn_RU bankAccountOpenedIn_RU()
+        #{
+        #    return this.BankAccountMap::bankAccountOpenedIn_RU();
+        #}
+      ENDSOURCE
+      SOURCE #bankAccountRegNum
+        #display BankAccount bankAccountRegNum()
+        #{
+        #    return this.bankAccountMap::bankAccountRegNum();
+        #}
+      ENDSOURCE
+      SOURCE #bankAccountStatus
+        #/// <summary>
+        #///    Returns the status of the vendor bank account.
+        #/// </summary>
+        #/// <param name="_transDate">
+        #///    The date on which the payment transaction has to be made, or the current UTC date.
+        #/// </param>
+        #/// <returns>
+        #///    The status of vendor bank account.
+        #/// </returns>
+        #/// <remarks>
+        #///    This is a utility method that is used to get the status of vendor bank account based on <paramref
+        #///    name="_transDate" /> parameter.
+        #/// </remarks>
+        #
+        #
+        #public BankAccountStatus bankAccountStatus(utcdatetime _transDate)
+        #{
+        #    BankAccountStatus bankAccountStatus;
+        #    ;
+        #    if(this.ExpiryDate == Global::utcDateTimeNull() || this.ExpiryDate > _transDate)
+        #    {
+        #        bankAccountStatus = BankAccountStatus::Active;
+        #    }
+        #    else
+        #    {
+        #        bankAccountStatus =  BankAccountStatus::Inactive;
+        #    }
+        #    return bankAccountStatus;
+        #}
+      ENDSOURCE
+      SOURCE #bankAccountValidation
+        #Bank bankAccountValidation()
+        #{
+        #    return this.BankAccountMap::bankAccountValidation();
+        #}
+      ENDSOURCE
+      SOURCE #bankBIC_RU
+        #//BP deviation documented
+        #public display BankBIC_RU bankBIC_RU()
+        #{
+        #    return this.BankAccountMap::bankBIC_RU();
+        #}
+      ENDSOURCE
+      SOURCE #bankcode_BR
+        #// <GBR>
+        #//BP Deviation Documented
+        #display BankCode_BR bankcode_BR()
+        #{
+        #    return Bank_BR::parseBankCode(this.AccountNum);
+        #}
+        #// </GBR>
+      ENDSOURCE
+      SOURCE #bankIsBranch_RU
+        #public boolean bankIsBranch_RU()
+        #{
+        #    return this.BankAccountMap::bankIsBranch_RU();
+        #}
+      ENDSOURCE
+      SOURCE #bankName_RU
+        #//BP deviation documented
+        #public display BankName_RU bankName_RU()
+        #{
+        #    return this.BankAccountMap::bankName_RU();
+        #}
+      ENDSOURCE
+      SOURCE #bankShortAddressing_RU
+        #public BankShortAddressing_RU bankShortAddressing_RU()
+        #{
+        #    return this.BankAccountMap::bankShortAddressing_RU();
+        #}
+      ENDSOURCE
+      SOURCE #baseBankName_RU
+        #public Description baseBankName_RU()
+        #{
+        #    return this.BankAccountMap::baseBankName_RU();
+        #}
+      ENDSOURCE
+      SOURCE #baseBankShortAddressing_RU
+        #public BankShortAddressing_RU baseBankShortAddressing_RU()
+        #{
+        #    return this.BankAccountMap::baseBankShortAddressing_RU();
+        #}
+      ENDSOURCE
+      SOURCE #checkDefault_LV
+        #server private boolean checkDefault_LV()
+        #{
+        #    VendBankAccount vendBankAccount;
+        #
+        #    if(this.LvDefaultBank)
+        #    {
+        #        select firstonly RecId from vendBankAccount
+        #            where vendBankAccount.VendAccount == this.VendAccount &&
+        #                  vendBankAccount.CurrencyCode == this.CurrencyCode &&
+        #                  vendBankAccount.LvDefaultBank == NoYes::Yes &&
+        #                  vendBankAccount.RecId != this.RecId;
+        #    }
+        #
+        #    return vendBankAccount.RecId ? checkFailed("@GLS108523") : true;
+        #}
+      ENDSOURCE
+      SOURCE #checkDunsValueExists
+        #/// <summary>
+        #/// Checks whether the unique combination of the record ID in the <c>LogisticLocation</c> table and
+        #/// Duns4 number exists other than in current record.
+        #/// </summary>
+        #/// <param name="_logisticLocationRecId">
+        #/// The record ID of the <c>LogisticLocation</c> table.
+        #/// </param>
+        #/// <param name="_duns4Number">
+        #/// The variable that contains the value for the Duns4 number.
+        #/// </param>
+        #/// <returns>
+        #/// true if the combination of the record ID of the <c>LogisticLocation</c> table and Duns4 number
+        #/// exist other than the current record; otherwise, false.
+        #/// </returns>
+        #private boolean checkDunsValueExists(RefRecId _logisticLocationRecId, VendDUNS4Num _duns4Number)
+        #{
+        #    boolean ok = false;
+        #    VendBankAccount vendBankAccount;
+        #
+        #    if (_logisticLocationRecId)
+        #    {
+        #        select RecId from vendBankAccount
+        #            where vendBankAccount.VendDuns4Number == _duns4Number
+        #               && vendBankAccount.LogisticsLocation == _logisticLocationRecId
+        #               && vendBankAccount.RecId != this.RecId ;
+        #
+        #        if (vendBankAccount.RecId)
+        #        {
+        #            ok = true;
+        #        }
+        #    }
+        #
+        #    return ok;
+        #}
+      ENDSOURCE
+      SOURCE #countryIsoCode
+        #LogisticsAddressCountryRegionISOCode countryIsoCode()
+        #{
+        #    ;
+        #    return LogisticsAddressCountryRegion::find(LogisticsLocationEntity::location2PostalAddress(this.Location).CountryRegionId).isOcode;
+        #}
+      ENDSOURCE
+      SOURCE #countryRegionId
+        #/// <summary>
+        #/// Retrieves the <c>CountryRegionId</c> value from the <c>logisticsPostalAddress</c> table.
+        #/// </summary>
+        #/// <returns>
+        #/// The <c>CountryRegionId</c> value from the <c>logisticsPostalAddress</c> table.
+        #/// </returns>
+        #LogisticsAddressCountryRegionId countryRegionId()
+        #{
+        #    return LogisticsLocationEntity::location2PostalAddress(this.Location).CountryRegionId;
+        #}
+      ENDSOURCE
+      SOURCE #createIBAN
+        #//INC38934 ++
+        #public void createIBAN()
+        #{
+        #    this.bankAccountMap::createIBAN(); //<CDR253432,ldan,2025_07_03,BlobStorageParametrizace/>
+        #
+        #    /*<CDR253432,ldan,2025_07_03,BlobStorageParametrizace>
+        #    BankIbanNumber  bankIbanNumber;
+        #
+        #    if (this.AccountNum && this.RegistrationNum && this.SWIFTNo)
+        #    {
+        #        bankIbanNumber = new BankIbanNumber();
+        #
+        #        bankIbanNumber.parmBankAccount(this.AccountNum);
+        #        bankIbanNumber.parmBankRegNum(this.RegistrationNum);
+        #        bankIbanNumber.parmSWIFTNo(this.SWIFTNo);
+        #
+        #        bankIbanNumber.calculateNewIban();
+        #        this.BankIBAN = bankIbanNumber.parmBankIBAN();
+        #    }
+        #    </CDR253432,ldan,2025_07_03,BlobStorageParametrizace>*/
+        #}
+      ENDSOURCE
+      SOURCE #currentBankAccountStatus
+        #/// <summary>
+        #///    Returns the current status of the bank account based on the current <c>utcdatetime</c> data type.
+        #/// </summary>
+        #/// <returns>
+        #///    The string equivalent of the <c>BankAccountStatus</c> enumeration value.
+        #/// </returns>
+        #
+        #//BP Deviation Documented
+        #display VendBankAccountStatus currentBankAccountStatus()
+        #{
+        #    return enum2str(this.bankAccountStatus(DateTimeUtil::utcNow()));
+        #}
+      ENDSOURCE
+      SOURCE #dac_br
+        #// </GBR>
+        #//BP Deviation Documented
+        #display BankDAC_BR dac_br()
+        #{
+        #    return Bank_BR::parseDAC(this.AccountNum);
+        #}
+        #// </GBR>
+      ENDSOURCE
+      SOURCE #dispBankIBAN
+        #//INC30107,INC30401, 06/03/2016, NEW
+        #//<CDR203309,ldan,2020_12_09,IBAN_Zobrazeni_zmena/> display BankIBAN dispBankIBAN()
+        #display BankIBANdisp dispBankIBAN() //<CDR203309,ldan,2020_12_09,IBAN_Zobrazeni_zmena/>
+        #{
+        #    return this.bankAccountMap::dispBankIBAN();
+        #}
+      ENDSOURCE
+      SOURCE #editBankIBAN
+        #//INC30107,INC30401, 06/03/2016, NEW
+        #//<CDR203309,ldan,2020_12_09,IBAN_Zobrazeni_zmena/> edit BankIBAN editBankIBAN(
+        #edit BankIBANdisp editBankIBAN( //<CDR203309,ldan,2020_12_09,IBAN_Zobrazeni_zmena/>
+        #    boolean   _set,
+        #    BankIBAN  _bankIBAN)
+        #{
+        #    return this.bankAccountMap::editBankIBAN(_set, _bankIBAN);
+        #}
+      ENDSOURCE
+      SOURCE #editExchRate
+        #//BP Deviation Documented
+        #public edit CrossExchRate editExchRate(boolean set, CrossExchRate _exchRate)
+        #{
+        #    if (set)
+        #    {
+        #        this.ExchRate = ExchangeRateHelper::prepareExchangeRateForStorage_Static(_exchRate, ExchangeRateDisplayFactor::One);
+        #    }
+        #    else
+        #    {
+        #        _exchRate = ExchangeRateHelper::displayStoredExchangeRate_Static(this.ExchRate, ExchangeRateDisplayFactor::One);
+        #    }
+        #
+        #    return _exchRate;
+        #}
+      ENDSOURCE
+      SOURCE #existOpenTransactions
+        #/// <summary>
+        #/// Checks for the existence of open transactions based on the bank account active date or the expiry
+        #/// date.
+        #/// </summary>
+        #/// <param name="_fieldId">
+        #/// The ID of <c>datetime</c> field that specifies either the bank account active date or the expiry
+        #/// date.
+        #/// </param>
+        #/// <returns>
+        #/// true if open transactions exist for the bank account; otherwise, false.
+        #/// </returns>
+        #/// <remarks>
+        #/// This method is called by <c>validateField</c> method to check whether open transactions exist for
+        #/// the selected vendor bank account whenever the bank account active date or expiration date is
+        #/// modified.
+        #/// </remarks>
+        #boolean existOpenTransactions(FieldId _fieldId)
+        #{
+        #    boolean ret = false;
+        #    VendTrans vendTrans;
+        #    VendPaymModeTable vendPaymMode;
+        #    boolean retOpenTrans = false;
+        #    VendTransOpen vendTransOpen;
+        #    ;
+        #
+        #    switch(_fieldId)
+        #    {
+        #        case (fieldNum(VendBankAccount, ActiveDate)) :
+        #                if (isConfigurationkeyEnabled(configurationKeyNum(PublicSector)))
+        #                {
+        #                    select firstonly RecId from vendTrans
+        #                    exists join vendPaymMode
+        #                        where vendPaymMode.PaymMode == vendTrans.PaymMode
+        #                           && vendPaymMode.PaymentType == PaymentType::ElectronicPayment
+        #                           && vendTrans.AccountNum == this.VendAccount
+        #                           && vendTrans.AmountCur != vendTrans.SettleAmountCur
+        #                           && vendTrans.TransDate < DateTimeUtil::date(this.ActiveDate)
+        #                           && vendTrans.ThirdPartyBankAccountId == this.AccountID
+        #                           && vendTrans.TransType == LedgerTransType::Payment;
+        #                }
+        #                else
+        #                {
+        #                    select firstonly RecId from vendTrans exists join vendPaymMode
+        #                    where  vendPaymMode.PaymMode == vendTrans.PaymMode
+        #                    && vendPaymMode.PaymentType == PaymentType::ElectronicPayment
+        #                    && vendTrans.AccountNum == this.VendAccount
+        #                    && vendTrans.AmountCur != vendTrans.SettleAmountCur
+        #                    && vendTrans.TransDate < DateTimeUtil::date(this.ActiveDate)
+        #                    && vendTrans.ThirdPartyBankAccountId == this.AccountID;
+        #                }
+        #
+        #                if(vendTrans.RecId)
+        #                {
+        #                    ret = true;
+        #                }
+        #
+        #                select firstonly RecId from vendTrans
+        #                    where vendTrans.TransDate < DateTimeUtil::date(this.ActiveDate)
+        #                join RefRecId from vendTransOpen
+        #                    where vendTransOpen.RefRecId == vendTrans.RecId
+        #                       && vendTransOpen.ThirdPartyBankAccountId == this.AccountID
+        #                join PaymMode from vendPaymMode
+        #                    where vendPaymMode.PaymMode == vendTrans.PaymMode
+        #                       && vendPaymMode.PaymentType == PaymentType::ElectronicPayment
+        #                       && vendTrans.AccountNum == this.VendAccount
+        #                       && vendTrans.AmountCur != vendTrans.SettleAmountCur;
+        #
+        #                if (vendTrans.RecId)
+        #                {
+        #                    retOpenTrans = true;
+        #                }
+        #
+        #                ret = ret || retOpenTrans;
+        #        break;
+        #        case (fieldNum(VendBankAccount, ExpiryDate)) :
+        #                if (isConfigurationkeyEnabled(configurationKeyNum(PublicSector)))
+        #                {
+        #                    select firstonly RecId from vendTrans
+        #                        where vendTrans.AccountNum == this.VendAccount
+        #                           && vendTrans.AmountCur != vendTrans.SettleAmountCur
+        #                           && vendTrans.TransDate >= DateTimeUtil::date(this.ExpiryDate)
+        #                           && vendTrans.ThirdPartyBankAccountId == this.AccountID
+        #                           && vendTrans.TransType == LedgerTransType::Payment;
+        #                }
+        #                else
+        #                {
+        #                    select firstonly RecId from vendTrans
+        #                    where vendTrans.AccountNum == this.VendAccount &&
+        #                    vendTrans.AmountCur != vendTrans.SettleAmountCur &&
+        #                    vendTrans.TransDate >= DateTimeUtil::date(this.ExpiryDate) &&
+        #                    vendTrans.ThirdPartyBankAccountId == this.AccountID;
+        #                }
+        #
+        #                if(vendTrans.RecId)
+        #                {
+        #                    ret = true;
+        #                }
+        #
+        #                select firstonly RecId from vendTrans
+        #                    where vendTrans.AccountNum == this.VendAccount
+        #                       && vendTrans.AmountCur != vendTrans.SettleAmountCur
+        #                       && vendTrans.TransDate >= DateTimeUtil::date(this.ExpiryDate)
+        #                join RefRecId from vendTransOpen
+        #                    where vendTransOpen.RefRecId == vendTrans.RecId
+        #                       && vendTransOpen.ThirdPartyBankAccountId == this.AccountID;
+        #
+        #                if (vendTrans.RecId)
+        #                {
+        #                    retOpenTrans = true;
+        #                }
+        #
+        #                ret = ret || retOpenTrans;
+        #         break;
+        #
+        #    }
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #foreignBankName_RU
+        #/// <summary>
+        #/// Gets name of foreign bank assotiated with current bank account.
+        #/// </summary>
+        #/// <returns>
+        #/// Name of the foreign bank.
+        #/// </returns>
+        #
+        #//BP deviation documented
+        #public display BankName_RU foreignBankName_RU()
+        #{
+        #    return this.BankAccountMap::foreignBankName_RU();
+        #}
+      ENDSOURCE
+      SOURCE #hasDocuments
+        #/// <summary>
+        #/// Gets a value that indicates whether there is at least one document attached to the vendor bank
+        #/// account record.
+        #/// </summary>
+        #/// <returns>
+        #/// true if the vendor bank account has documents; otherwise, false.
+        #/// </returns>
+        #//BP Deviation documented
+        #display VendProfileHasDocuments hasDocuments()
+        #{
+        #    boolean     bankHasDocuments = false;
+        #
+        #    bankHasDocuments = DocuRef::exist(this.DataAreaId, this.TableId, this.RecId);
+        #
+        #    return bankHasDocuments;
+        #}
+      ENDSOURCE
+      SOURCE #initFromBankGroup
+        #void initFromBankGroup(BankGroup _bankGroup)
+        #{
+        #    ;
+        #    this.BankAccountMap::initFromBankGroup(_bankGroup);
+        #}
+      ENDSOURCE
+      SOURCE #initValue
+        #void initValue()
+        #{
+        #    // <GJP>
+        #    #isoCountryRegionCodes
+        #    // </GJP>
+        #
+        #    super();
+        #
+        #    // <GJP>
+        #    if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoJP]))
+        #    {
+        #        this.TransType_JP = VendBankTransType_JP::OrdinarySavings;
+        #    }
+        #    // </GJP>
+        #}
+      ENDSOURCE
+      SOURCE #insert
+        #public void insert()
+        #{
+        #
+        #    //INC38934 ++
+        #    if (!this.BankIBAN)
+        #    {
+        #        this.createIBAN();
+        #    }
+        #    //INC38934 --
+        #
+        #    super();
+        #}
+      ENDSOURCE
+      SOURCE #modifiedField
+        #public void modifiedField(FieldId _fieldId)
+        #{
+        #    super(_fieldId);
+        #
+        #    this.BankAccountMap::modifiedField(_fieldId);
+        #
+        #    if (isConfigurationkeyEnabled(configurationKeyNum(PublicSector)))
+        #    {
+        #        switch (_fieldId)
+        #        {
+        #            case fieldNum(VendBankAccount, DirDunsNumber):
+        #                this.LogisticsLocation = LogisticsLocation::findByDUNSNumRecId(this.DirDunsNumber, VendTable::find(this.VendAccount).Party).RecId;
+        #                break;
+        #
+        #            //INC38934 ++
+        #            case fieldNum(VendBankAccount, AccountNum) :
+        #            case fieldNum(VendBankAccount, RegistrationNum) :
+        #            case fieldNum(VendBankAccount, SWIFTNo) :
+        #            case fieldNum(VendBankAccount, BankGroupId) :
+        #                this.createIBAN();
+        #                break;
+        #            //INC38934 --
+        #
+        #            default:
+        #                break;
+        #        }
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #validateDelete
+        #public boolean validateDelete()
+        #{
+        #    boolean ret;
+        #
+        #    ret = super();
+        #
+        #    if(VendPrenote::existBankPrenotes(this.VendAccount,this.AccountID))
+        #    {
+        #        if(Box::yesNo(strFmt("@SYS128525",this.AccountID),DialogButton::Yes))
+        #        {
+        #            VendPrenote::deletePrenotes(this.AccountID, this.VendAccount);
+        #            ret = true;
+        #        }
+        #        else
+        #        {
+        #            ret = false;
+        #        }
+        #    }
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #validateField
+        #public boolean validateField(FieldId _fieldId)
+        #{
+        #    boolean ret;
+        #    ;
+        #
+        #
+        #    ret = super(_fieldId);
+        #    if (ret)
+        #    {
+        #        switch (_fieldId)
+        #        {
+        #            case (fieldNum(VendBankAccount, BankIBAN)) :
+        #                if (Bank::checkBankIBAN(this.BankIBAN))
+        #                {
+        #                    this.BankIBAN = strUpr(this.BankIBAN);
+        #                    ret = true;
+        #                }
+        #                else
+        #                {
+        #                    ret = false;
+        #                }
+        #                break;
+        #
+        #            case (fieldNum(VendBankAccount, ActiveDate)):
+        #
+        #                if(this.ActiveDate != Global::utcDateTimeNull() &&
+        #                        this.ExpiryDate != Global::utcDateTimeNull()
+        #                        && this.ActiveDate > this.ExpiryDate)
+        #                {
+        #                    ret = checkFailed("@SYS116175");
+        #                }
+        #
+        #                else if(this. ActiveDate != Global::utcDateTimeNull() &&  this.existOpenTransactions(_fieldId))
+        #                {
+        #                     info(strFmt("@SYS115074", this.AccountID));
+        #                }
+        #                else
+        #                {
+        #                    ret = true;
+        #                }
+        #
+        #                break;
+        #
+        #
+        #            case (fieldNum(VendBankAccount, ExpiryDate)) :
+        #                if(this.ActiveDate != Global::utcDateTimeNull() &&
+        #                        this.ExpiryDate != Global::utcDateTimeNull()
+        #                        && this.ActiveDate > this.ExpiryDate)
+        #                {
+        #                    ret = checkFailed("@SYS116176");
+        #                }
+        #                else if(this. ExpiryDate != Global::utcDateTimeNull() &&  this.existOpenTransactions(_fieldId))
+        #                {
+        #                    info(strFmt("@SYS115092", this.AccountID));
+        #                }
+        #
+        #            break;
+        #
+        #            case fieldNum(VendBankAccount, AccountNum) :
+        #                ret = this.BankAccountMap::bankAccountValidation().checkBankAccountNum(this.AccountNum);
+        #                if (ret)
+        #                {
+        #                    ret = this.validatePrenote();
+        #                }
+        #                break;
+        #
+        #            case fieldNum(VendBankAccount,Name), fieldNum(VendBankAccount,RegistrationNum):
+        #
+        #                ret = this.validatePrenote();
+        #                break;
+        #
+        #            case (fieldNum(VendBankAccount, VendDuns4Number)):
+        #                if (strLen(this.VendDuns4Number) > 0)
+        #                {
+        #                    // Duns number is not selected and does not exist
+        #                    if ((!this.LogisticsLocation) || (DirDunsNumber::find(this.DirDunsNumber).DunsNumber==""))
+        #                    {
+        #                        ret = checkFailed("@SPS260");
+        #                    }
+        #
+        #                    // Duns4 number must be of length 4 character
+        #                    if ((ret) && (strLen(this.VendDuns4Number) != 4))
+        #                    {
+        #                        ret = checkFailed(strFmt("@SPS261", this.VendDuns4Number));
+        #                    }
+        #                }
+        #                break;
+        #        }
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #validatePrenote
+        #private boolean validatePrenote()
+        #{
+        #    boolean ret = true;
+        #
+        #    if(VendPrenote::existBankPrenotes(this.VendAccount,this.AccountID))
+        #    {
+        #        if(Box::yesNo(strFmt("@SYS128525",this.AccountID),DialogButton::Yes))
+        #        {
+        #            VendPrenote::deletePrenotes(this.AccountID, this.VendAccount);
+        #            ret = true;
+        #        }
+        #        else
+        #        {
+        #            ret = false;
+        #        }
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #validateWrite
+        #public boolean validateWrite()
+        #{
+        #    // <GEELV>
+        #    #ISOCountryRegionCodes
+        #    // </GEELV>
+        #    boolean ret;
+        #
+        #    ret = super();
+        #
+        #    if (ret)
+        #    {
+        #        ret = this.BankAccountMap::validateWrite();
+        #
+        #        if (isConfigurationkeyEnabled(configurationKeyNum(PublicSector)))
+        #        {
+        #            // Associated Duns number doesnt exist
+        #            if ((!this.LogisticsLocation) && (this.VendDuns4Number))
+        #            {
+        #                ret = checkFailed("@SPS260");
+        #            }
+        #
+        #            if ((ret) && (this.checkDunsValueExists(this.LogisticsLocation, this.VendDuns4Number)))
+        #            {
+        #                ret = checkFailed("@SPS262");
+        #            }
+        #        }
+        #
+        #        // <GEELV>
+        #        if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoLV]))
+        #        {
+        #            if (this.LvDefaultBank && !this.CurrencyCode)
+        #            {
+        #                ret = checkFailed(strFmt("@SYS84378", fieldId2pname(tableNum(VendBankAccount), fieldNum(VendBankAccount, CurrencyCode))));
+        #            }
+        #            ret = ret && this.checkDefault_LV();
+        #        }
+        #        // </GEELV>
+        #
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #checkBankAccountReference
+        #static boolean checkBankAccountReference(VendAccount        _vendAccount,
+        #                                         VendBankAccountId  _vendBankAccountId,
+        #                                         CompanyId          _company = curext())
+        #{
+        #    CompanyId   companyId;
+        #    ;
+        #
+        #    if (_vendBankAccountId)
+        #    {
+        #        if (!_company)
+        #        {
+        #            companyId = curext();
+        #        }
+        #        else
+        #        {
+        #            companyId = _company;
+        #
+        #            if (!xDataArea::exist(companyId))
+        #            {
+        #                return checkFailed(strFmt("@SYS10666", companyId));
+        #            }
+        #        }
+        #
+        #        changecompany(companyId)
+        #        {
+        #            if (!VendBankAccount::find(_vendAccount, _vendBankAccountId))
+        #            {
+        #                return checkFailed(strFmt("@SYS27061",_vendBankAccountId));
+        #            }
+        #        }
+        #    }
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #checkExist
+        #public static boolean checkExist(VendAccount _vendAccount, VendBankAccountId _vendBankAccountId )
+        #{
+        #    boolean ret = true;
+        #    ;
+        #
+        #    if (!VendBankAccount::exist(_vendAccount, _vendBankAccountId))
+        #    {
+        #        ret = checkFailed(strFmt(VendBankAccount::txtNotExist(), _vendAccount, _vendBankAccountId));
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #exist
+        #public static boolean exist(VendAccount _vendAccount, VendBankAccountId _vendBankAccountId )
+        #{
+        #    boolean found;
+        #    ;
+        #
+        #    found = (select firstonly
+        #                 RecId
+        #            from
+        #                 vendBankAccount
+        #             where
+        #                 vendBankAccount.VendAccount == _vendAccount &&
+        #                vendBankAccount.AccountID == _vendBankAccountId).RecId != 0;
+        #
+        #    return found;
+        #}
+      ENDSOURCE
+      SOURCE #existAccountNum
+        #//<CDR224672,ldan,2022_11_01,SalesForce_Interface/>
+        #public static boolean existAccountNum(VendAccount _vendAccount,
+        #                                      BankAccount _baseBankAccountNum,
+        #                                      BankRegNum _bankRegNum)
+        #{
+        #    VendBankAccount vendBankAccount;
+        #
+        #    select firstonly RecId from vendBankAccount
+        #        where vendBankAccount.VendAccount == _vendAccount
+        #           && vendBankAccount.AccountNum  == _baseBankAccountNum
+        #           && vendBankAccount.RegistrationNum == _bankRegNum;
+        #
+        #    return vendBankAccount.RecId ? true : false;
+        #}
+      ENDSOURCE
+      SOURCE #find
+        #public static VendBankAccount find(
+        #    VendAccount _vendAccount,
+        #    VendBankAccountId _vendBankAccountId ,
+        #    boolean                 _forupdate = false,
+        #    ConcurrencyModel        _concurrencyModel = ConcurrencyModel::Auto)
+        #{
+        #    VendBankAccount vendBankAccount;
+        #    ;
+        #
+        #    vendBankAccount.selectForUpdate(_forupdate);
+        #    if (_forupdate  && _concurrencyModel != ConcurrencyModel::Auto)
+        #    {
+        #        vendBankAccount.concurrencyModel(_concurrencyModel);
+        #    }
+        #
+        #    select firstonly
+        #        vendBankAccount
+        #        where
+        #        vendBankAccount.VendAccount == _vendAccount &&
+        #                vendBankAccount.AccountID == _vendBankAccountId;
+        #
+        #    return vendBankAccount;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #findAccountNum
+        #//<CDR224672,ldan,2022_11_01,SalesForce_Interface/>
+        #public static VendBankAccount findAccountNum(VendAccount _vendAccount,
+        #                                             BankAccount _baseBankAccountNum,
+        #                                             BankRegNum _bankRegNum,
+        #                                             boolean _forUpdate = false)
+        #{
+        #    VendBankAccount vendBankAccount;
+        #
+        #    vendBankAccount.selectForUpdate(_forUpdate);
+        #
+        #    select firstonly vendBankAccount
+        #        where vendBankAccount.VendAccount == _vendAccount
+        #           && vendBankAccount.AccountNum  == _baseBankAccountNum
+        #           && vendBankAccount.RegistrationNum == _bankRegNum;
+        #
+        #    return vendBankAccount;
+        #}
+      ENDSOURCE
+      SOURCE #findByCompany
+        #/// <summary>
+        #/// Finds a <c>VendBankAccount</c> record in the specified company.
+        #/// </summary>
+        #/// <param name="_companyId">
+        #/// The company in which to look for the record.
+        #/// </param>
+        #/// <param name="_vendAccount">
+        #/// The vendor account ID.
+        #/// </param>
+        #/// <param name="_vendBankAccountId">
+        #/// The bank account ID.
+        #/// </param>
+        #/// <param name="_forupdate">
+        #/// Determines whether the returned <c>VendBankAccount</c> record is selected for update; optional.
+        #/// </param>
+        #/// <param name="_concurrencyModel">
+        #/// The concurrency model to use; optional.
+        #/// </param>
+        #/// <returns>
+        #/// The <c>VendBankAccount</c> record, if found.
+        #/// </returns>
+        #
+        #public static VendBankAccount findByCompany(
+        #    CompanyId _companyId,
+        #    VendAccount _vendAccount,
+        #    VendBankAccountId _vendBankAccountId ,
+        #    boolean                 _forupdate = false,
+        #    ConcurrencyModel        _concurrencyModel = ConcurrencyModel::Auto)
+        #{
+        #    VendBankAccount vendBankAccount;
+        #    ;
+        #
+        #    changecompany (_companyId)
+        #    {
+        #        vendBankAccount = VendBankAccount::find(_vendAccount, _vendBankAccountId, _forupdate, _concurrencyModel);
+        #    }
+        #
+        #    return vendBankAccount;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #findByIBAN
+        #// INC38478_ImportPrijatychFaktur, dkodes, 02.11.2018
+        #public static VendBankAccount findByIBAN(BankIBAN _iban, boolean _forUpdate = false)
+        #{
+        #    VendBankAccount vendBankAccount;
+        #
+        #    if (_iban)
+        #    {
+        #        vendBankAccount.selectForUpdate(_forUpdate);
+        #
+        #        select firstonly vendBankAccount
+        #            where   vendBankAccount.BankIBAN    == _iban;
+        #    }
+        #
+        #    return vendBankAccount;
+        #}
+      ENDSOURCE
+      SOURCE #findByRecId
+        #//WBW_0015_AdvanceInvoice
+        #public static VendBankAccount findByRecId(
+        #    RecId               _recId,
+        #    boolean             _forupdate = false,
+        #    ConcurrencyModel    _concurrencyModel = ConcurrencyModel::Auto)
+        #{
+        #    VendBankAccount vendBankAccount;
+        #
+        #    vendBankAccount.selectForUpdate(_forupdate);
+        #    if (_forupdate  && _concurrencyModel != ConcurrencyModel::Auto)
+        #    {
+        #        vendBankAccount.concurrencyModel(_concurrencyModel);
+        #    }
+        #
+        #    select firstonly
+        #        vendBankAccount
+        #        where
+        #        vendBankAccount.RecId == _recId;
+        #
+        #    return vendBankAccount;
+        #}
+      ENDSOURCE
+      SOURCE #findByRegNum
+        #//WBW_0025_bankDefinition
+        #//VAP_1003 +Pheg
+        #public static VendBankAccount findByRegNum(BankRegNum         _bankRegNum,
+        #                                    BankAccount        _bankAccount,
+        #                                    boolean            _forUpdate = false)
+        #{
+        #    VendBankAccount vendBankAccount;
+        #
+        #    if (_bankRegNum && _bankAccount)
+        #    {
+        #        vendBankAccount.selectForUpdate(_forUpdate);
+        #
+        #        select firstonly vendBankAccount
+        #            where vendBankAccount.AccountNum        == _bankAccount
+        #            && vendBankAccount.RegistrationNum      == _bankRegNum;
+        #    }
+        #
+        #    if (_bankAccount && !vendBankAccount)
+        #    {
+        #        vendBankAccount.selectForUpdate(_forUpdate);
+        #
+        #        select firstonly vendBankAccount
+        #                   where vendBankAccount.BankIBAN       == _bankAccount;
+        #    }
+        #
+        #    return vendBankAccount;
+        #}
+      ENDSOURCE
+      SOURCE #findDefault_LV
+        #public server static VendBankAccount findDefault_LV(VendAccount _vendAccount, CurrencyCode _currencyCode)
+        #{
+        #    VendBankAccount vendBankAccount;
+        #
+        #    select firstonly vendBankAccount
+        #        where vendBankAccount.VendAccount     == _vendAccount  &&
+        #              vendBankAccount.CurrencyCode    == _currencyCode &&
+        #              vendBankAccount.LvDefaultBank   == NoYes::Yes;
+        #
+        #    return vendBankAccount;
+        #}
+      ENDSOURCE
+      SOURCE #findDefaultByCompany_LV
+        #public static VendBankAccount findDefaultByCompany_LV(CompanyId          _companyId,
+        #                                                      VendAccount        _vendAccount,
+        #                                                      CurrencyCode       _currencyCode,
+        #                                                      boolean            _forUpdate          = false,
+        #                                                      ConcurrencyModel   _concurrencyModel   = ConcurrencyModel::Auto)
+        #{
+        #    VendBankAccount vendBankAccount;
+        #
+        #    changecompany(_companyId)
+        #    {
+        #        vendBankAccount.selectForUpdate(_forUpdate);
+        #        if (_forUpdate  && _concurrencyModel != ConcurrencyModel::Auto)
+        #        {
+        #            vendBankAccount.concurrencyModel(_concurrencyModel);
+        #        }
+        #
+        #        select firstonly vendBankAccount
+        #            where vendBankAccount.VendAccount     == _vendAccount  &&
+        #                  vendBankAccount.CurrencyCode    == _currencyCode &&
+        #                  vendBankAccount.LvDefaultBank   == NoYes::Yes;
+        #    }
+        #
+        #    return vendBankAccount;
+        #}
+      ENDSOURCE
+      SOURCE #generateAccountId
+        #/// <summary>
+        #/// Generates a new account ID, based on the number of records in the <c>VendBankAccount</c> account.
+        #/// </summary>
+        #/// <returns>
+        #/// The bank account ID.
+        #/// </returns>
+        #public static VendBankAccountId generateAccountId()
+        #{
+        #    VendBankAccount         vendBankAccountCount;
+        #
+        #    select count(RecId) from vendBankAccountCount;
+        #    return int642str(vendBankAccountCount.RecId + 1);
+        #}
+      ENDSOURCE
+      SOURCE #lookupBankAccount
+        #public client static void lookupBankAccount(FormStringControl   _ctrl,
+        #                                     VendAccount         _vendAccount,
+        #                                     CompanyId           _company = curext(),
+        #                                     utcdatetime          _transDate = utcDateTimeNull(),
+        #                                     VendPaymMode       _paymentMode = "")
+        #{
+        #
+        #    SysTableLookup          sysTableLookup = SysTableLookup::newParameters(tableNum(VendBankAccount), _ctrl);
+        #    Query                   query = new Query();
+        #    QueryBuildDataSource    qbds;
+        #    QueryBuildRange         activeBankAccountsRange;
+        #    CompanyId               companyId;
+        #    VendPaymModeTable       vendPaymMode;
+        #    #localmacro.ExpiryDateCriteria "((ExpiryDate == \%1) || (ExpiryDate > \%2))" #endmacro
+        #    #localmacro.ActiveDateCriteria "(ActiveDate <= \%1)" #endmacro
+        #    ;
+        #
+        #    if (!_company)
+        #    {
+        #        companyId = curext();
+        #    }
+        #    else
+        #    {
+        #        companyId = _company;
+        #
+        #        if (!xDataArea::exist(companyId))
+        #        {
+        #            throw error(strFmt("@SYS10666", companyId));
+        #        }
+        #    }
+        #
+        #    changecompany(companyId)
+        #    {
+        #        sysTableLookup.addLookupfield(fieldNum(VendBankAccount, AccountID), true);
+        #        sysTableLookup.addLookupfield(fieldNum(VendBankAccount, Name));
+        #
+        #        qbds = query.addDataSource(tableNum(VendBankAccount));
+        #        qbds.addRange(fieldNum(VendBankAccount, VendAccount)).value(queryValue(_vendAccount));
+        #
+        #        if(_transDate)
+        #        {
+        #            //Lookup active bank accounts only.
+        #            //Active banks either have expiry date as null or expiry date greater than payment date
+        #            activeBankAccountsRange = qbds.addRange(fieldNum(VendBankAccount, ExpiryDate));
+        #            activeBankAccountsRange.value(strFmt(#ExpiryDateCriteria,
+        #                                                    date2StrXpp(dateNull()) , DateTimeUtil::toStr(_transDate)));
+        #            activeBankAccountsRange.status(RangeStatus::Hidden);
+        #
+        #            if(_paymentMode)
+        #            {
+        #                //If for electronic payment bank is inactive based on active date
+        #                select firstonly vendPaymMode where vendPaymMode.PaymMode == _paymentMode
+        #                 && vendPaymMode.PaymentType == PaymentType::ElectronicPayment;
+        #                    if( vendPaymMode )
+        #                    {
+        #                        activeBankAccountsRange = qbds.addRange(fieldNum(VendBankAccount, ActiveDate));
+        #                        activeBankAccountsRange.value(strFmt(#ActiveDateCriteria, DateTimeUtil::toStr(_transDate)));
+        #                        activeBankAccountsRange.status(RangeStatus::Hidden);
+        #                    }
+        #            }
+        #        }
+        #        sysTableLookup.parmQuery(query);
+        #        sysTableLookup.performFormLookup();
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #txtNotExist
+        #static TxtNotExist txtNotExist()
+        #{
+        #    return "@SYS9779";
+        #}
+        #
+      ENDSOURCE
+    ENDMETHODS
+  ENDTABLE
+  
+
+***Element: END

@@ -11,7 +11,7 @@ export default async function ZaznamyPage() {
     return (
       <div>
         <h1 className="mb-2 text-2xl font-semibold text-brand">Ke schválení</h1>
-        <p className="rounded-lg bg-white p-6 text-slate-500 ring-1 ring-slate-200">
+        <p className="rounded-lg bg-surface p-6 text-muted ring-1 ring-line">
           Tvůj účet nemá přiřazené <strong>ERP userId</strong>, takže ti nechodí žádné
           workitemy ke schválení. Doplň ho ve Správě (jen administrátor).
         </p>
@@ -98,14 +98,5 @@ export default async function ZaznamyPage() {
     return a.createdAt.localeCompare(b.createdAt);
   });
 
-  return (
-    <div>
-      <h1 className="mb-1 text-2xl font-semibold text-brand">Ke schválení</h1>
-      <p className="mb-5 text-sm text-slate-500">
-        Swipe (vpravo schválit, vlevo zamítnout, dolů odložit, nahoru na konec), nebo seznam s
-        hromadným výběrem.
-      </p>
-      <ApprovalHub items={items} />
-    </div>
-  );
+  return <ApprovalHub items={items} />;
 }

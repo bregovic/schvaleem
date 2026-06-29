@@ -19,7 +19,7 @@ const THRESHOLD_ACTIONS = ["NONE", "REQUIRE_COMMENT", "BLOCK"];
 const CHECK_TYPES = ["BANK_ACCOUNT_CZ", "ICO_CZ", "IBAN", "DIC_CZ"];
 
 const inp =
-  "rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-brand-accent";
+  "rounded-md border border-line px-2 py-1.5 text-sm outline-none focus:border-brand-accent";
 
 export default async function KonfiguracePage() {
   const user = await getCurrentUser();
@@ -44,13 +44,13 @@ export default async function KonfiguracePage() {
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-brand">Konfigurace typů dokumentů</h1>
-        <Link href="/sprava" className="text-sm text-slate-500 hover:underline">
+        <Link href="/sprava" className="text-sm text-muted hover:underline">
           ← Správa
         </Link>
       </div>
 
       {orgs.length === 0 && (
-        <p className="rounded-lg bg-white p-6 text-slate-500 ring-1 ring-slate-200">
+        <p className="rounded-lg bg-surface p-6 text-muted ring-1 ring-line">
           Nejdřív založ organizaci v{" "}
           <Link href="/sprava/organizace" className="text-brand-accent hover:underline">
             Organizace a dataAreas
@@ -61,8 +61,8 @@ export default async function KonfiguracePage() {
 
       {/* Vytvoření konfigurace */}
       {orgs.length > 0 && (
-        <section className="rounded-lg bg-white p-4 ring-1 ring-slate-200">
-          <h2 className="mb-3 text-sm font-semibold text-slate-600">Nová konfigurace</h2>
+        <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
+          <h2 className="mb-3 text-sm font-semibold text-muted">Nová konfigurace</h2>
           <form action={upsertDocTypeConfig} className="flex flex-wrap items-center gap-2">
             <select name="organizationId" required className={inp}>
               <option value="">Organizace…</option>
@@ -74,10 +74,10 @@ export default async function KonfiguracePage() {
             </select>
             <input name="documentType" required placeholder="ContextTableId (např. 1425)" className={inp} />
             <input name="name" placeholder="Název (Cestovní žádanka)" className={inp} />
-            <label className="flex items-center gap-1 text-xs text-slate-600">
+            <label className="flex items-center gap-1 text-xs text-muted">
               <input type="checkbox" name="requireCommentOnReject" defaultChecked /> komentář u reject
             </label>
-            <label className="flex items-center gap-1 text-xs text-slate-600">
+            <label className="flex items-center gap-1 text-xs text-muted">
               <input type="checkbox" name="requireCommentOnApprove" /> komentář u approve
             </label>
             <input name="amountThreshold" placeholder="Limit částky" className={`${inp} w-28`} />
@@ -88,7 +88,7 @@ export default async function KonfiguracePage() {
                 </option>
               ))}
             </select>
-            <button className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand/90">
+            <button className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90">
               Uložit konfiguraci
             </button>
           </form>
@@ -98,12 +98,12 @@ export default async function KonfiguracePage() {
       {/* Existující konfigurace */}
       {orgs.map((o) =>
         o.configs.map((c) => (
-          <section key={c.id} className="overflow-hidden rounded-lg bg-white ring-1 ring-slate-200">
-            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
+          <section key={c.id} className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
+            <div className="flex items-center justify-between border-b border-line bg-surface-2 px-4 py-2.5">
               <h2 className="text-sm font-semibold text-brand">
                 {o.name} · {c.name ?? c.documentType}
                 {c.name && (
-                  <span className="ml-2 font-mono text-xs font-normal text-slate-400">
+                  <span className="ml-2 font-mono text-xs font-normal text-muted">
                     ({c.documentType})
                   </span>
                 )}
@@ -116,8 +116,8 @@ export default async function KonfiguracePage() {
 
             {/* Pravidla */}
             <div className="border-b border-slate-100 px-4 py-3">
-              <p className="mb-2 text-xs font-semibold uppercase text-slate-400">Pravidla</p>
-              <form action={upsertDocTypeConfig} className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+              <p className="mb-2 text-xs font-semibold uppercase text-muted">Pravidla</p>
+              <form action={upsertDocTypeConfig} className="flex flex-wrap items-center gap-3 text-xs text-muted">
                 <input type="hidden" name="organizationId" value={o.id} />
                 <input type="hidden" name="documentType" value={c.documentType} />
                 <input name="name" defaultValue={c.name ?? ""} placeholder="Název" className={inp} />
@@ -136,7 +136,7 @@ export default async function KonfiguracePage() {
                     </option>
                   ))}
                 </select>
-                <button className="rounded-md bg-slate-200 px-3 py-1 font-medium text-slate-700 hover:bg-slate-300">
+                <button className="rounded-md bg-surface-2 px-3 py-1 font-medium text-muted hover:bg-line">
                   Uložit pravidla
                 </button>
               </form>
@@ -144,16 +144,16 @@ export default async function KonfiguracePage() {
 
             {/* Pole (atributy) */}
             <div className="border-b border-slate-100 px-4 py-3">
-              <p className="mb-2 text-xs font-semibold uppercase text-slate-400">
+              <p className="mb-2 text-xs font-semibold uppercase text-muted">
                 Pole z JSON (co sledujeme a jak zobrazit)
               </p>
               <table className="w-full text-sm">
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-line">
                   {c.fields.map((f) => (
                     <tr key={f.id}>
-                      <td className="py-1.5 font-mono text-slate-600">{f.jsonKey}</td>
+                      <td className="py-1.5 font-mono text-muted">{f.jsonKey}</td>
                       <td className="py-1.5 text-brand">{f.label}</td>
-                      <td className="py-1.5 text-slate-500">
+                      <td className="py-1.5 text-muted">
                         {f.role}
                         {f.preview && (
                           <span className="ml-1 rounded bg-brand-accent/10 px-1 text-xs text-brand-accent">
@@ -161,7 +161,7 @@ export default async function KonfiguracePage() {
                           </span>
                         )}
                       </td>
-                      <td className="py-1.5 text-slate-400">#{f.order}</td>
+                      <td className="py-1.5 text-muted">#{f.order}</td>
                       <td className="py-1.5 text-right">
                         <form action={deleteField}>
                           <input type="hidden" name="id" value={f.id} />
@@ -172,7 +172,7 @@ export default async function KonfiguracePage() {
                   ))}
                   {c.fields.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="py-2 text-slate-400">
+                      <td colSpan={5} className="py-2 text-muted">
                         Bez polí = zobrazí se všechna pole z JSON jako detail.
                       </td>
                     </tr>
@@ -190,11 +190,11 @@ export default async function KonfiguracePage() {
                     </option>
                   ))}
                 </select>
-                <label className="flex items-center gap-1 text-xs text-slate-600">
+                <label className="flex items-center gap-1 text-xs text-muted">
                   <input type="checkbox" name="preview" /> náhled
                 </label>
                 <input name="order" type="number" defaultValue={0} className={`${inp} w-16`} />
-                <button className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand/90">
+                <button className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90">
                   + pole
                 </button>
               </form>
@@ -202,21 +202,21 @@ export default async function KonfiguracePage() {
 
             {/* Metody (akce) */}
             <div className="px-4 py-3">
-              <p className="mb-2 text-xs font-semibold uppercase text-slate-400">
+              <p className="mb-2 text-xs font-semibold uppercase text-muted">
                 Metody / akce (posílané do ERP)
               </p>
               <div className="mb-2 flex flex-wrap gap-1.5">
                 {c.actions.map((a) => (
-                  <span key={a.id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  <span key={a.id} className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
                     {a.label} ({a.code}/{a.kind})
                     <form action={deleteAction} className="inline">
                       <input type="hidden" name="id" value={a.id} />
-                      <button className="text-slate-400 hover:text-red-600">×</button>
+                      <button className="text-muted hover:text-red-600">×</button>
                     </form>
                   </span>
                 ))}
                 {c.actions.length === 0 && (
-                  <span className="text-xs text-slate-400">Bez metod = výchozí Schválit / Zamítnout.</span>
+                  <span className="text-xs text-muted">Bez metod = výchozí Schválit / Zamítnout.</span>
                 )}
               </div>
               <form action={addAction} className="flex flex-wrap items-center gap-2">
@@ -230,7 +230,7 @@ export default async function KonfiguracePage() {
                     </option>
                   ))}
                 </select>
-                <button className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand/90">
+                <button className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90">
                   + metoda
                 </button>
               </form>
@@ -238,21 +238,21 @@ export default async function KonfiguracePage() {
 
             {/* Automatické kontroly */}
             <div className="border-t border-slate-100 px-4 py-3">
-              <p className="mb-2 text-xs font-semibold uppercase text-slate-400">
+              <p className="mb-2 text-xs font-semibold uppercase text-muted">
                 Automatické kontroly (modulo účtu, IČO, IBAN, DIČ)
               </p>
               <div className="mb-2 flex flex-wrap gap-1.5">
                 {c.checks.map((ch) => (
-                  <span key={ch.id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  <span key={ch.id} className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
                     {ch.label} ({ch.type} ← {ch.jsonKey})
                     <form action={deleteCheck} className="inline">
                       <input type="hidden" name="id" value={ch.id} />
-                      <button className="text-slate-400 hover:text-red-600">×</button>
+                      <button className="text-muted hover:text-red-600">×</button>
                     </form>
                   </span>
                 ))}
                 {c.checks.length === 0 && (
-                  <span className="text-xs text-slate-400">Žádné automatické kontroly.</span>
+                  <span className="text-xs text-muted">Žádné automatické kontroly.</span>
                 )}
               </div>
               <form action={addCheck} className="flex flex-wrap items-center gap-2">
@@ -266,7 +266,7 @@ export default async function KonfiguracePage() {
                 </select>
                 <input name="jsonKey" required placeholder="JSON klíč (pole s hodnotou)" className={inp} />
                 <input name="label" placeholder="Popisek" className={inp} />
-                <button className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand/90">
+                <button className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90">
                   + kontrola
                 </button>
               </form>
