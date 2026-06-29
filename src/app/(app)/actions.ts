@@ -197,26 +197,36 @@ export async function createUser(formData: FormData): Promise<void> {
   const role = formData.get("role") === "ADMIN" ? "ADMIN" : "APPROVER";
 
   if ((!email && !erpUserId) || password.length < 6) {
-    throw new Error("Zadej email nebo ERP ID a heslo (min. 6 znaků).");
+    redirect(`/sprava?err=${encodeURIComponent("Zadej email nebo ERP ID a heslo (min. 6 znaků).")}`);
   }
 
-  await prisma.user.create({
-    data: {
-      email,
-      name,
-      erpUserId,
-      role,
-      passwordHash: await hashPassword(password),
-    },
-  });
+  let err: string | null = null;
+  try {
+    await prisma.user.create({
+      data: {
+        email,
+        name,
+        erpUserId,
+        role,
+        passwordHash: await hashPassword(password),
+      },
+    });
+  } catch (e) {
+    err =
+      (e as { code?: string })?.code === "P2002"
+        ? "Email nebo ERP ID už používá jiný účet."
+        : "Uživatele se nepodařilo vytvořit.";
+  }
+  if (err) redirect(`/sprava?err=${encodeURIComponent(err)}`);
   revalidatePath("/sprava");
+  redirect("/sprava");
 }
 
 // Editace existujícího uživatele (vč. dodatečného přiřazení ERP userId).
 export async function updateUser(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
-  if (!id) throw new Error("Chybí id uživatele.");
+  if (!id) redirect(`/sprava?err=${encodeURIComponent("Chybí id uživatele.")}`);
 
   const name = String(formData.get("name") ?? "").trim() || null;
   const erpUserId = String(formData.get("erpUserId") ?? "").trim() || null;
@@ -224,25 +234,27 @@ export async function updateUser(formData: FormData): Promise<void> {
   const active = formData.get("active") === "on";
   const newPassword = String(formData.get("newPassword") ?? "");
 
-  // erpUserId je unikátní – ohlídej kolizi s jiným účtem.
-  if (erpUserId) {
-    const clash = await prisma.user.findUnique({ where: { erpUserId } });
-    if (clash && clash.id !== id) {
-      throw new Error(`ERP userId "${erpUserId}" už používá jiný účet (${clash.email}).`);
-    }
+  let err: string | null = null;
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: {
+        name,
+        erpUserId,
+        role,
+        active,
+        ...(newPassword.length >= 6
+          ? { passwordHash: await hashPassword(newPassword) }
+          : {}),
+      },
+    });
+  } catch (e) {
+    err =
+      (e as { code?: string })?.code === "P2002"
+        ? "ERP id už používá jiný účet."
+        : "Uživatele se nepodařilo uložit.";
   }
-
-  await prisma.user.update({
-    where: { id },
-    data: {
-      name,
-      erpUserId,
-      role,
-      active,
-      ...(newPassword.length >= 6
-        ? { passwordHash: await hashPassword(newPassword) }
-        : {}),
-    },
-  });
+  if (err) redirect(`/sprava?err=${encodeURIComponent(err)}`);
   revalidatePath("/sprava");
+  redirect("/sprava");
 }

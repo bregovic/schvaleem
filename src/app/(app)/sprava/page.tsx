@@ -16,14 +16,14 @@ function fmt(d: Date | null) {
 export default async function SpravaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ newKey?: string }>;
+  searchParams: Promise<{ newKey?: string; err?: string }>;
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (user.role !== "ADMIN") redirect("/zaznamy");
   const t = getDict(user.locale);
 
-  const { newKey } = await searchParams;
+  const { newKey, err } = await searchParams;
 
   const [keys, users, logs] = await Promise.all([
     prisma.apiKey.findMany({ orderBy: { createdAt: "desc" } }),
@@ -56,6 +56,12 @@ export default async function SpravaPage({
           </Link>
         </nav>
       </div>
+
+      {err && (
+        <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          {err}
+        </div>
+      )}
 
       {newKey && (
         <div className="rounded-lg border border-green-300 bg-green-50 p-4">
