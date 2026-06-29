@@ -27,7 +27,7 @@ export function DecideForm({ workitemId, t }: { workitemId: string; t: Dict }) {
         placeholder={t.decide.comment}
         className="rounded-md border border-line bg-surface-2 px-3 py-2 text-sm text-fg outline-none focus:border-accent"
       />
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <button
           type="submit"
           name="action"
@@ -45,6 +45,15 @@ export function DecideForm({ workitemId, t }: { workitemId: string; t: Dict }) {
           className="rounded-md bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 disabled:opacity-60"
         >
           {t.decide.reject}
+        </button>
+        <button
+          type="submit"
+          name="action"
+          value="DEFER"
+          disabled={pending}
+          className="rounded-md bg-amber-500 px-4 py-2 font-medium text-white hover:bg-amber-600 disabled:opacity-60"
+        >
+          {t.decide.defer}
         </button>
       </div>
     </form>

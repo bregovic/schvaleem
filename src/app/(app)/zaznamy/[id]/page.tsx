@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getDict } from "@/lib/i18n";
 import { resolveWorkflowDisplay } from "@/lib/config";
 import { runRegistryCheck } from "@/lib/registries";
+import { formatAmount } from "../types";
 import { StatusBadge } from "../../StatusBadge";
 import { DecideForm } from "./DecideForm";
 import { EscClose } from "./EscClose";
@@ -100,7 +101,7 @@ export default async function WorkitemDetail({
           <>
             {" · "}
             <span className="font-semibold text-fg">
-              {display.amount}
+              {formatAmount(display.amount)}
               {display.currency ? ` ${display.currency}` : ""}
             </span>
           </>

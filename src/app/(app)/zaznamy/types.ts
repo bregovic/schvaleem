@@ -26,7 +26,19 @@ export type ApprovalItem = {
   approveBlocked: boolean;
 };
 
+// Účetní formát: oddělené tisíce + 2 desetinná místa (cs-CZ). Nečíselné nechá být.
+export function formatAmount(amount: string | null): string | null {
+  if (!amount) return null;
+  const n = Number(String(amount).replace(/\s/g, "").replace(",", "."));
+  if (!isFinite(n)) return amount;
+  return new Intl.NumberFormat("cs-CZ", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(n);
+}
+
 export function amountLabel(it: { amount: string | null; currency: string | null }) {
-  if (!it.amount) return null;
-  return `${it.amount}${it.currency ? " " + it.currency : ""}`;
+  const a = formatAmount(it.amount);
+  if (!a) return null;
+  return `${a}${it.currency ? " " + it.currency : ""}`;
 }

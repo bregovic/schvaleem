@@ -24,7 +24,12 @@ export async function loginAction(
   const id = identifier.trim();
   // Přihlášení přes email NEBO ERP userId.
   const user = await prisma.user.findFirst({
-    where: { OR: [{ email: id.toLowerCase() }, { erpUserId: id }] },
+    where: {
+      OR: [
+        { email: id.toLowerCase() },
+        { erpUserId: { equals: id, mode: "insensitive" } },
+      ],
+    },
   });
 
   if (!user || !user.active || !(await verifyPassword(password, user.passwordHash))) {

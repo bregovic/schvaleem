@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getDict } from "@/lib/i18n";
 import { PasswordForm } from "./PasswordForm";
 import { LanguageForm } from "./LanguageForm";
+import { InstallApp } from "./InstallApp";
 
 export default async function UcetPage() {
   const user = await getCurrentUser();
@@ -35,6 +36,11 @@ export default async function UcetPage() {
         <section className="rounded-lg bg-surface p-5 ring-1 ring-line">
           <h2 className="mb-4 text-sm font-semibold text-muted">{t.account.language}</h2>
           <LanguageForm t={t} current={user.locale} />
+        </section>
+
+        <section className="rounded-lg bg-surface p-5 ring-1 ring-line">
+          <h2 className="mb-4 text-sm font-semibold text-muted">{t.account.appTitle}</h2>
+          <InstallApp t={t} />
         </section>
       </div>
 

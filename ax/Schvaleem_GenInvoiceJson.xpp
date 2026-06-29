@@ -89,7 +89,7 @@ static void Schvaleem_GenInvoiceJson(Args _args)
     {
         if (!_d)
             return 'null';
-        return q(date2str(_d, 321,
+        return q(date2str(_d, 123,
                           DateDay::Digits2, DateSeparator::Dot,
                           DateMonth::Digits2, DateSeparator::Dot,
                           DateYear::Digits4));

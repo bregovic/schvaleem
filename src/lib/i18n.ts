@@ -84,7 +84,7 @@ const cs = {
     demoNote: "Ukázkové PDF (testovací režim)",
     registries: "Veřejné registry",
   },
-  decide: { comment: "Komentář…", approve: "✓ Schválit", reject: "✕ Zamítnout" },
+  decide: { comment: "Komentář…", approve: "✓ Schválit", reject: "✕ Zamítnout", defer: "↓ Odložit" },
   status: {
     PENDING: "Čeká",
     APPROVED: "Schváleno",
@@ -112,6 +112,10 @@ const cs = {
     configuration: "Konfigurace dokumentů",
     organizations: "Organizace a firmy",
     users: "Uživatelé a API klíče",
+    appTitle: "Aplikace",
+    installApp: "Nainstalovat na plochu (Android)",
+    appInstalled: "Aplikace je nainstalovaná.",
+    installHint: "Na Androidu v Chrome: menu (⋮) → Přidat na plochu / Nainstalovat aplikaci.",
   },
   admin: {
     // Správa
@@ -297,7 +301,7 @@ const en: typeof cs = {
     demoNote: "Sample PDF (test mode)",
     registries: "Public registries",
   },
-  decide: { comment: "Comment…", approve: "✓ Approve", reject: "✕ Reject" },
+  decide: { comment: "Comment…", approve: "✓ Approve", reject: "✕ Reject", defer: "↓ Defer" },
   status: {
     PENDING: "Pending",
     APPROVED: "Approved",
@@ -325,6 +329,10 @@ const en: typeof cs = {
     configuration: "Document configuration",
     organizations: "Organizations & companies",
     users: "Users & API keys",
+    appTitle: "App",
+    installApp: "Install to home screen (Android)",
+    appInstalled: "App is installed.",
+    installHint: "On Android Chrome: menu (⋮) → Add to Home screen / Install app.",
   },
   admin: {
     // Administration
