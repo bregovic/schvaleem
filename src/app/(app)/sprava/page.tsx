@@ -137,8 +137,8 @@ export default async function SpravaPage({
             <li key={u.id} className="px-4 py-3">
               <form action={updateUser} className="flex flex-wrap items-center gap-2">
                 <input type="hidden" name="id" value={u.id} />
-                <span className="w-48 truncate text-muted" title={u.email}>
-                  {u.email}
+                <span className="w-48 truncate text-muted" title={u.email ?? u.erpUserId ?? ""}>
+                  {u.email ?? u.erpUserId ?? "—"}
                 </span>
                 <input
                   name="name"
@@ -178,7 +178,7 @@ export default async function SpravaPage({
         </ul>
         <form action={createUser} className="flex flex-wrap gap-2 border-t border-line bg-surface-2 px-4 py-3">
           <input name="name" placeholder={t.admin.namePlaceholder} className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
-          <input name="email" type="email" required placeholder={t.admin.email} className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
+          <input name="email" type="email" placeholder={t.admin.email} className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
           <input name="erpUserId" placeholder={t.admin.erpUserId} className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
           <input name="password" type="text" required placeholder={t.admin.passwordMin} className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
           <select name="role" className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent">

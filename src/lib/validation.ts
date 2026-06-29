@@ -52,6 +52,6 @@ export const createDocumentSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().email("Neplatný email."),
+  identifier: z.string().min(1, "Zadej email nebo ERP ID."),
   password: z.string().min(1, "Zadej heslo."),
 });

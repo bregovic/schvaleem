@@ -11,6 +11,7 @@ const cs = {
   nav: { records: "Záznamy", settings: "Nastavení", logout: "Odhlásit" },
   login: {
     email: "Email",
+    identifier: "Email nebo ERP ID",
     password: "Heslo",
     signIn: "Přihlásit se",
     signingIn: "Přihlašuji…",
@@ -223,6 +224,7 @@ const en: typeof cs = {
   nav: { records: "Records", settings: "Settings", logout: "Sign out" },
   login: {
     email: "Email",
+    identifier: "Email or ERP ID",
     password: "Password",
     signIn: "Sign in",
     signingIn: "Signing in…",

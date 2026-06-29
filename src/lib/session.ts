@@ -9,7 +9,7 @@ const SESSION_DAYS = 30;
 
 export type SessionUser = {
   id: string;
-  email: string;
+  email: string | null;
   name: string | null;
   role: Role;
   erpUserId: string | null;

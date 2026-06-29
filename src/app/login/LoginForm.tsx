@@ -12,12 +12,12 @@ export function LoginForm({ t }: { t: Dict }) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       <label className="flex flex-col gap-1 text-sm font-medium text-fg">
-        {t.login.email}
+        {t.login.identifier}
         <input
-          type="email"
-          name="email"
+          type="text"
+          name="identifier"
           required
-          autoComplete="email"
+          autoComplete="username"
           className="rounded-md border border-line bg-surface-2 px-3 py-2 text-base text-fg outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
         />
       </label>

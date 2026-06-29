@@ -21,7 +21,7 @@ export default async function UcetPage() {
     <div className="mx-auto max-w-2xl">
       <h1 className="mb-1 text-2xl font-semibold text-fg">{t.account.title}</h1>
       <p className="mb-6 text-sm text-muted">
-        {user.name ?? user.email} ·{" "}
+        {user.name ?? user.email ?? user.erpUserId} ·{" "}
         {user.role === "ADMIN" ? t.account.roleAdmin : t.account.roleApprover}
         {user.erpUserId ? ` · ${t.account.erpUserId}: ${user.erpUserId}` : ""}
       </p>

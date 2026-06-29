@@ -13,20 +13,22 @@ export async function loginAction(
   formData: FormData,
 ): Promise<LoginState> {
   const parsed = loginSchema.safeParse({
-    email: formData.get("email"),
+    identifier: formData.get("identifier"),
     password: formData.get("password"),
   });
   if (!parsed.success) {
-    return { error: "Vyplň email i heslo." };
+    return { error: "Vyplň přihlašovací údaj i heslo." };
   }
 
-  const { email, password } = parsed.data;
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
+  const { identifier, password } = parsed.data;
+  const id = identifier.trim();
+  // Přihlášení přes email NEBO ERP userId.
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ email: id.toLowerCase() }, { erpUserId: id }] },
   });
 
   if (!user || !user.active || !(await verifyPassword(password, user.passwordHash))) {
-    return { error: "Nesprávný email nebo heslo." };
+    return { error: "Nesprávné přihlašovací údaje." };
   }
 
   await createSession(user.id);

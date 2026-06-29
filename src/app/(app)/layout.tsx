@@ -33,7 +33,7 @@ export default async function AppLayout({
           </nav>
           <div className="flex items-center gap-3 text-sm">
             <Link href="/ucet" className="text-muted hover:text-fg">
-              {user.name ?? user.email}
+              {user.name ?? user.email ?? user.erpUserId ?? "—"}
             </Link>
             <form action={logoutAction}>
               <button

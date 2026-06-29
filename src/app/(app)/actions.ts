@@ -190,14 +190,14 @@ export async function revokeApiKey(formData: FormData): Promise<void> {
 
 export async function createUser(formData: FormData): Promise<void> {
   await requireAdmin();
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase() || null;
   const name = String(formData.get("name") ?? "").trim() || null;
   const erpUserId = String(formData.get("erpUserId") ?? "").trim() || null;
   const password = String(formData.get("password") ?? "");
   const role = formData.get("role") === "ADMIN" ? "ADMIN" : "APPROVER";
 
-  if (!email || password.length < 6) {
-    throw new Error("Email a heslo (min. 6 znaků) jsou povinné.");
+  if ((!email && !erpUserId) || password.length < 6) {
+    throw new Error("Zadej email nebo ERP ID a heslo (min. 6 znaků).");
   }
 
   await prisma.user.create({
