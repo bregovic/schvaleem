@@ -40,12 +40,17 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     // ---- JSON helpery ----------------------------------------------------------
     str jsonEsc(str _s)
     {
-        str s = _s;
-        s = strReplace(s, @'\', @'\\');
-        s = strReplace(s, '"', '\"');
-        s = strReplace(s, '\n', ' ');
-        s = strReplace(s, '\r', '');
-        s = strReplace(s, '\t', ' ');
+        // num2char místo '\n' apod. – jednoznačné řídicí znaky (X++ escape v
+        // strReplace nemusí být spolehlivé). Reálný CR/LF/TAB v JSON řetězci
+        // by jinak udělal nevalidní JSON.
+        str bs = num2char(92);   // \
+        str dq = num2char(34);   // "
+        str s  = _s;
+        s = strReplace(s, bs, bs + bs);        // \  -> \\
+        s = strReplace(s, dq, bs + dq);        // "  -> \"
+        s = strReplace(s, num2char(13), ' ');  // CR
+        s = strReplace(s, num2char(10), ' ');  // LF
+        s = strReplace(s, num2char(9),  ' ');  // TAB
         return s;
     }
     str q(str _s) { return '"' + jsonEsc(_s) + '"'; }

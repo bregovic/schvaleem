@@ -205,7 +205,17 @@ export async function importWorkitems(
   try {
     data = JSON.parse(raw);
   } catch {
-    return { error: "Neplatný JSON." };
+    // Záchrana: odstraň reálné řídicí znaky (CR/LF/TAB uvnitř řetězců z ERP),
+    // které dělají JSON nevalidním. Mimo řetězce jsou to jen mezery, takže
+    // strukturu to neporuší.
+    try {
+      const sanitized = Array.from(raw)
+        .map((ch) => (ch.charCodeAt(0) < 32 ? " " : ch))
+        .join("");
+      data = JSON.parse(sanitized);
+    } catch {
+      return { error: "Neplatný JSON." };
+    }
   }
 
   // Nahraná PDF -> mapa název(lowercase) => Base64
