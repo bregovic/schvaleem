@@ -139,7 +139,15 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
             if (!wfStatus.RecId)
                 continue;
 
-            tid         = wfStatus.ContextTableId;
+            tid = wfStatus.ContextTableId;
+
+            // Jen typy dokladů, které umíme zpracovat – jinak by se exportovaly
+            // stovky nesouvisejících workflow workitemů (PO, deníky…) bez údajů.
+            if (tid != tableNum(VendInvoiceInfoTable)
+             && tid != tableNum(CzVendAdvanceInvoiceTable)
+             && tid != tableNum(TrvRequisitionTable))
+                continue;
+
             valuesJson  = '{' + #NL + #I4 + '}';   // výchozí prázdné values
             docTypeName = tableId2name(tid);
             docLabel    = wfStatus.Document ? wfStatus.Document : docTypeName;
