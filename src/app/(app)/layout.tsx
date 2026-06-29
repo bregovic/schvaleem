@@ -17,12 +17,12 @@ export default async function AppLayout({
           <nav className="flex items-center gap-5 text-sm font-medium text-muted">
             <Link href="/zaznamy" className="flex items-center">
               <Image
-                src="/logo.png"
+                src="/icon-light.png"
                 alt="schvaleem"
-                width={150}
-                height={44}
+                width={32}
+                height={32}
                 priority
-                className="h-7 w-auto"
+                className="h-8 w-8"
               />
             </Link>
             <Link href="/zaznamy" className="hover:text-fg">

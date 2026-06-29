@@ -11,14 +11,16 @@ export default async function LoginPage() {
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm rounded-2xl bg-surface p-8 shadow-sm ring-1 ring-line">
         <div className="mb-8 flex justify-center">
-          <Image
-            src="/logo.png"
-            alt="schvaleem"
-            width={220}
-            height={64}
-            priority
-            className="h-auto w-56"
-          />
+          <div className="rounded-xl bg-white px-5 py-4">
+            <Image
+              src="/logo.png"
+              alt="schvaleem"
+              width={220}
+              height={64}
+              priority
+              className="h-auto w-48"
+            />
+          </div>
         </div>
         <LoginForm />
       </div>

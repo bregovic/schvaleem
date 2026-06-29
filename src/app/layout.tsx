@@ -4,13 +4,13 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "schvaleem",
   description: "Schvalovací systém + API pro AX 2012",
-  icons: { icon: "/logo.png" },
+  icons: { icon: "/icon.png" },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#1e2d40",
+  themeColor: "#0b111a",
 };
 
 export default function RootLayout({

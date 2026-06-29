@@ -22,8 +22,7 @@ function agg(items: ApprovalItem[], keyFn: (i: ApprovalItem) => [string, string]
 
 export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
   const router = useRouter();
-  const [mode, setMode] = useState<"swipe" | "list">("list");
-  const [isMobile, setIsMobile] = useState(false);
+  const [mode, setModeState] = useState<"swipe" | "list">("list");
   const [fType, setFType] = useState<string | null>(null);
   const [fCompany, setFCompany] = useState<string | null>(null);
   const [queue, setQueue] = useState<ApprovalItem[]>(items);
@@ -32,12 +31,26 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
-  // Swipe nabízíme jen na mobilu/dotyku; na PC je vždy seznam.
+  // Volba režimu: zapamatovaná (localStorage) > výchozí podle zařízení.
   useEffect(() => {
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem("schvaleem.viewMode");
+    } catch {}
+    if (saved === "swipe" || saved === "list") {
+      setModeState(saved);
+      return;
+    }
     const mq = window.matchMedia("(max-width: 767px), (pointer: coarse)");
-    setIsMobile(mq.matches);
-    setMode(mq.matches ? "swipe" : "list");
+    setModeState(mq.matches ? "swipe" : "list");
   }, []);
+
+  function setMode(m: "swipe" | "list") {
+    setModeState(m);
+    try {
+      localStorage.setItem("schvaleem.viewMode", m);
+    } catch {}
+  }
 
   const filtered = useMemo(
     () =>
@@ -84,13 +97,6 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
     setQueue((q) => q.filter((i) => i.id !== id));
     run([id], action, cmt);
   }
-  function onMoveToEnd(id: string) {
-    setQueue((q) => {
-      const i = q.find((x) => x.id === id);
-      if (!i) return q;
-      return [...q.filter((x) => x.id !== id), i];
-    });
-  }
 
   // list handlery
   function toggle(id: string) {
@@ -107,8 +113,8 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
 
   if (items.length === 0) {
     return (
-      <p className="rounded-2xl bg-surface p-10 text-center text-muted ring-1 ring-line">
-        Nemáš nic ke schválení. 🎉
+      <p className="rounded-2xl border border-line bg-surface p-12 text-center text-sm text-muted">
+        Nic ke schválení.
       </p>
     );
   }
@@ -123,22 +129,24 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
         <h1 className="text-xl font-semibold tracking-tight text-fg">
           Ke schválení <span className="text-muted">· {filtered.length}</span>
         </h1>
-        {isMobile && (
-          <div className="flex items-center gap-1 rounded-full bg-surface-2 p-1 ring-1 ring-line">
-            <button
-              onClick={() => setMode("list")}
-              className={`rounded-full px-3 py-1 text-sm font-medium transition ${mode === "list" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
-            >
-              Seznam
-            </button>
-            <button
-              onClick={() => setMode("swipe")}
-              className={`rounded-full px-3 py-1 text-sm font-medium transition ${mode === "swipe" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
-            >
-              Swipe
-            </button>
-          </div>
-        )}
+        <div className="flex items-center gap-1 rounded-full bg-surface-2 p-1 ring-1 ring-line">
+          <button
+            onClick={() => setMode("list")}
+            title="Seznam"
+            aria-label="Seznam"
+            className={`rounded-full p-2 transition ${mode === "list" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
+          >
+            <IconList />
+          </button>
+          <button
+            onClick={() => setMode("swipe")}
+            title="Karty (swipe)"
+            aria-label="Karty"
+            className={`rounded-full p-2 transition ${mode === "swipe" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
+          >
+            <IconCards />
+          </button>
+        </div>
       </div>
 
       {/* Přehled / agregace */}
@@ -171,7 +179,7 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
       {msg && <p className="mb-3 rounded-md bg-red-500/15 px-3 py-2 text-sm text-red-300">{msg}</p>}
 
       {mode === "swipe" ? (
-        <SwipeDeck queue={queue} onDecision={onDecision} onMoveToEnd={onMoveToEnd} pending={busy} />
+        <SwipeDeck queue={queue} onDecision={onDecision} pending={busy} />
       ) : (
         <div>
           {/* Hromadný výběr – ovládání */}
@@ -285,6 +293,28 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
         </div>
       )}
     </div>
+  );
+}
+
+function IconList() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+      <line x1="8" y1="6" x2="20" y2="6" />
+      <line x1="8" y1="12" x2="20" y2="12" />
+      <line x1="8" y1="18" x2="20" y2="18" />
+      <line x1="3.5" y1="6" x2="3.5" y2="6" />
+      <line x1="3.5" y1="12" x2="3.5" y2="12" />
+      <line x1="3.5" y1="18" x2="3.5" y2="18" />
+    </svg>
+  );
+}
+
+function IconCards() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="6" y="3" width="14" height="16" rx="2" opacity="0.45" />
+      <rect x="3" y="6" width="14" height="15" rx="2" />
+    </svg>
   );
 }
 

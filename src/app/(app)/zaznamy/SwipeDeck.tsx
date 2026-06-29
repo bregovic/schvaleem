@@ -23,12 +23,10 @@ function fmtDate(iso: string) {
 export function SwipeDeck({
   queue,
   onDecision,
-  onMoveToEnd,
   pending,
 }: {
   queue: ApprovalItem[];
   onDecision: (id: string, action: Action, comment: string) => void;
-  onMoveToEnd: (id: string) => void;
   pending: boolean;
 }) {
   const [comment, setComment] = useState("");
@@ -39,7 +37,6 @@ export function SwipeDeck({
   const okOpacity = useTransform(x, [30, 150], [0, 1]);
   const noOpacity = useTransform(x, [-150, -30], [1, 0]);
   const deferOpacity = useTransform(y, [40, 150], [0, 1]);
-  const endOpacity = useTransform(y, [-150, -40], [1, 0]);
 
   const item = queue[0];
   const next = queue[1];
@@ -65,13 +62,6 @@ export function SwipeDeck({
     reset();
   }
 
-  async function toEnd() {
-    if (!item) return;
-    await animate(y, -500, { duration: 0.22 });
-    onMoveToEnd(item.id);
-    reset();
-  }
-
   function handleDragEnd(
     _e: unknown,
     info: { offset: { x: number; y: number }; velocity: { x: number; y: number } },
@@ -80,7 +70,6 @@ export function SwipeDeck({
     if (offset.x > 120 || velocity.x > 700) fly("APPROVE");
     else if (offset.x < -120 || velocity.x < -700) fly("REJECT");
     else if (offset.y > 130) fly("DEFER");
-    else if (offset.y < -130) toEnd();
     else {
       animate(x, 0, { type: "spring", stiffness: 300, damping: 25 });
       animate(y, 0, { type: "spring", stiffness: 300, damping: 25 });
@@ -89,8 +78,8 @@ export function SwipeDeck({
 
   if (!item) {
     return (
-      <p className="rounded-2xl bg-surface p-10 text-center text-muted ring-1 ring-line">
-        Nic dalšího ke schválení. 🎉
+      <p className="rounded-2xl border border-line bg-surface p-12 text-center text-sm text-muted">
+        Nic ke schválení.
       </p>
     );
   }
@@ -127,9 +116,6 @@ export function SwipeDeck({
           </motion.div>
           <motion.div style={{ opacity: deferOpacity }} className="pointer-events-none absolute inset-x-0 bottom-4 text-center text-base font-bold text-amber-600">
             ↓ ODLOŽIT
-          </motion.div>
-          <motion.div style={{ opacity: endOpacity }} className="pointer-events-none absolute inset-x-0 top-4 text-center text-base font-bold text-muted">
-            ↑ NA KONEC
           </motion.div>
 
           <div className="flex items-start justify-between gap-2">
@@ -228,7 +214,7 @@ export function SwipeDeck({
       />
 
       {/* tlačítka pro všechny akce */}
-      <div className="mt-3 grid grid-cols-4 gap-2">
+      <div className="mt-3 grid grid-cols-3 gap-2">
         <button
           onClick={() => fly("REJECT")}
           disabled={pending}
@@ -242,13 +228,6 @@ export function SwipeDeck({
           className="rounded-xl bg-amber-500 py-3 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-50"
         >
           ↓ Odložit
-        </button>
-        <button
-          onClick={toEnd}
-          disabled={pending}
-          className="rounded-xl bg-surface-2 py-3 text-sm font-semibold text-muted hover:bg-line disabled:opacity-50"
-        >
-          ↑ Na konec
         </button>
         <button
           onClick={() => fly("APPROVE")}
