@@ -3,10 +3,11 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { decideWorkitems, type DecideState } from "../../actions";
+import type { Dict } from "@/lib/i18n";
 
 const initial: DecideState = {};
 
-export function DecideForm({ workitemId }: { workitemId: string }) {
+export function DecideForm({ workitemId, t }: { workitemId: string; t: Dict }) {
   const [state, formAction, pending] = useActionState(decideWorkitems, initial);
   const router = useRouter();
 
@@ -23,8 +24,8 @@ export function DecideForm({ workitemId }: { workitemId: string }) {
       <textarea
         name="comment"
         rows={2}
-        placeholder="Komentář…"
-        className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent"
+        placeholder={t.decide.comment}
+        className="rounded-md border border-line bg-surface-2 px-3 py-2 text-sm text-fg outline-none focus:border-accent"
       />
       <div className="flex gap-3">
         <button
@@ -34,7 +35,7 @@ export function DecideForm({ workitemId }: { workitemId: string }) {
           disabled={pending}
           className="rounded-md bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700 disabled:opacity-60"
         >
-          ✓ Schválit
+          {t.decide.approve}
         </button>
         <button
           type="submit"
@@ -43,7 +44,7 @@ export function DecideForm({ workitemId }: { workitemId: string }) {
           disabled={pending}
           className="rounded-md bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 disabled:opacity-60"
         >
-          ✕ Zamítnout
+          {t.decide.reject}
         </button>
       </div>
     </form>

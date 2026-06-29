@@ -79,6 +79,8 @@ const cs = {
     open: "Otevřít ↗",
     decision: "Rozhodnutí",
     comment: "Komentář",
+    instructions: "Instrukce",
+    demoNote: "Ukázkové PDF (testovací režim)",
   },
   decide: { comment: "Komentář…", approve: "✓ Schválit", reject: "✕ Zamítnout" },
   status: {
@@ -183,6 +185,8 @@ const en: typeof cs = {
     open: "Open ↗",
     decision: "Decision",
     comment: "Comment",
+    instructions: "Instructions",
+    demoNote: "Sample PDF (test mode)",
   },
   decide: { comment: "Comment…", approve: "✓ Approve", reject: "✕ Reject" },
   status: {
