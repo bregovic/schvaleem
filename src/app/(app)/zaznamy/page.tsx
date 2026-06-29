@@ -56,8 +56,9 @@ export default async function ZaznamyPage() {
           typeName.get(`${w.workflow.organizationId}:${w.workflow.documentType}`)) ||
         w.workflow.documentType;
 
-      // Titulek: konfigurované TITLE pole > Subject z ERP > popis dokladu > výchozí
-      const title = d.hasTitle ? d.title : w.subject || w.workflow.label || d.title;
+      // Titulek: konfigurované TITLE pole > popis dokladu (label) > výchozí.
+      // Subject (instrukce "Proveďte schválení…") se jako titulek nepoužívá.
+      const title = d.hasTitle ? d.title : w.workflow.label || d.title;
 
       const dueMs = w.dueAt ? w.dueAt.getTime() : null;
       const overdue = dueMs !== null && dueMs < now;
