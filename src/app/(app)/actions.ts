@@ -79,11 +79,21 @@ export async function decideWorkitems(
   const action = String(formData.get("action") ?? "");
   const comment = String(formData.get("comment") ?? "").trim();
 
-  if (action !== "APPROVE" && action !== "REJECT") {
+  if (action !== "APPROVE" && action !== "REJECT" && action !== "DEFER") {
     return { error: "Neplatná akce." };
   }
   if (ids.length === 0) {
     return { error: "Nevybral jsi žádný workitem." };
+  }
+
+  // Odložit na později – jen označí, nerozhoduje.
+  if (action === "DEFER") {
+    const res = await prisma.workitem.updateMany({
+      where: { id: { in: ids }, assigneeErpUserId: user.erpUserId, status: "PENDING" },
+      data: { deferredAt: new Date() },
+    });
+    revalidatePath("/zaznamy");
+    return { ok: true, count: res.count };
   }
 
   const items = await prisma.workitem.findMany({

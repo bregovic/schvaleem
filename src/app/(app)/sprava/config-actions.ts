@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import type { FieldRole, ActionKind, ThresholdAction } from "@/generated/prisma/client";
+import type { FieldRole, ActionKind, ThresholdAction, CheckType } from "@/generated/prisma/client";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
@@ -117,9 +117,10 @@ export async function addField(formData: FormData): Promise<void> {
   const jsonKey = String(formData.get("jsonKey") ?? "").trim();
   const label = String(formData.get("label") ?? "").trim() || jsonKey;
   const role = String(formData.get("role") ?? "DETAIL") as FieldRole;
+  const preview = formData.get("preview") === "on";
   const order = Number(formData.get("order") ?? 0) || 0;
   if (!configId || !jsonKey) return;
-  await prisma.fieldConfig.create({ data: { configId, jsonKey, label, role, order } });
+  await prisma.fieldConfig.create({ data: { configId, jsonKey, label, role, preview, order } });
   revalidatePath("/sprava/konfigurace");
 }
 
@@ -145,5 +146,25 @@ export async function deleteAction(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   await prisma.actionConfig.delete({ where: { id } });
+  revalidatePath("/sprava/konfigurace");
+}
+
+// --- Automatické kontroly ---
+
+export async function addCheck(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const configId = String(formData.get("configId") ?? "");
+  const type = String(formData.get("type") ?? "") as CheckType;
+  const jsonKey = String(formData.get("jsonKey") ?? "").trim();
+  const label = String(formData.get("label") ?? "").trim() || jsonKey;
+  if (!configId || !type || !jsonKey) return;
+  await prisma.checkConfig.create({ data: { configId, type, jsonKey, label } });
+  revalidatePath("/sprava/konfigurace");
+}
+
+export async function deleteCheck(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  await prisma.checkConfig.delete({ where: { id } });
   revalidatePath("/sprava/konfigurace");
 }

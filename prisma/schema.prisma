@@ -109,8 +109,28 @@ model DocumentTypeConfig {
 
   fields  FieldConfig[]
   actions ActionConfig[]
+  checks  CheckConfig[]
 
   @@unique([organizationId, documentType])
+}
+
+enum CheckType {
+  BANK_ACCOUNT_CZ // modulo 11 českého bankovního účtu
+  ICO_CZ // kontrolní číslice IČO
+  IBAN // kontrola IBAN (mod 97)
+  DIC_CZ // formát DIČ (CZxxxxxxxx)
+}
+
+model CheckConfig {
+  id       String             @id @default(cuid())
+  configId String
+  config   DocumentTypeConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  type     CheckType
+  jsonKey  String // pole s hodnotou ke kontrole
+  label    String
+  order    Int                @default(0)
+
+  @@index([configId])
 }
 
 model FieldConfig {
@@ -120,6 +140,7 @@ model FieldConfig {
   jsonKey  String // klíč v příchozím JSON (values)
   label    String // popisek pro uživatele
   role     FieldRole          @default(DETAIL)
+  preview  Boolean            @default(false) // zobrazit v náhledu hlavičky karty
   order    Int                @default(0)
 
   @@index([configId])
@@ -182,6 +203,7 @@ model Workitem {
   decidedBy       User?     @relation("WorkitemDecidedBy", fields: [decidedByUserId], references: [id], onDelete: SetNull)
   decidedAt       DateTime?
   deliveredToErpAt DateTime? // kdy si ERP výsledek vyzvedl/potvrdil
+  deferredAt       DateTime? // „odloženo na později" – řadí se na konec
 
   createdAt DateTime @default(now())
 

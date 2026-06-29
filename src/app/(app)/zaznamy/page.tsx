@@ -1,7 +1,8 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { resolveWorkflowDisplay } from "@/lib/config";
-import { ApprovalList, type ApprovalItem } from "./ApprovalList";
+import { resolveWorkflowDisplay, parseAmount } from "@/lib/config";
+import { ApprovalHub } from "./ApprovalHub";
+import type { ApprovalItem } from "./types";
 
 export default async function ZaznamyPage() {
   const user = await getCurrentUser();
@@ -18,15 +19,34 @@ export default async function ZaznamyPage() {
     );
   }
 
-  const workitems = await prisma.workitem.findMany({
-    where: { assigneeErpUserId: user.erpUserId, status: "PENDING" },
-    include: { workflow: { include: { organization: true } } },
-    orderBy: { createdAt: "asc" }, // nejstarší první
-  });
+  const [workitems, dataAreas, configs] = await Promise.all([
+    prisma.workitem.findMany({
+      where: { assigneeErpUserId: user.erpUserId, status: "PENDING" },
+      include: { workflow: { include: { organization: true } } },
+      orderBy: { createdAt: "asc" },
+    }),
+    prisma.dataArea.findMany(),
+    prisma.documentTypeConfig.findMany({ select: { organizationId: true, documentType: true, name: true } }),
+  ]);
+
+  const areaName = new Map(dataAreas.map((a) => [a.code, a.name]));
+  const typeName = new Map(
+    configs.map((c) => [`${c.organizationId}:${c.documentType}`, c.name]),
+  );
 
   const items: ApprovalItem[] = await Promise.all(
     workitems.map(async (w) => {
       const d = await resolveWorkflowDisplay(w.workflow);
+      const amount = parseAmount(d.amount);
+      const approveBlocked =
+        d.rules.thresholdAction === "BLOCK" &&
+        d.rules.amountThreshold !== null &&
+        amount !== null &&
+        amount > d.rules.amountThreshold;
+      const tn =
+        (w.workflow.organizationId &&
+          typeName.get(`${w.workflow.organizationId}:${w.workflow.documentType}`)) ||
+        w.workflow.documentType;
       return {
         id: w.id,
         org: w.workflow.organization?.name ?? "Nezařazené",
@@ -34,20 +54,35 @@ export default async function ZaznamyPage() {
         amount: d.amount,
         currency: d.currency,
         documentType: w.workflow.documentType,
+        documentTypeName: tn,
         dataArea: w.dataAreaCode,
+        dataAreaName: areaName.get(w.dataAreaCode) ?? null,
         createdAt: w.createdAt.toISOString(),
+        deferred: !!w.deferredAt,
+        previewFields: d.previewFields.map((f) => ({ label: f.label, value: f.value })),
+        checks: d.checks,
+        suggestedAction: d.suggestedAction,
+        priority: d.priority,
+        requireCommentOnReject: d.rules.requireCommentOnReject,
+        approveBlocked,
       };
     }),
   );
 
+  // Nejstarší první; odložené na konec.
+  items.sort((a, b) => {
+    if (a.deferred !== b.deferred) return a.deferred ? 1 : -1;
+    return a.createdAt.localeCompare(b.createdAt);
+  });
+
   return (
     <div>
       <h1 className="mb-1 text-2xl font-semibold text-brand">Ke schválení</h1>
-      <p className="mb-6 text-sm text-slate-500">
-        Tvé workitemy, nejstarší první. Vyber víc položek a rozhodni hromadně, nebo přepni
-        na režim swipe.
+      <p className="mb-5 text-sm text-slate-500">
+        Swipe (vpravo schválit, vlevo zamítnout, dolů odložit, nahoru na konec), nebo seznam s
+        hromadným výběrem.
       </p>
-      <ApprovalList items={items} />
+      <ApprovalHub items={items} />
     </div>
   );
 }

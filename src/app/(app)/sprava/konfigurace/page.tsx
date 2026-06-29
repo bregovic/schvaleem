@@ -9,11 +9,14 @@ import {
   deleteField,
   addAction,
   deleteAction,
+  addCheck,
+  deleteCheck,
 } from "../config-actions";
 
 const FIELD_ROLES = ["TITLE", "AMOUNT", "CURRENCY", "DETAIL", "HIDDEN"];
 const ACTION_KINDS = ["APPROVE", "REJECT", "OTHER"];
 const THRESHOLD_ACTIONS = ["NONE", "REQUIRE_COMMENT", "BLOCK"];
+const CHECK_TYPES = ["BANK_ACCOUNT_CZ", "ICO_CZ", "IBAN", "DIC_CZ"];
 
 const inp =
   "rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-brand-accent";
@@ -31,6 +34,7 @@ export default async function KonfiguracePage() {
         include: {
           fields: { orderBy: { order: "asc" } },
           actions: { orderBy: { order: "asc" } },
+          checks: { orderBy: { order: "asc" } },
         },
       },
     },
@@ -149,7 +153,14 @@ export default async function KonfiguracePage() {
                     <tr key={f.id}>
                       <td className="py-1.5 font-mono text-slate-600">{f.jsonKey}</td>
                       <td className="py-1.5 text-brand">{f.label}</td>
-                      <td className="py-1.5 text-slate-500">{f.role}</td>
+                      <td className="py-1.5 text-slate-500">
+                        {f.role}
+                        {f.preview && (
+                          <span className="ml-1 rounded bg-brand-accent/10 px-1 text-xs text-brand-accent">
+                            náhled
+                          </span>
+                        )}
+                      </td>
                       <td className="py-1.5 text-slate-400">#{f.order}</td>
                       <td className="py-1.5 text-right">
                         <form action={deleteField}>
@@ -179,6 +190,9 @@ export default async function KonfiguracePage() {
                     </option>
                   ))}
                 </select>
+                <label className="flex items-center gap-1 text-xs text-slate-600">
+                  <input type="checkbox" name="preview" /> náhled
+                </label>
                 <input name="order" type="number" defaultValue={0} className={`${inp} w-16`} />
                 <button className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand/90">
                   + pole
@@ -218,6 +232,42 @@ export default async function KonfiguracePage() {
                 </select>
                 <button className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand/90">
                   + metoda
+                </button>
+              </form>
+            </div>
+
+            {/* Automatické kontroly */}
+            <div className="border-t border-slate-100 px-4 py-3">
+              <p className="mb-2 text-xs font-semibold uppercase text-slate-400">
+                Automatické kontroly (modulo účtu, IČO, IBAN, DIČ)
+              </p>
+              <div className="mb-2 flex flex-wrap gap-1.5">
+                {c.checks.map((ch) => (
+                  <span key={ch.id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                    {ch.label} ({ch.type} ← {ch.jsonKey})
+                    <form action={deleteCheck} className="inline">
+                      <input type="hidden" name="id" value={ch.id} />
+                      <button className="text-slate-400 hover:text-red-600">×</button>
+                    </form>
+                  </span>
+                ))}
+                {c.checks.length === 0 && (
+                  <span className="text-xs text-slate-400">Žádné automatické kontroly.</span>
+                )}
+              </div>
+              <form action={addCheck} className="flex flex-wrap items-center gap-2">
+                <input type="hidden" name="configId" value={c.id} />
+                <select name="type" defaultValue="BANK_ACCOUNT_CZ" className={inp}>
+                  {CHECK_TYPES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+                <input name="jsonKey" required placeholder="JSON klíč (pole s hodnotou)" className={inp} />
+                <input name="label" placeholder="Popisek" className={inp} />
+                <button className="rounded-md bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand/90">
+                  + kontrola
                 </button>
               </form>
             </div>

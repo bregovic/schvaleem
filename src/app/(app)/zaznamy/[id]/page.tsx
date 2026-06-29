@@ -65,6 +65,31 @@ export default async function WorkitemDetail({
         )}
       </p>
 
+      {display.checks.length > 0 && (
+        <section className="mb-6 rounded-lg bg-white p-4 ring-1 ring-slate-200">
+          <h2 className="mb-2 text-sm font-semibold text-slate-600">Automatické kontroly</h2>
+          <ul className="space-y-1 text-sm">
+            {display.checks.map((c) => (
+              <li key={c.label} className="flex items-center gap-2">
+                <span
+                  className={
+                    c.ok === true
+                      ? "text-green-600"
+                      : c.ok === false
+                        ? "text-red-600"
+                        : "text-slate-400"
+                  }
+                >
+                  {c.ok === true ? "✓" : c.ok === false ? "✕" : "•"}
+                </span>
+                <span className="font-medium text-brand">{c.label}:</span>
+                <span className="text-slate-500">{c.message}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section className="mb-6 overflow-hidden rounded-lg bg-white ring-1 ring-slate-200">
         <h2 className="border-b border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-600">
           Data dokumentu
