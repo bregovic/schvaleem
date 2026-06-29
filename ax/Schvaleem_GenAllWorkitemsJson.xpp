@@ -124,10 +124,11 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         str   obj;
         str   docLabel;
         str   docTypeName;
-        Name  empName;
-        str   trvCur;
-        str   amtStr;
-        int   tid;
+        Name      empName;
+        str       amtStr;
+        int       tid;
+        RefRecId  recId;
+        DataAreaId company;
 
         // Driver = workitemy. wfStatus se dohledá JEDEN (firstOnly) – pozor,
         // WorkflowTrackingStatusTable je HISTORIE (mnoho řádků na instanci),
@@ -138,35 +139,40 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
             if (onlyPending && wfWorkItem.Status != WorkflowWorkItemStatus::Pending)
                 continue;
 
+            // Metadata workflow instance (originator, stav, datum) – z trackingu.
             select firstOnly wfStatus
                 order by wfStatus.createdDateTime desc
                 where wfStatus.CorrelationId == wfWorkItem.CorrelationId
-                   && wfStatus.ContextRecId  != 0;       // řádek s kontextem dokladu
-            if (!wfStatus.RecId)
+                   && wfStatus.ContextRecId  != 0;
+
+            // Dokument bereme PŘÍMO z workitemu (RefTableId/RefRecId/CompanyId).
+            // Tracking ContextRecId může mířit na "uloženou" image dokladu, kterou
+            // v dané firmě nenajdeme; workitem ukazuje na aktivní doklad.
+            tid     = wfWorkItem.RefTableId ? wfWorkItem.RefTableId : wfStatus.ContextTableId;
+            recId   = wfWorkItem.RefRecId   ? wfWorkItem.RefRecId   : wfStatus.ContextRecId;
+            company = wfWorkItem.CompanyId  ? wfWorkItem.CompanyId  : wfStatus.ContextCompanyId;
+            if (!recId || !company)
                 continue;
 
-            tid = wfStatus.ContextTableId;
-
-            // Jen typy dokladů, které umíme zpracovat – jinak by se exportovaly
-            // stovky nesouvisejících workflow workitemů (PO, deníky…) bez údajů.
+            // Jen typy dokladů, které umíme zpracovat.
             if (tid != tableNum(VendInvoiceInfoTable)
              && tid != tableNum(CzVendAdvanceInvoiceTable)
              && tid != tableNum(TrvRequisitionTable))
                 continue;
 
-            valuesJson  = '{' + #NL + #I4 + '}';   // výchozí prázdné values
+            valuesJson  = '{' + #NL + #I4 + '}';
             docTypeName = tableId2name(tid);
             docLabel    = wfStatus.Document ? wfStatus.Document : docTypeName;
 
             // Doklad je v per-company tabulce → načti ho v JEHO společnosti.
-            changeCompany(wfStatus.ContextCompanyId)
+            changeCompany(company)
             {
             try
             {
                 // -------- Přijatá faktura --------
                 if (tid == tableNum(VendInvoiceInfoTable))
                 {
-                    select firstOnly vii where vii.RecId == wfStatus.ContextRecId;
+                    select firstOnly vii where vii.RecId == recId;
                     vt = VendTable::find(vii.InvoiceAccount);
                     select firstOnly vba
                         where vba.VendAccount == vt.AccountNum
@@ -204,7 +210,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                 // -------- Zálohová faktura --------
                 else if (tid == tableNum(CzVendAdvanceInvoiceTable))
                 {
-                    select firstOnly adv where adv.RecId == wfStatus.ContextRecId;
+                    select firstOnly adv where adv.RecId == recId;
                     vt = VendTable::find(adv.InvoiceAccount);
                     select firstOnly vba
                         where vba.VendAccount == vt.AccountNum
@@ -231,10 +237,8 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                 // -------- Cestovní žádanka --------
                 else if (tid == tableNum(TrvRequisitionTable))
                 {
-                    select firstOnly trv where trv.RecId == wfStatus.ContextRecId;
+                    select firstOnly trv where trv.RecId == recId;
                     empName = HcmWorker::worker2Name(trv.CreatingWorker);
-                    trvCur  = '';
-                    try { trvCur = Ledger::accountingCurrency(Ledger::current()); } catch { trvCur = ''; }
 
                     docTypeName = 'Cestovní žádanka';
                     docLabel    = strFmt("Cestovní žádanka %1 – %2", trv.RequisitionNumber, empName);
@@ -247,8 +251,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                       + fl(#I6, 'Destinace',      q(trv.DestinationCity)) + ',' + #NL
                       + fl(#I6, 'Cesta od',       datev(trv.StartDate)) + ',' + #NL
                       + fl(#I6, 'Cesta do',       datev(trv.EndDate)) + ',' + #NL
-                      + fl(#I6, 'Odhad nákladů',  numv(trv.totalEstimate())) + ',' + #NL
-                      + fl(#I6, 'Měna',           q(trvCur)) + #NL
+                      + fl(#I6, 'Odhad nákladů',  q(trv.totalEstimateSystemCurrencyWithCurrency())) + #NL
                       + #I4 + '}';
                 }
             }
@@ -261,11 +264,11 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
 
             obj =
                 #I2 + '{' + #NL
-              + fl(#I4, 'workflowId',       q(guid2str(wfStatus.RootCorrelationId))) + ',' + #NL
+              + fl(#I4, 'workflowId',       q(guid2str(wfWorkItem.RootCorrelationId))) + ',' + #NL
               + fl(#I4, 'workitemId',       q(int642str(wfWorkItem.RecId))) + ',' + #NL
-              + fl(#I4, 'dataArea',         q(wfStatus.ContextCompanyId)) + ',' + #NL
+              + fl(#I4, 'dataArea',         q(company)) + ',' + #NL
               + fl(#I4, 'documentType',     q(int2str(tid))) + ',' + #NL
-              + fl(#I4, 'recordId',         q(int642str(wfStatus.ContextRecId))) + ',' + #NL
+              + fl(#I4, 'recordId',         q(int642str(recId))) + ',' + #NL
               + fl(#I4, 'assigneeUserId',   q(wfWorkItem.UserId)) + ',' + #NL
               + fl(#I4, 'documentTypeName', q(docTypeName)) + ',' + #NL
               + fl(#I4, 'documentLabel',    q(docLabel)) + ',' + #NL
