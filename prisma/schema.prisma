@@ -1,0 +1,232 @@
+// schvaleem – datový model
+// Generický workflow-approval hub. ERP (AX2012 i jiné) posílá aktivní workitemy,
+// lidé je odbavují, ERP si výsledek vyzvedne (GET) a data se pak mažou.
+// Tabulky žijí ve schématu "schvaleem" (sdílená Railway DB s projektem DMS).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ===========================================================================
+// Uživatelé a přihlášení (email + heslo, vlastní DB session)
+// ===========================================================================
+
+enum Role {
+  ADMIN
+  APPROVER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  role         Role     @default(APPROVER)
+  active       Boolean  @default(true)
+  erpUserId    String?  @unique // userId z ERP – podle něj vidí uživatel své workitemy
+  createdAt    DateTime @default(now())
+
+  sessions  Session[]
+  decisions Workitem[] @relation("WorkitemDecidedBy")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ===========================================================================
+// Konfigurace (trvalá): organizace, dataAreas, konfigurace typů dokumentů
+// ===========================================================================
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  dataAreas DataArea[]
+  configs   DocumentTypeConfig[]
+  workflows Workflow[]
+}
+
+model DataArea {
+  id             String        @id @default(cuid())
+  code           String        @unique // dataAreaId z ERP (např. "CZ01")
+  name           String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  createdAt      DateTime      @default(now())
+
+  @@index([organizationId])
+}
+
+enum FieldRole {
+  TITLE // hlavní popisek na hlavičce
+  AMOUNT // částka
+  CURRENCY // měna
+  DETAIL // zobrazit v detailu
+  HIDDEN // nezobrazovat
+}
+
+enum ActionKind {
+  APPROVE
+  REJECT
+  OTHER
+}
+
+enum ThresholdAction {
+  NONE
+  REQUIRE_COMMENT // nad limit vyžadovat komentář
+  BLOCK // nad limit nelze schválit v aplikaci
+}
+
+model DocumentTypeConfig {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  documentType   String
+
+  // Pravidla schvalování
+  requireCommentOnReject  Boolean         @default(true)
+  requireCommentOnApprove Boolean         @default(false)
+  amountThreshold         Decimal?        @db.Decimal(18, 2)
+  thresholdAction         ThresholdAction @default(NONE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fields  FieldConfig[]
+  actions ActionConfig[]
+
+  @@unique([organizationId, documentType])
+}
+
+model FieldConfig {
+  id       String             @id @default(cuid())
+  configId String
+  config   DocumentTypeConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  jsonKey  String // klíč v příchozím JSON (values)
+  label    String // popisek pro uživatele
+  role     FieldRole          @default(DETAIL)
+  order    Int                @default(0)
+
+  @@index([configId])
+}
+
+model ActionConfig {
+  id       String             @id @default(cuid())
+  configId String
+  config   DocumentTypeConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  code     String // kód akce posílaný do ERP (např. "APPROVE")
+  label    String // popisek tlačítka
+  kind     ActionKind         @default(OTHER)
+  order    Int                @default(0)
+
+  @@index([configId])
+}
+
+// ===========================================================================
+// Provoz (přechodné, maže se po převzetí z ERP)
+// ===========================================================================
+
+enum WorkitemStatus {
+  PENDING // čeká na uživatele
+  APPROVED // schváleno uživatelem
+  REJECTED // zamítnuto uživatelem
+  COMPLETED_BY_SYSTEM // workflow dokončeno v ERP bez uživatele
+}
+
+model Workflow {
+  id             String        @id @default(cuid())
+  erpWorkflowId  String // id workflow instance z ERP
+  dataAreaCode   String // dataAreaId z ERP
+  documentType   String
+  recordId       String? // recId zdrojového dokladu v ERP
+  values         Json // hodnoty dokumentu (kontrakt s ERP)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  createdAt      DateTime      @default(now())
+
+  workitems Workitem[]
+  documents Document[]
+
+  @@unique([erpWorkflowId, dataAreaCode])
+  @@index([documentType])
+  @@index([organizationId])
+}
+
+model Workitem {
+  id                String         @id @default(cuid())
+  erpWorkitemId     String         @unique // id workitemu z ERP
+  workflowId        String
+  workflow          Workflow       @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  dataAreaCode      String
+  assigneeErpUserId String // userId z ERP, kdo má schválit
+  status            WorkitemStatus @default(PENDING)
+
+  action          String? // kód provedené akce (z ActionConfig)
+  comment         String?
+  decidedByUserId String?
+  decidedBy       User?     @relation("WorkitemDecidedBy", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+  decidedAt       DateTime?
+  deliveredToErpAt DateTime? // kdy si ERP výsledek vyzvedl/potvrdil
+
+  createdAt DateTime @default(now())
+
+  @@index([assigneeErpUserId, status])
+  @@index([workflowId])
+}
+
+model Document {
+  id          String   @id // doc_xxx
+  filename    String
+  contentType String   @default("application/pdf")
+  size        Int
+  content     Bytes
+  workflowId  String?
+  workflow    Workflow? @relation(fields: [workflowId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([workflowId])
+}
+
+// ===========================================================================
+// API klíče pro ERP a audit log volání
+// ===========================================================================
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  name       String
+  prefix     String
+  keyHash    String    @unique
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  logs ApiLog[]
+}
+
+model ApiLog {
+  id         String   @id @default(cuid())
+  method     String
+  path       String
+  statusCode Int
+  apiKeyId   String?
+  apiKey     ApiKey?  @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  ip         String?
+  durationMs Int?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
