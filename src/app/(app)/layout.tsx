@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
+import { getDict } from "@/lib/i18n";
 import { logoutAction } from "./actions";
 
 export default async function AppLayout({
@@ -9,6 +10,7 @@ export default async function AppLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const t = getDict(user.locale);
 
   return (
     <div className="min-h-screen">
@@ -26,13 +28,8 @@ export default async function AppLayout({
               />
             </Link>
             <Link href="/zaznamy" className="hover:text-fg">
-              Záznamy
+              {t.nav.records}
             </Link>
-            {user.role === "ADMIN" && (
-              <Link href="/sprava" className="hover:text-fg">
-                Správa
-              </Link>
-            )}
           </nav>
           <div className="flex items-center gap-3 text-sm">
             <Link href="/ucet" className="text-muted hover:text-fg">
@@ -43,7 +40,7 @@ export default async function AppLayout({
                 type="submit"
                 className="rounded-md border border-line px-3 py-1.5 text-muted transition hover:bg-surface-2"
               >
-                Odhlásit
+                {t.nav.logout}
               </button>
             </form>
           </div>

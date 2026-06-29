@@ -1,0 +1,3144 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: DBT
+
+; Microsoft Dynamics AX Table : TrvRequisitionLine unloaded
+; --------------------------------------------------------------------------------
+  TABLEVERSION 1
+  
+  TABLE #TrvRequisitionLine
+    EnforceFKRelation 1
+    PROPERTIES
+      Name                #TrvRequisitionLine
+      Label               #@SYS153130
+      TitleField1         #Category
+      TitleField2         #AccountingCurrencyAmount
+      ConfigurationKey    #TrvRequisition
+      SecurityKey         #TrvTables
+      CacheLookup         #NotInTTS
+      CreateRecIdIndex    #Yes
+      SaveDataPerCompany  #No
+      TableGroup          #Transaction
+      PrimaryIndex        #SurrogateKey
+      ClusterIndex        #SurrogateKey
+      SingularLabel       #@SYS153130
+      DeveloperDocumentation  #@SYS317019
+      Origin              #{2C120FB8-0000-1000-0F8B-4C3D36105829}
+      LegacyId            #4024
+    ENDPROPERTIES
+    
+    FIELDS
+      FIELD #AccomodationCategoryId
+        INT64
+        PROPERTIES
+          Name                #AccomodationCategoryId
+          Label               #@AQS255
+          Table               #TrvRequisitionLine
+          Origin              #{1A6741C8-D863-4B77-BE35-38C2FB7971D1}
+          ExtendedDataType    #TrvRequisitionAccomodationCategoryId
+        ENDPROPERTIES
+        
+      FIELD #AccountingCurrencyAmount
+        REAL
+        PROPERTIES
+          Name                #AccountingCurrencyAmount
+          HelpText            #@SYS153136
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{28C2A490-1747-4A84-81C5-E592F116CAD3}
+          LegacyId            #7
+          ExtendedDataType    #AmountMST
+        ENDPROPERTIES
+        
+      FIELD #AirlineServiceClass
+        ENUM
+        PROPERTIES
+          Name                #AirlineServiceClass
+          Table               #TrvRequisitionLine
+          Origin              #{C8E8D745-2686-4394-A28A-A19026B6EE72}
+          LegacyId            #39
+          EnumType            #TrvAirlineServiceClassEnum
+        ENDPROPERTIES
+        
+      FIELD #CarRentalVehicleClass
+        ENUM
+        PROPERTIES
+          Name                #CarRentalVehicleClass
+          Table               #TrvRequisitionLine
+          Origin              #{B80AC0B5-E06F-4CE9-BD47-36F9686154BA}
+          LegacyId            #40
+          EnumType            #TrvCarRentalVehicleClassEnum
+        ENDPROPERTIES
+        
+      FIELD #Category
+        STRING
+        PROPERTIES
+          Name                #Category
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{E6C45E25-DA9A-4AB7-80AF-26B206487BBA}
+          LegacyId            #2
+          ExtendedDataType    #TrvCostTypeEDT
+          StringSize          #30
+        ENDPROPERTIES
+        
+      FIELD #DefaultDimension
+        INT64
+        PROPERTIES
+          Name                #DefaultDimension
+          Table               #TrvRequisitionLine
+          Origin              #{8D56995C-BCC0-4E0F-A8D5-6E46C1FE9401}
+          LegacyId            #41
+          ExtendedDataType    #DimensionDefault
+        ENDPROPERTIES
+        
+      FIELD #EstimatedDate
+        DATE
+        PROPERTIES
+          Name                #EstimatedDate
+          Label               #@SYS153131
+          HelpText            #@SYS153132
+          Mandatory           #Yes
+          Table               #TrvRequisitionLine
+          Origin              #{F7D1D898-5B2E-4C42-9BD0-027AFF8C1685}
+          LegacyId            #3
+          ExtendedDataType    #TrvDateStd
+        ENDPROPERTIES
+        
+      FIELD #ExchangeRate
+        REAL
+        PROPERTIES
+          Name                #ExchangeRate
+          Table               #TrvRequisitionLine
+          Origin              #{213A8A74-B197-47C6-80E5-F95DE37A2D9E}
+          LegacyId            #6
+          ExtendedDataType    #ExchRate
+        ENDPROPERTIES
+        
+      FIELD #ExpType
+        ENUM
+        PROPERTIES
+          Name                #ExpType
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{FE3673C3-D5A6-4CCC-A107-D753139EA2C5}
+          LegacyId            #19
+          EnumType            #TrvExpType
+        ENDPROPERTIES
+        
+      FIELD #IsAutoCreate
+        ENUM
+        PROPERTIES
+          Name                #IsAutoCreate
+          Table               #TrvRequisitionLine
+          Origin              #{9B2A1A94-BE15-4D9F-80C8-690079322B60}
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #IsBudgetCheckPending
+        ENUM
+        PROPERTIES
+          Name                #IsBudgetCheckPending
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #TrvRequisitionLine
+          Origin              #{979F6CA9-2ADC-4DA9-9E15-EAC52B4EE59C}
+          LegacyId            #27
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #LegalEntity
+        INT64
+        PROPERTIES
+          Name                #LegalEntity
+          Mandatory           #Yes
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{008C9ADC-D1AA-43BF-A22C-AFB8C992E120}
+          LegacyId            #17
+          ExtendedDataType    #LegalEntity
+        ENDPROPERTIES
+        
+      FIELD #Merchant
+        STRING
+        PROPERTIES
+          Name                #Merchant
+          Visible             #No
+          Table               #TrvRequisitionLine
+          Origin              #{53E0E386-0580-44DD-A05D-5AE7B16BBA7A}
+          LegacyId            #15
+          ExtendedDataType    #TrvExpMerchantId
+          StringSize          #30
+        ENDPROPERTIES
+        
+      FIELD #Mileage
+        REAL
+        PROPERTIES
+          Name                #Mileage
+          HelpText            #@SYS153137
+          Table               #TrvRequisitionLine
+          Origin              #{FB3A3225-F2A5-46EC-AC98-7693C47AE2DB}
+          LegacyId            #10
+          ExtendedDataType    #TrvMileage
+        ENDPROPERTIES
+        
+      FIELD #MileageRate
+        REAL
+        PROPERTIES
+          Name                #MileageRate
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #TrvRequisitionLine
+          Origin              #{25AE2450-C996-4928-B78E-370C9EF78DA0}
+          LegacyId            #11
+          ExtendedDataType    #TrvCostRate
+        ENDPROPERTIES
+        
+      FIELD #NeedCheckAfterAutoCreate
+        ENUM
+        PROPERTIES
+          Name                #NeedCheckAfterAutoCreate
+          Table               #TrvRequisitionLine
+          Origin              #{A5ACDA1C-4838-4005-B168-647EA441E87D}
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #NightsNumber
+        INT
+        PROPERTIES
+          Name                #NightsNumber
+          Label               #@PSA1967
+          Table               #TrvRequisitionLine
+          Origin              #{F55A66FC-932C-4EDA-B08C-98450B3D636C}
+        ENDPROPERTIES
+        
+      FIELD #Notes
+        STRING
+        PROPERTIES
+          Name                #Notes
+          Table               #TrvRequisitionLine
+          Origin              #{B4AB5737-072D-43B1-B39D-0743668E9614}
+          ExtendedDataType    #AQSTrvReqLineNotes
+          StringSize          #(Memo)
+        ENDPROPERTIES
+        
+      FIELD #PerdiemDate
+        DATE
+        PROPERTIES
+          Name                #PerdiemDate
+          Label               #@AQS926
+          Table               #TrvRequisitionLine
+          Origin              #{AC9F4382-DF8E-4643-8743-441CBA59B7CC}
+        ENDPROPERTIES
+        
+      FIELD #PerdiemDateFrom
+        DATETIME
+        PROPERTIES
+          Name                #PerdiemDateFrom
+          Label               #@SYS122757
+          HelpText            #@SYS101547
+          Visible             #No
+          Table               #TrvRequisitionLine
+          Origin              #{129BD800-3237-4CFB-BE25-AA107E138280}
+          LegacyId            #14
+          ExtendedDataType    #TrvDateTime
+        ENDPROPERTIES
+        
+      FIELD #PerdiemDateTo
+        DATETIME
+        PROPERTIES
+          Name                #PerdiemDateTo
+          Label               #@SYS122758
+          HelpText            #@SYS101546
+          Visible             #No
+          Table               #TrvRequisitionLine
+          Origin              #{E266864A-5465-48A7-9AF8-6B8516BD7828}
+          LegacyId            #13
+          ExtendedDataType    #TrvDateTime
+        ENDPROPERTIES
+        
+      FIELD #PerdiemDaysBetweenFirstLastDay
+        REAL
+        PROPERTIES
+          Name                #PerdiemDaysBetweenFirstLastDay
+          Label               #@AQS925
+          Table               #TrvRequisitionLine
+          Origin              #{3F1C98DE-8835-43E9-9DEB-CFB4ECF67B7C}
+        ENDPROPERTIES
+        
+      FIELD #PerdiemHoursFirstDay
+        REAL
+        PROPERTIES
+          Name                #PerdiemHoursFirstDay
+          Label               #@AQS923
+          Table               #TrvRequisitionLine
+          Origin              #{D3CBD5BA-5BF9-4032-9AB3-B7C72CFB42DB}
+        ENDPROPERTIES
+        
+      FIELD #PerdiemHoursLastDay
+        REAL
+        PROPERTIES
+          Name                #PerdiemHoursLastDay
+          Label               #@AQS924
+          Table               #TrvRequisitionLine
+          Origin              #{E07D2E32-8DFD-4B1D-A2DC-27B5A38E7843}
+        ENDPROPERTIES
+        
+      FIELD #PerdiemLocation
+        STRING
+        PROPERTIES
+          Name                #PerdiemLocation
+          Table               #TrvRequisitionLine
+          Origin              #{B5844DA4-D24E-4C14-859F-82DC1791EA37}
+          LegacyId            #12
+          ExtendedDataType    #TrvLocation
+          StringSize          #128
+        ENDPROPERTIES
+        
+      FIELD #PermDiemDailyRate
+        REAL
+        PROPERTIES
+          Name                #PermDiemDailyRate
+          Label               #@AQS3614
+          HelpText            #@AQS3617
+          Table               #TrvRequisitionLine
+          Origin              #{69D5C8F8-6138-4D7E-A99F-9211DF768252}
+          ExtendedDataType    #Amount
+        ENDPROPERTIES
+        
+      FIELD #PermDiemMealCount
+        INT
+        PROPERTIES
+          Name                #PermDiemMealCount
+          Label               #@AQS495
+          Table               #TrvRequisitionLine
+          Origin              #{A0AAB84C-F8A4-4ADA-AE07-FA9C85D96298}
+          ExtendedDataType    #Integer
+        ENDPROPERTIES
+        
+      FIELD #PermDiemPocketMoneyPercent
+        REAL
+        PROPERTIES
+          Name                #PermDiemPocketMoneyPercent
+          Label               #@AQS493
+          Table               #TrvRequisitionLine
+          Origin              #{524A51CE-FD23-4BE9-A266-E0BAFCE01BF2}
+          ExtendedDataType    #Percent
+        ENDPROPERTIES
+        
+      FIELD #PrepaymentAmountCur
+        REAL
+        PROPERTIES
+          Name                #PrepaymentAmountCur
+          Visible             #No
+          Table               #TrvRequisitionLine
+          Origin              #{F1FE266B-1146-42BC-BC08-6156B6EE984D}
+          ExtendedDataType    #TrvReqPrepaymentAmountCur
+        ENDPROPERTIES
+        
+      FIELD #PrivateCarConsumption
+        REAL
+        PROPERTIES
+          Name                #PrivateCarConsumption
+          Label               #@AQS410
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{F84C6CA7-814E-4542-97EE-7B1513D3FD6A}
+        ENDPROPERTIES
+        
+      FIELD #PrivateCarFuelId
+        INT64
+        PROPERTIES
+          Name                #PrivateCarFuelId
+          Label               #@AQS471
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{C6BCA518-1E3A-4D62-93E9-C34227768F23}
+          ExtendedDataType    #TrvFuelId
+        ENDPROPERTIES
+        
+      FIELD #PrivateCarFuelPrice
+        REAL
+        PROPERTIES
+          Name                #PrivateCarFuelPrice
+          Label               #@AQS2732
+          HelpText            #@AQS2733
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{5D26A82A-C921-4A4C-8A87-E05ABEA0EFFC}
+          ExtendedDataType    #CostAmount
+        ENDPROPERTIES
+        
+      FIELD #PrivateCarId
+        INT64
+        PROPERTIES
+          Name                #PrivateCarId
+          Label               #@AQS394
+          Table               #TrvRequisitionLine
+          Origin              #{B15BE986-A1FA-45E1-BB17-0CC46CF46BAF}
+          ExtendedDataType    #TrvRequisitionPrivateCarId
+        ENDPROPERTIES
+        
+      FIELD #PrivateCarKilometers
+        INT
+        PROPERTIES
+          Name                #PrivateCarKilometers
+          Label               #@AQS472
+          Table               #TrvRequisitionLine
+          Origin              #{5BCCD7F4-B186-48B1-AA37-89F9753C5A7C}
+          ExtendedDataType    #Integer
+        ENDPROPERTIES
+        
+      FIELD #PrivateCarLicencePlate
+        STRING
+        PROPERTIES
+          Name                #PrivateCarLicencePlate
+          Label               #@AQS391
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{3F965D9B-F717-4CCF-9506-6375A3E1CA42}
+        ENDPROPERTIES
+        
+      FIELD #PrivateCarTrailer
+        ENUM
+        PROPERTIES
+          Name                #PrivateCarTrailer
+          Label               #@AQS473
+          Table               #TrvRequisitionLine
+          Origin              #{3D45D3AE-6ADB-4276-8392-11DCCC518BD8}
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #PrivateCarVehicleKindId
+        INT64
+        PROPERTIES
+          Name                #PrivateCarVehicleKindId
+          Label               #@AQS403
+          Table               #TrvRequisitionLine
+          Origin              #{2ADFB2D6-F1CB-4188-A120-43008FD9BFA8}
+          ExtendedDataType    #TrvVehicleKindId
+        ENDPROPERTIES
+        
+      FIELD #ProjActivityNumber
+        STRING
+        PROPERTIES
+          Name                #ProjActivityNumber
+          Table               #TrvRequisitionLine
+          Origin              #{2DE46FEC-3910-4D3C-B9E3-CE19F4886032}
+          LegacyId            #38
+          ExtendedDataType    #ProjActivityNumber
+          StringSize          #50
+        ENDPROPERTIES
+        
+      FIELD #ProjLinePropertyId
+        STRING
+        PROPERTIES
+          Name                #ProjLinePropertyId
+          Table               #TrvRequisitionLine
+          Origin              #{9EF7E6D1-C821-48F6-A2DB-BEF21C84018B}
+          LegacyId            #37
+          ExtendedDataType    #ProjLinePropertyId
+        ENDPROPERTIES
+        
+      FIELD #ProjTable
+        INT64
+        PROPERTIES
+          Name                #ProjTable
+          Visible             #No
+          ConfigurationKey    #ProjBasic
+          Table               #TrvRequisitionLine
+          Origin              #{0E455DF4-5C3C-4B8F-9A50-FD5B2D1133B8}
+          LegacyId            #36
+          ExtendedDataType    #RefRecId
+        ENDPROPERTIES
+        
+      FIELD #ReconciliationStatus
+        ENUM
+        PROPERTIES
+          Name                #ReconciliationStatus
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{AFB95A33-5216-4361-B13D-C044189E1EB7}
+          LegacyId            #18
+          EnumType            #TrvRequisitionReconciliationStatus
+        ENDPROPERTIES
+        
+      FIELD #ReferenceDataAreaId
+        STRING
+        PROPERTIES
+          Name                #ReferenceDataAreaId
+          Table               #TrvRequisitionLine
+          Origin              #{399CD847-390A-4CBB-8C60-EEE8ED698C45}
+          ExtendedDataType    #DataAreaId
+          StringSize          #4
+        ENDPROPERTIES
+        
+      FIELD #SourceDocumentLine
+        INT64
+        PROPERTIES
+          Name                #SourceDocumentLine
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Visible             #No
+          Table               #TrvRequisitionLine
+          Origin              #{953D12E6-D52C-4A15-9866-072BFEEFDB0B}
+          LegacyId            #9
+          ExtendedDataType    #RefRecId
+        ENDPROPERTIES
+        
+      FIELD #TransactionCurrencyAmount
+        REAL
+        PROPERTIES
+          Name                #TransactionCurrencyAmount
+          Label               #@SYS153133
+          HelpText            #@SYS153134
+          Table               #TrvRequisitionLine
+          RelationContext     #Currency
+          Origin              #{40E65902-5255-4C6B-BAF2-CB27741217C2}
+          LegacyId            #4
+          ExtendedDataType    #TrvTransactionCurrencyAmount
+        ENDPROPERTIES
+        
+      FIELD #TransactionCurrencyCode
+        STRING
+        PROPERTIES
+          Name                #TransactionCurrencyCode
+          Mandatory           #Yes
+          Table               #TrvRequisitionLine
+          Origin              #{69AC7EAB-72FA-4E8F-A8E1-0D80588FEADA}
+          LegacyId            #5
+          ExtendedDataType    #TrvCurrencyCode
+          StringSize          #3
+        ENDPROPERTIES
+        
+      FIELD #TrvRequisitionTable
+        INT64
+        PROPERTIES
+          Name                #TrvRequisitionTable
+          Mandatory           #Yes
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #TrvRequisitionLine
+          Origin              #{2CD6802E-D5C9-4514-A630-B4696C760736}
+          LegacyId            #1
+          ExtendedDataType    #TrvRequisitionId
+        ENDPROPERTIES
+        
+      FIELD #TrvRequisitionTransportTypeId
+        INT64
+        PROPERTIES
+          Name                #TrvRequisitionTransportTypeId
+          Table               #TrvRequisitionLine
+          Origin              #{3DF6CAF3-5296-4A0D-B6D9-1A8B4F36F4E3}
+          ExtendedDataType    #TrvRequisitionTransportTypeId
+        ENDPROPERTIES
+        
+      FIELD #UnitPrice
+        REAL
+        PROPERTIES
+          Name                #UnitPrice
+          Table               #TrvRequisitionLine
+          Origin              #{8B85DDF2-F126-4311-A903-E094E28D262B}
+          ExtendedDataType    #UnitPrice
+        ENDPROPERTIES
+        
+      FIELD #VendAccount
+        STRING
+        PROPERTIES
+          Name                #VendAccount
+          Label               #@SYS8079
+          Table               #TrvRequisitionLine
+          Origin              #{087F39DF-72A1-47B7-BA00-825EACC7B6E0}
+          ExtendedDataType    #VendAccount
+          StringSize          #20
+        ENDPROPERTIES
+        
+    ENDFIELDS
+    GROUPS
+      GROUP #AutoReport
+        PROPERTIES
+          Name                #AutoReport
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Category
+          #EstimatedDate
+          #TransactionCurrencyAmount
+          #TransactionCurrencyCode
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #AutoLookup
+        PROPERTIES
+          Name                #AutoLookup
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Category
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Dimension
+        PROPERTIES
+          Name                #Dimension
+          Label               #@SYS14926
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #DefaultDimension
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Expense
+        PROPERTIES
+          Name                #Expense
+          Label               #@SYS101318
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #TransactionCurrencyAmount
+          #TransactionCurrencyCode
+          #PrepaymentAmountCur
+          #ExchangeRate
+          #AccountingCurrencyAmount
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #General
+        PROPERTIES
+          Name                #General
+          Label               #@SYS2952
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Category
+          #ProjTable
+          #EstimatedDate
+          #TransactionCurrencyAmount
+          #TransactionCurrencyCode
+          #ReconciliationStatus
+          #LegalEntity
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Hotel
+        PROPERTIES
+          Name                #Hotel
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #AccomodationCategoryId
+          #NightsNumber
+          #UnitPrice
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Preview
+        PROPERTIES
+          Name                #Preview
+          Label               #@SYS313169
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Category
+          #EstimatedDate
+          #TransactionCurrencyAmount
+          #TransactionCurrencyCode
+          #AccountingCurrencyAmount
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #PrivateCar
+        PROPERTIES
+          Name                #PrivateCar
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #PrivateCarId
+          #PrivateCarLicencePlate
+          #PrivateCarConsumption
+          #PrivateCarFuelPrice
+          #PrivateCarKilometers
+          #PrivateCarTrailer
+          #privateCarCompensationPerUnit
+          #privateCarTotalCompensationPerUnit
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Project
+        PROPERTIES
+          Name                #Project
+          Label               #@SYS103045
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ProjActivityNumber
+          #ProjLinePropertyId
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #ReferenceDataArea
+        PROPERTIES
+          Name                #ReferenceDataArea
+          Label               #@SYS135125
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ReferenceDataAreaId
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Transaction
+        PROPERTIES
+          Name                #Transaction
+          Label               #@SYS15191
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Merchant
+          #AccomodationCategoryId
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Transaction_Airline
+        PROPERTIES
+          Name                #Transaction_Airline
+          Label               #@SYS15191
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Merchant
+          #AirlineServiceClass
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Transaction_CarRental
+        PROPERTIES
+          Name                #Transaction_CarRental
+          Label               #@SYS15191
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Merchant
+          #CarRentalVehicleClass
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Transaction_Hotel
+        PROPERTIES
+          Name                #Transaction_Hotel
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #AccomodationCategoryId
+          #Merchant
+          #NightsNumber
+          #UnitPrice
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Transaction_Mileage
+        PROPERTIES
+          Name                #Transaction_Mileage
+          Label               #@SYS15191
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Merchant
+          #Mileage
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Transaction_Perdiem
+        PROPERTIES
+          Name                #Transaction_Perdiem
+          Label               #@SYS15191
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #PerdiemLocation
+          #PerdiemDate
+          #PerdiemDateFrom
+          #PerdiemHoursFirstDay
+          #PerdiemHoursLastDay
+          #PerdiemDaysBetweenFirstLastDay
+          #PerdiemDateTo
+          #PermDiemMealCount
+          #PermDiemPocketMoneyPercent
+          #PermDiemDailyRate
+          #perDiemCurrency
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Transaction_PrivateCar
+        PROPERTIES
+          Name                #Transaction_PrivateCar
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #PrivateCarId
+          #PrivateCarLicencePlate
+          #PrivateCarVehicleKindId
+          #PrivateCarConsumption
+          #PrivateCarFuelId
+          #PrivateCarKilometers
+          #PrivateCarFuelPrice
+          #PrivateCarTrailer
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #TravelerPreferences
+        PROPERTIES
+          Name                #TravelerPreferences
+          Label               #@SYS153176
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+        ENDGROUPFIELDS
+      ENDGROUP
+    ENDGROUPS
+    
+    INDICES
+      #LegalEntityIdx
+      PROPERTIES
+        Name                #LegalEntityIdx
+        Origin              #{2B0E0001-0FB8-1000-5FAB-F2A1313FD286}
+        LegacyId            #1
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #LegalEntity
+      ENDINDEXFIELDS
+      
+      #SourceDocumentLineIdx
+      PROPERTIES
+        Name                #SourceDocumentLineIdx
+        AllowDuplicates     #No
+        UniqueAcrossCompanies #Yes
+        Origin              #{2B150002-0FB8-1000-5E5A-149475E22330}
+        LegacyId            #2
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #SourceDocumentLine
+        #Partition
+      ENDINDEXFIELDS
+      
+      #TrvRequisitionTableIdx
+      PROPERTIES
+        Name                #TrvRequisitionTableIdx
+        Origin              #{2B160003-0FB8-1000-CB72-035FF809949C}
+        LegacyId            #3
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #TrvRequisitionTable
+      ENDINDEXFIELDS
+      
+      #ProjTableIdx
+      PROPERTIES
+        Name                #ProjTableIdx
+        Origin              #{CC204CAC-8566-454E-8889-C23AB859BB7F}
+        LegacyId            #12
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #ProjTable
+      ENDINDEXFIELDS
+      
+    ENDINDICES
+    FULLTEXTINDICES
+    ENDFULLTEXTINDICES
+    REFERENCES
+      REFERENCE #CompanyInfo
+        PROPERTIES
+          Name                #CompanyInfo
+          Table               #CompanyInfo
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ReferenceDataAreaId
+            RelatedField        #DataArea
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #Currency
+        PROPERTIES
+          Name                #Currency
+          Table               #Currency
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #TransactionCurrencyCode
+            RelatedField        #CurrencyCode
+            SourceEDT           #TrvCurrencyCode
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #DefaultDimension
+        PROPERTIES
+          Name                #DefaultDimension
+          Table               #DimensionAttributeValueSet
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          RelatedTableRole    #Designates
+          Role                #DesginatedBy
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #DefaultDimension
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #LegalEntity
+        PROPERTIES
+          Name                #LegalEntity
+          Table               #CompanyInfo
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #LegallyAccounts
+          Role                #LegallyAccountedBy
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #LegalEntity
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #ProjLineProperty
+        PROPERTIES
+          Name                #ProjLineProperty
+          Table               #ProjLineProperty
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ReferenceDataAreaId
+            RelatedField        #dataAreaId
+          ENDPROPERTIES
+          
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ProjLinePropertyId
+            RelatedField        #LinePropertyId
+            SourceEDT           #ProjLinePropertyId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #ProjTable
+        PROPERTIES
+          Name                #ProjTable
+          Table               #ProjTable
+          Validate            #No
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #ProjTable
+          Role                #TrvRequisitionLine
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ProjTable
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #smmActivities
+        PROPERTIES
+          Name                #smmActivities
+          Table               #smmActivities
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ReferenceDataAreaId
+            RelatedField        #dataAreaId
+          ENDPROPERTIES
+          
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ProjActivityNumber
+            RelatedField        #ActivityNumber
+            SourceEDT           #ProjActivityNumber
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #SourceDocumentLine
+        PROPERTIES
+          Name                #SourceDocumentLine
+          Table               #SourceDocumentLine
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroOne
+          RelationshipType    #Association
+          RelatedTableRole    #DescribesAccountingOf
+          Role                #AccountingDescribedBy
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #SourceDocumentLine
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #TrvCostType
+        PROPERTIES
+          Name                #TrvCostType
+          Table               #TrvCostType
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ReferenceDataAreaId
+            RelatedField        #dataAreaId
+          ENDPROPERTIES
+          
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #Category
+            RelatedField        #CostType
+            SourceEDT           #TrvCostTypeEDT
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #TrvExpMerchant
+        PROPERTIES
+          Name                #TrvExpMerchant
+          Table               #TrvExpMerchant
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ReferenceDataAreaId
+            RelatedField        #dataAreaId
+          ENDPROPERTIES
+          
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #Merchant
+            RelatedField        #MerchantId
+            SourceEDT           #TrvExpMerchantId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #TrvFuel
+        PROPERTIES
+          Name                #TrvFuel
+          Table               #TrvFuel
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #PrivateCarFuelId
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #TrvLocations
+        PROPERTIES
+          Name                #TrvLocations
+          Table               #TrvLocations
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #ReferenceDataAreaId
+            RelatedField        #dataAreaId
+          ENDPROPERTIES
+          
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #PerdiemLocation
+            RelatedField        #Location
+            SourceEDT           #TrvLocation
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #TrvRequisitionAccomodationCategory
+        PROPERTIES
+          Name                #TrvRequisitionAccomodationCategory
+          Table               #TrvRequisitionAccomodationCategory
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #AccomodationCategoryId
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #TrvRequisitionPrivateCar
+        PROPERTIES
+          Name                #TrvRequisitionPrivateCar
+          Table               #TrvRequisitionPrivateCar
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #PrivateCarId
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #TrvRequisitionTable
+        PROPERTIES
+          Name                #TrvRequisitionTable
+          Table               #TrvRequisitionTable
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          RelatedTableRole    #Contains
+          Role                #BelongsTo
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #TrvRequisitionTable
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #TrvVehicleKind
+        PROPERTIES
+          Name                #TrvVehicleKind
+          Table               #TrvVehicleKind
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #PrivateCarVehicleKindId
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendTable
+        PROPERTIES
+          Name                #VendTable
+          Table               #VendTable
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #VendAccount
+            RelatedField        #dataAreaId
+          ENDPROPERTIES
+          
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #VendAccount
+            RelatedField        #AccountNum
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+    ENDREFERENCES
+    
+    DELETEACTIONS
+      #SourceDocumentLine
+      PROPERTIES
+        Table               #SourceDocumentLine
+        DeleteAction        #Cascade
+      ENDPROPERTIES
+      
+      #TrvPolicyViolationJustification
+      PROPERTIES
+        Table               #TrvPolicyViolationJustification
+        DeleteAction        #Cascade
+      ENDPROPERTIES
+      
+      #TrvPolicyViolationsCache
+      PROPERTIES
+        Table               #TrvPolicyViolationsCache
+        DeleteAction        #Cascade
+      ENDPROPERTIES
+      
+      #TrvPolicyViolationsLog(TrvRequisitionLine)
+      PROPERTIES
+        Table               #TrvPolicyViolationsLog
+        DeleteAction        #Cascade
+        Relation            #TrvRequisitionLine
+      ENDPROPERTIES
+      
+    ENDDELETEACTIONS
+    
+    METHODS
+      SOURCE #accountingCurrencyAmountWithCurrencyCode
+        #/// <summary>
+        #/// Gives the amount in company currency and the currency code.
+        #/// </summary>
+        #/// <returns>
+        #/// The amount in company currency and the currency code.
+        #/// </returns>
+        #display TrvRequisitionEstimateWithCurrency accountingCurrencyAmountWithCurrencyCode()
+        #{
+        #    return EPTrv::amountWithCurrencyCode(this.AccountingCurrencyAmount, this.LegalEntity);
+        #}
+      ENDSOURCE
+      SOURCE #amountMSTInCompanyCurrency
+        #display AmountMSTInCompanyCurrency amountMSTInCompanyCurrency()
+        #{
+        #    // Todo později přehodit přímo na formulář.
+        #    return this.AccountingCurrencyAmount;
+        #}
+      ENDSOURCE
+      SOURCE #amountToBeReconciled
+        #/// <summary>
+        #///     Gives the amount to be reconciled for the travel requisition line.
+        #/// </summary>
+        #/// <param name="_trvExpTransRecId">
+        #///     The <c>RecId</c> of the expense line which is not being considered in the reconciled amount of the travel requisition.
+        #/// </param>
+        #/// <returns>
+        #///     The amount to be reconciled.
+        #/// </returns>
+        #public display TrvRequisitionToBeReconciled amountToBeReconciled(RecId _trvExpTransRecId = 0)
+        #{
+        #    TrvExpTrans trvExpTrans;
+        #
+        #    select sum(AccountingCurrencyReconciledAmount) from trvExpTrans
+        #        where trvExpTrans.MappedToRequisitionLine == this.RecId
+        #           && trvExpTrans.RecId                   != _trvExpTransRecId;
+        #
+        #    return (this.AccountingCurrencyAmount - trvExpTrans.AccountingCurrencyReconciledAmount);
+        #}
+      ENDSOURCE
+      SOURCE #amountToBeReconciledWithCurrencyCode
+        #display TrvRequisitionToBeReconciledWithCurrency amountToBeReconciledWithCurrencyCode()
+        #{
+        #    return EPTrv::amountWithCurrencyCode(this.amountToBeReconciled(), this.LegalEntity);
+        #}
+      ENDSOURCE
+      SOURCE #approverJustification
+        #/// <summary>
+        #/// Displays a concatenated string of all approver names and their justification for the policy
+        #/// violation.
+        #/// </summary>
+        #/// <returns>
+        #/// Approver names and justification provided by them.
+        #/// </returns>
+        #display TrvPreviousApproversJustifications approverJustification()
+        #{
+        #    return EPTrv::otherApproversJustifications(this.RecId, TrvPolicyViolationJustificationTypeEnum::TrvReqLine);
+        #}
+        #
+      ENDSOURCE
+      SOURCE #aqsUpdateHeaderAccommodationStatus
+        #// + TomZan
+        #public void aqsUpdateHeaderAccommodationStatus()
+        #{
+        #    TrvRequisitionTable::AQSUpdateAccomodationOverStatus(this.TrvRequisitionTable);
+        #}
+      ENDSOURCE
+      SOURCE #budgetCheckResult
+        #/// <summary>
+        #/// Gets the budget check and project budget check result for a travel requisition line.
+        #/// </summary>
+        #/// <returns>
+        #/// The budget check and project budget check result for the travel requisition line.
+        #/// </returns>
+        #display BudgetCheckResult budgetCheckResult()
+        #{
+        #    BudgetCheckResult budgetCheckResult;
+        #    ProjBudgetCheckResult projBudgetCheckResult;
+        #    ProjBudgetStatus    projBudgetStatus;
+        #
+        #    budgetCheckResult = BudgetSourceSourceDocumentLine::findBudgetCheckResult(this.SourceDocumentLine);
+        #
+        #    projBudgetStatus = ProjBudgetStatus::findBySourceDocumentLine(this.SourceDocumentLine);
+        #    projBudgetCheckResult = projBudgetStatus ? projBudgetStatus.BudgetCheckResult : ProjBudgetCheckResult::NoCheck;
+        #
+        #    //adding projBudgetCheckResult + 1, since this base enum value starts from 0
+        #    if (enum2int(budgetCheckResult) >= enum2int(projBudgetCheckResult) + 1)
+        #    {
+        #        budgetCheckResult = budgetCheckResult;
+        #    }
+        #    else
+        #    {
+        #        budgetCheckResult = enum2int(projBudgetCheckResult) + 1;
+        #    }
+        #
+        #    return budgetCheckResult;
+        #}
+      ENDSOURCE
+      SOURCE #calculateAccomodation
+        #public void calculateAccomodation(utcdatetime _startDate, utcdatetime _endDate, Money _dailyRate)
+        #{
+        #    real    hrsFirstDay = 0;
+        #    real    hrsLastDay = 0;
+        #    real    numHours = 0;
+        #    date    startMidnight;
+        #    date    lastMidnight;
+        #    int     numdays;
+        #    boolean firstLastSame = false;
+        #    utcdatetime dateFrom = DateTimeUtil::applyTimeZoneOffset(_startDate, DateTimeUtil::getUserPreferredTimeZone());
+        #    utcdatetime dateTo = DateTimeUtil::applyTimeZoneOffset(_endDate, DateTimeUtil::getUserPreferredTimeZone());
+        #    ;
+        #
+        #    if(!dateFrom || !dateTo )
+        #    {
+        #        this.TransactionCurrencyAmount = 0;
+        #        return;
+        #    }
+        #
+        #    firstLastSame = (DateTimeUtil::date(dateFrom) == DateTimeUtil::date(dateTo));
+        #
+        #    if(firstLastSame)
+        #    {
+        #        hrsFirstDay += DateTimeUtil::getDifference(dateTo, dateFrom)/3600;
+        #        numdays = 0;
+        #    }
+        #    else
+        #    {
+        #        hrsFirstDay = 24 - DateTimeUtil::hour(dateFrom) - (DateTimeUtil::minute(dateFrom)/60);
+        #
+        #        hrsLastDay = DateTimeUtil::hour(dateTo) + (DateTimeUtil::minute(dateTo)/60);
+        #
+        #        startMidnight = DateTimeUtil::date(DateTimeUtil::addDays(dateFrom, 1));
+        #        lastMidnight = DateTimeUtil::date(dateTo);
+        #
+        #        //number of full travel days, not counting first and last
+        #        numdays = lastMidnight - startMidnight + 1;
+        #    }
+        #
+        #    // + TomZan
+        #    /*
+        #    this.NightsNumber = numdays;
+        #    */
+        #    this.NightsNumber = max(0, numdays - TrvRequisitionLine::AQSNightsSum(this.TrvRequisitionTable));
+        #    // - TomZan
+        #    this.UnitPrice = _dailyRate;
+        #    this.calculateEstimatedAmount();
+        #}
+      ENDSOURCE
+      SOURCE #calculateAccountingCurrencyAmount
+        #/// <summary>
+        #///     Calculates the amount in company currency.
+        #/// </summary>
+        #void calculateAccountingCurrencyAmount()
+        #{
+        #    round(this.TransactionCurrencyAmount, Currency::roundingPrecisionAdjusted(this.TransactionCurrencyCode));
+        #
+        #    this.AccountingCurrencyAmount = this.ExchangeRate ?
+        #                Currency::amountCur2MST(this.TransactionCurrencyAmount,
+        #                                        this.TransactionCurrencyCode, this.ExchangeRate) :
+        #                this.TransactionCurrencyAmount;
+        #}
+      ENDSOURCE
+      SOURCE #calculateEstimatedAmount
+        #public void calculateEstimatedAmount()
+        #{
+        #    switch (this.ExpType)
+        #    {
+        #        case TrvExpType::Hotel :
+        #            this.TransactionCurrencyAmount = this.NightsNumber * this.UnitPrice;
+        #            break;
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #calculateExchangeRate
+        #/// <summary>
+        #///     Calculates the exchange rate from the currency code and estimated date of transaction.
+        #/// </summary>
+        #server void calculateExchangeRate()
+        #{
+        #    ExchangeRateHelper exchangeRateHelper = ExchangeRateHelper::newExchangeDate(
+        #        Ledger::primaryLedger(this.LegalEntity),
+        #        this.TransactionCurrencyCode,
+        #        this.EstimatedDate);
+        #
+        #    if (this.TransactionCurrencyCode)
+        #    {
+        #        this.ExchangeRate = exchangeRateHelper.getCrossRate();
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #calculateExpType
+        #/// <summary>
+        #/// Sets the expense type field, depending on the category.
+        #/// </summary>
+        #void calculateExpType()
+        #{
+        #    this.ExpType = TrvCostType::find(this.Category).ExpType;
+        #}
+      ENDSOURCE
+      SOURCE #calculateMileage
+        #/// <summary>
+        #///     Calculates the amount for mileage.
+        #/// </summary>
+        #public void calculateMileage()
+        #{
+        #    TrvKmSum                kmSum;
+        #    TrvCostTypeRates        rates;
+        #    TrvRequisitionTable     trvRequisitionTable;
+        #
+        #    if (this.ExpType != TrvExpType::Transport)
+        #    {
+        #        return;
+        #    }
+        #
+        #    // no need to recalculate MileageRate
+        #    if (!this.MileageRate)
+        #    {
+        #        select CreatingWorker from trvRequisitionTable where trvRequisitionTable.RecId == this.TrvRequisitionTable;
+        #
+        #        select sum(Km) from kmSum
+        #            where kmSum.Worker == trvRequisitionTable.CreatingWorker
+        #               && kmSum.Year   == year(this.EstimatedDate);
+        #
+        #        rates = TrvCostTypeRates::getApplicableRate(this.Category, kmSum.Km, this.EstimatedDate);
+        #
+        #        if (rates.CostRate)
+        #        {
+        #            this.MileageRate = rates.CostRate;
+        #        }
+        #        else
+        #        {
+        #            this.MileageRate = TrvParameters::find().KmPrice;
+        #        }
+        #    }
+        #
+        #    this.TransactionCurrencyAmount = this.Mileage * this.MileageRate;
+        #    this.calculateAccountingCurrencyAmount();
+        #}
+      ENDSOURCE
+      SOURCE #calculatePerdiem
+        #/// <summary>
+        #/// Calculates the per diem total for this transaction and fills out the amount and currency fields.
+        #/// </summary>
+        #/// <remarks>
+        #/// If the <c>DateFrom</c>, <c>DateTo</c>, or <c>Location</c> fields are not set, this method returns
+        #/// without setting anything.
+        #/// </remarks>
+        #public void calculatePerdiem()
+        #{
+        #    TrvRequisitionTable trvRequisitionTable;
+        #    TrvPartyEmployeeRelationship    trvPartyEmployeeRelationship;
+        #    TrvPerDiems         trvPerDiems;
+        #    TrvAllowanceRate    trvAllowanceRate, trvAllowanceRateAnyExist;
+        #    TrvParameters       trvParameters = TrvParameters::find();
+        #    real    hrsFirstDay = 0;
+        #    real    hrsLastDay = 0;
+        #    real    numHours = 0;
+        #    date    startMidnight;
+        #    date    lastMidnight;
+        #    int     numdays;
+        #    real    mealAllowance;
+        #    real    hotelAllowance;
+        #    real    otherAllowance;
+        #    real    expAmount;
+        #    boolean firstLastSame = false;
+        #    utcdatetime dateFrom = DateTimeUtil::applyTimeZoneOffset(this.PerdiemDateFrom, DateTimeUtil::getUserPreferredTimeZone());
+        #    utcdatetime dateTo = DateTimeUtil::applyTimeZoneOffset(this.PerdiemDateTo, DateTimeUtil::getUserPreferredTimeZone());
+        #    #ISOCountryRegionCodes
+        #    CalculatePerdiemCZ perdiemCZ;
+        #    ;
+        #
+        #    //only applies for per diems
+        #    if (this.ExpType != TrvExpType::Allowance)
+        #    {
+        #        return;
+        #    }
+        #
+        #    if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoCZ]))
+        #    {
+        #        if(!this.PerdiemDate)
+        #        {
+        #            this.TransactionCurrencyAmount = 0;
+        #            return;
+        #        }
+        #    }
+        #    else
+        #    {
+        #        if(!dateFrom || !dateTo)
+        #        {
+        #            this.TransactionCurrencyAmount = 0;
+        #            return;
+        #        }
+        #    }
+        #
+        #    firstLastSame = (DateTimeUtil::date(dateFrom) == DateTimeUtil::date(dateTo));
+        #
+        #    if(firstLastSame)
+        #    {
+        #        hrsFirstDay += DateTimeUtil::getDifference(dateTo, dateFrom)/3600;
+        #        numdays = 0;
+        #    }
+        #    else
+        #    {
+        #        hrsFirstDay = 24 - DateTimeUtil::hour(dateFrom) - (DateTimeUtil::minute(dateFrom)/60);
+        #
+        #        hrsLastDay = DateTimeUtil::hour(dateTo) + (DateTimeUtil::minute(dateTo)/60);
+        #
+        #        startMidnight = DateTimeUtil::date(DateTimeUtil::addDays(dateFrom, 1));
+        #        lastMidnight = DateTimeUtil::date(dateTo);
+        #
+        #        //number of full travel days, not counting first and last
+        #        numdays = lastMidnight - startMidnight;
+        #    }
+        #
+        #    if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoCZ]))
+        #    {
+        #        perdiemCZ = new CalculatePerdiemCZ();
+        #        perdiemCZ.calculatePerdiemCZ(this.PerdiemHoursFirstDay, this.PerdiemHoursLastDay, real2int(this.PerdiemDaysBetweenFirstLastDay), this.TrvRequisitionTable, this);
+        #
+        #        //update dependant fields
+        #        this.calculateExchangeRate();
+        #        this.calculateAccountingCurrencyAmount();
+        #
+        #        return;
+        #    }
+        #
+        #     // for the per diem calculation is based on 24 hour period
+        #    if (trvParameters.PerDiemCalculation == TrvPerDiemCalculation::FullDayHourPeriod)
+        #    {
+        #        numHours = hrsFirstDay + (numdays * 24) + hrsLastDay;
+        #        if (numHours >= 24)
+        #        {
+        #            numdays = numHours / 24;
+        #            hrsFirstDay = 0;
+        #            hrsLastDay = numHours - (numdays * 24);
+        #        }
+        #        else
+        #        {
+        #            numdays = 0;
+        #            hrsFirstDay = numHours;
+        #            hrsLastDay = 0;
+        #        }
+        #    }
+        #
+        #    select CreatingWorker from trvRequisitionTable where trvRequisitionTable.RecId == this.TrvRequisitionTable;
+        #
+        #    select firstonly PerDiem from trvPartyEmployeeRelationship
+        #        where trvPartyEmployeeRelationship.Worker == trvRequisitionTable.CreatingWorker;
+        #    if(trvPartyEmployeeRelationship.PerDiem > 0)
+        #    {
+        #        if(firstLastSame)
+        #        {
+        #            this.TransactionCurrencyAmount = trvPartyEmployeeRelationship.PerDiem * 1;
+        #        }
+        #        else
+        #        {
+        #            if(hrsFirstDay)
+        #            {
+        #                numdays++;
+        #            }
+        #
+        #            if(hrsLastDay)
+        #            {
+        #                numdays++;
+        #            }
+        #
+        #            this.TransactionCurrencyAmount = trvPartyEmployeeRelationship.PerDiem * numdays;
+        #        }
+        #        //update dependant fields
+        #        this.calculateExchangeRate();
+        #        this.calculateAccountingCurrencyAmount();
+        #        return;
+        #    }
+        #
+        #    //now that we didn't find an employee rule, we need
+        #    //a travel location to look up a general rule
+        #    if(!this.PerdiemLocation)
+        #    {
+        #        this.TransactionCurrencyAmount = 0;
+        #        return;
+        #    }
+        #
+        #    select trvPerDiems where
+        #        trvPerDiems.Location == this.PerdiemLocation &&
+        #        (trvPerDiems.DateFrom <= DateTimeUtil::date(dateFrom) || !trvPerDiems.DateFrom) &&
+        #        (trvPerDiems.DateTo >= DateTimeUtil::date(dateTo) || !trvPerDiems.DateTo);
+        #
+        #    if(!trvPerDiems.RecId)
+        #    {
+        #        warning("@SYS116199");
+        #
+        #        select RecId from trvPerDiems where
+        #            trvPerDiems.Location == this.PerdiemLocation &&
+        #            (trvPerDiems.DateFrom <= DateTimeUtil::date(dateFrom) || !trvPerDiems.DateFrom);
+        #
+        #        if(trvPerDiems.RecId)
+        #        {
+        #           warning(strFmt("@SYS117995", date2StrUsr(trvPerDiems.DateTo, DateFlags::FormatAll)));
+        #        }
+        #
+        #        this.TransactionCurrencyAmount = 0;
+        #        return;
+        #    }
+        #
+        #    // handle first day
+        #
+        #    // check if any allowance rates exist for the perdiem
+        #    select RecId from trvAllowanceRateAnyExist where
+        #        trvAllowanceRateAnyExist.PerDiemRecId == trvPerDiems.RecId &&
+        #        (trvAllowanceRateAnyExist.TrvFirstLastBoth == TrvFirstLastBoth::FirstDay || trvAllowanceRateAnyExist.TrvFirstLastBoth == TrvFirstLastBoth::Both);
+        #
+        #    if (!trvAllowanceRateAnyExist.RecId)
+        #    {
+        #        // if no rates have been setup, then count day as a full day only if hrs > 0
+        #        if (hrsFirstDay > 0)
+        #            numdays++;
+        #    }
+        #    else
+        #    {
+        #        select * from trvAllowanceRate where
+        #            trvAllowanceRate.PerDiemRecId == trvPerDiems.RecId &&
+        #            (trvAllowanceRate.TrvFirstLastBoth == TrvFirstLastBoth::FirstDay || trvAllowanceRate.TrvFirstLastBoth == TrvFirstLastBoth::Both) &&
+        #            trvAllowanceRate.FromQty <= hrsFirstDay && trvAllowanceRate.ToQty >= hrsFirstDay;
+        #
+        #        if(trvAllowanceRate.RecId && hrsFirstDay > 0)
+        #        {
+        #            // rates are setup and found for first day, use it
+        #            if(trvParameters.PerDiemRounding == TrvPerDiemRounding::RoundUp)
+        #            {
+        #                mealAllowance += roundUp(trvPerDiems.MealAllowance * trvAllowanceRate.MealReduction / 100, 1.0);
+        #                hotelAllowance += roundUp(trvPerDiems.HotelAllowance * trvAllowanceRate.HotelReduction / 100, 1.0);
+        #                otherAllowance += roundUp(trvPerDiems.OtherAllowance * trvAllowanceRate.OtherReduction / 100, 1.0);
+        #            }
+        #            else
+        #            {
+        #                mealAllowance += trvPerDiems.MealAllowance * trvAllowanceRate.MealReduction / 100;
+        #                hotelAllowance += trvPerDiems.HotelAllowance * trvAllowanceRate.HotelReduction / 100;
+        #                otherAllowance += trvPerDiems.OtherAllowance * trvAllowanceRate.OtherReduction / 100;
+        #            }
+        #        }
+        #        // else pay nothing
+        #    }
+        #
+        #    // handle last day
+        #
+        #    // do not apply last day reductions if first and last days are the same
+        #    if(!firstLastSame && (hrsLastDay>0))
+        #    {
+        #        // check if any allowance rates exist for the perdiem
+        #        select RecId from trvAllowanceRateAnyExist where
+        #            trvAllowanceRateAnyExist.PerDiemRecId == trvPerDiems.RecId &&
+        #            (trvAllowanceRateAnyExist.TrvFirstLastBoth == TrvFirstLastBoth::LastDay || trvAllowanceRateAnyExist.TrvFirstLastBoth == TrvFirstLastBoth::Both);
+        #
+        #        if (!trvAllowanceRateAnyExist.RecId)
+        #        {
+        #            // if no rates have been setup, then count day as a full day only if hrs > 0
+        #            if (hrsLastDay > 0)
+        #                numdays++;
+        #        }
+        #        else
+        #        {
+        #            select * from trvAllowanceRate where
+        #                trvAllowanceRate.PerDiemRecId == trvPerDiems.RecId &&
+        #                (trvAllowanceRate.TrvFirstLastBoth == TrvFirstLastBoth::LastDay || trvAllowanceRate.TrvFirstLastBoth == TrvFirstLastBoth::Both) &&
+        #                trvAllowanceRate.FromQty <= hrsLastDay && trvAllowanceRate.ToQty >= hrsLastDay;
+        #
+        #            if(trvAllowanceRate.RecId)
+        #            {
+        #               // rates are setup and found for last day, use it
+        #                if(trvParameters.PerDiemRounding == TrvPerDiemRounding::RoundUp)
+        #                {
+        #                    mealAllowance += roundUp(trvPerDiems.MealAllowance * trvAllowanceRate.MealReduction / 100, 1.0);
+        #                    hotelAllowance += roundUp(trvPerDiems.HotelAllowance * trvAllowanceRate.HotelReduction / 100, 1.0);
+        #                    otherAllowance += roundUp(trvPerDiems.OtherAllowance * trvAllowanceRate.OtherReduction / 100, 1.0);
+        #                }
+        #                else
+        #                {
+        #                    mealAllowance += trvPerDiems.MealAllowance * trvAllowanceRate.MealReduction / 100;
+        #                    hotelAllowance += trvPerDiems.HotelAllowance * trvAllowanceRate.HotelReduction / 100;
+        #                    otherAllowance += trvPerDiems.OtherAllowance * trvAllowanceRate.OtherReduction / 100;
+        #                }
+        #            }
+        #            // else pay nothing
+        #        }
+        #    }
+        #
+        #    mealAllowance += numdays * trvPerDiems.MealAllowance;
+        #    hotelAllowance += numdays * trvPerDiems.HotelAllowance;
+        #    otherAllowance += numdays * trvPerDiems.OtherAllowance;
+        #
+        #    expAmount = mealAllowance + hotelAllowance + otherAllowance;
+        #
+        #    this.TransactionCurrencyAmount=expAmount;
+        #    this.TransactionCurrencyCode = trvPerDiems.Currency;
+        #
+        #    //update dependant fields
+        #    this.calculateExchangeRate();
+        #    this.calculateAccountingCurrencyAmount();
+        #}
+      ENDSOURCE
+      SOURCE #calculatePocketMoney
+        #public void calculatePocketMoney(utcdatetime _startDate, utcdatetime _endDate, Amount _dailyRate, Percent _pocketPercent)
+        #{
+        #    real    hrsFirstDay = 0;
+        #    real    hrsLastDay = 0;
+        #    real    numHours = 0;
+        #    date    startMidnight;
+        #    date    lastMidnight;
+        #    int     numdays;
+        #    boolean firstLastSame = false;
+        #    utcdatetime dateFrom = DateTimeUtil::applyTimeZoneOffset(_startDate, DateTimeUtil::getUserPreferredTimeZone());
+        #    utcdatetime dateTo = DateTimeUtil::applyTimeZoneOffset(_endDate, DateTimeUtil::getUserPreferredTimeZone());
+        #    ;
+        #
+        #    if(!dateFrom || !dateTo )
+        #    {
+        #        this.TransactionCurrencyAmount = 0;
+        #        return;
+        #    }
+        #
+        #    firstLastSame = (DateTimeUtil::date(dateFrom) == DateTimeUtil::date(dateTo));
+        #
+        #    if(firstLastSame)
+        #    {
+        #        hrsFirstDay += DateTimeUtil::getDifference(dateTo, dateFrom)/3600;
+        #        numdays = 0;
+        #    }
+        #    else
+        #    {
+        #        hrsFirstDay = 24 - DateTimeUtil::hour(dateFrom) - (DateTimeUtil::minute(dateFrom)/60);
+        #
+        #        hrsLastDay = DateTimeUtil::hour(dateTo) + (DateTimeUtil::minute(dateTo)/60);
+        #
+        #        startMidnight = DateTimeUtil::date(DateTimeUtil::addDays(dateFrom, 1));
+        #        lastMidnight = DateTimeUtil::date(dateTo);
+        #
+        #        //number of full travel days, not counting first and last
+        #        numdays = lastMidnight - startMidnight + 1;
+        #    }
+        #
+        #    this.TransactionCurrencyAmount = (numdays + (hrsFirstDay + hrsLastDay)/24) * _dailyRate * (_pocketPercent/100);
+        #}
+      ENDSOURCE
+      SOURCE #calculatePrivateCar
+        #//INC41179
+        #void calculatePrivateCar()
+        #{
+        #    TrvRequisitionPrivateCar    cars;
+        #    TrvRequisitionTable         reqTable; //<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu/>
+        #
+        #    this.PrivateCarId = 0;
+        #
+        #    if(this.ExpType == TrvExpType::PrivateCar)
+        #    {
+        #        //<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #        reqTable = TrvRequisitionTable::find(this.TrvRequisitionTable);
+        #        this.PrivateCarId = TrvRequisitionPrivateCar::findDefaultPrivateCarWorker(reqTable.CreatingWorker, reqTable.RequisitionDate).RecId;
+        #        //</CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #
+        #        /*<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #        //kolik aut je zaměstnanci přiřazeno?
+        #        select count(RecId)
+        #        from cars
+        #        where cars.TrvHcmWorkerRecId == TrvRequisitionTable::find(this.TrvRequisitionTable).CreatingWorker
+        #           && cars.FromDate <= this.EstimatedDate
+        #           && cars.ToDate >= this.EstimatedDate;
+        #
+        #        //pokud má právě jedno
+        #        if(cars.RecId == 1)
+        #        {
+        #            //vyber ho
+        #            select cars
+        #            where cars.TrvHcmWorkerRecId == TrvRequisitionTable::find(this.TrvRequisitionTable).CreatingWorker
+        #               && cars.FromDate <= this.EstimatedDate
+        #               && cars.ToDate >= this.EstimatedDate;
+        #
+        #            //a nastav ho
+        #            this.PrivateCarId = cars.RecId;
+        #        }
+        #        </CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>*/
+        #    }
+        #
+        #    this.fillAfterPrivateCarSet();
+        #}
+      ENDSOURCE
+      SOURCE #canBeSendToWorkflow
+        #public boolean canBeSendToWorkflow()
+        #{
+        #    /*
+        #    if (this.NeedCheckAfterAutoCreate == NoYes::Yes)
+        #    {
+        #        return checkFailed(strFmt("@AQS539",this.Category, this.TransactionCurrencyAmount));
+        #    }
+        #    */
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #canBeUsedInTrvExpTrans
+        #public boolean canBeUsedInTrvExpTrans()
+        #{
+        #    return !TrvRequisitionLineToPurchOrder::existTrvRequisitionLine(this.RecId);
+        #}
+      ENDSOURCE
+      SOURCE #categoryDescription
+        #display Description categoryDescription(TrvRequisitionLine _line)
+        #{
+        #    CategoryTable cat;
+        #
+        #    if (_line.Category)
+        #    {
+        #        cat = CategoryTable::find(_line.Category);
+        #        if (cat.RecId)
+        #        {
+        #            return cat.CategoryName;
+        #        }
+        #    }
+        #    return "";
+        #}
+      ENDSOURCE
+      SOURCE #changeTransactionCurrencyAmount
+        #public void changeTransactionCurrencyAmount()
+        #{
+        #    TrvRequisitionAccomodationCategory category;
+        #
+        #    select * from category where category.RecId == this.AccomodationCategoryId;
+        #
+        #    this.UnitPrice = category.IndicativePrice;
+        #    this.TransactionCurrencyCode = category.CurrencyCode;
+        #    this.calculateEstimatedAmount();
+        #    this.modifiedField(fieldNum(TrvRequisitionLine, TransactionCurrencyCode));
+        #
+        #}
+      ENDSOURCE
+      SOURCE #checkBudget
+        #/// <summary>
+        #/// Performs a budget check on the travel requisition line.
+        #/// </summary>
+        #/// <remarks>
+        #/// When the budget check is not triggered by an explicit user action, the check is performed only when
+        #/// the budget check on an entry value is set.
+        #/// </remarks>
+        #public void checkBudget()
+        #{
+        #    BudgetControlSourceDocumentProcessor::submitSourceDocumentLineToCheckBudget(
+        #                                    SourceDocumentLine::find(this.SourceDocumentLine),
+        #                                    true,  // is draft reservation
+        #                                    null,  // caller
+        #                                    false);  // is not on demand check
+        #}
+      ENDSOURCE
+      SOURCE #checkBudgetOnDemand
+        #/// <summary>
+        #/// Performs an on-demand budget check on the travel requisition line.
+        #/// </summary>
+        #public void checkBudgetOnDemand()
+        #{
+        #    BudgetCheckResult budgetCheckResult = this.budgetCheckResult();
+        #
+        #    if (budgetCheckResult == BudgetCheckResult::NoCheck ||
+        #        budgetCheckResult == BudgetCheckResult::Failed)
+        #    {
+        #        BudgetControlSourceDocumentProcessor::submitSourceDocumentLineToCheckBudget(
+        #                                        SourceDocumentLine::find(this.SourceDocumentLine),
+        #                                        true,  // is draft reservation
+        #                                        null,  // caller
+        #                                        true);  // is on demand check
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #checkProjectBudget
+        #/// <summary>
+        #/// Performs a project budget check on the expense line.
+        #/// </summary>
+        #public void checkProjectBudget()
+        #{
+        #    SourceDocumentLineItem  sourceDocumentLineItem;
+        #
+        #    sourceDocumentLineItem = SourceDocumentLineItem::newFromSourceDocumentLine(SourceDocumentLine::find(this.SourceDocumentLine));
+        #    if (ProjectCommitmentFacade::isProjectBudgetControlEnabled(sourceDocumentLineItem, false))
+        #    {
+        #        ProjectCommitmentFacade::checkProjectBudgets(sourceDocumentLineItem, false, true);
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #checkProjectBudgetOnDemand
+        #/// <summary>
+        #/// Performs an on-demand project budget check on the expense line.
+        #/// </summary>
+        #public void checkProjectBudgetOnDemand()
+        #{
+        #    ProjBudgetCheckResult   budgetCheckResult;
+        #    SourceDocumentLineItem  sourceDocumentLineItem;
+        #
+        #    budgetCheckResult = this.projectBudgetCheckResult();
+        #    if (budgetCheckResult == ProjBudgetCheckResult::NoCheck ||
+        #        budgetCheckResult == ProjBudgetCheckResult::Failed  ||
+        #        budgetCheckResult == ProjBudgetCheckResult::PassedWithWarnings)
+        #    {
+        #        sourceDocumentLineItem = SourceDocumentLineItem::newFromSourceDocumentLine(SourceDocumentLine::find(this.SourceDocumentLine));
+        #        if (ProjectCommitmentFacade::isProjectBudgetControlEnabled(sourceDocumentLineItem, true))
+        #        {
+        #            ProjectCommitmentFacade::checkProjectBudgets(sourceDocumentLineItem, false, true);
+        #        }
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #checkVendAccountUsage
+        #//INC39794
+        #public boolean checkVendAccountUsage()
+        #{
+        #    if(this.VendAccount && !TrvCostType::find(this.Category).ItemId)
+        #    {
+        #        return checkFailed("@AQS2536");
+        #    }
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #clearProjectRelatedFields
+        #private void clearProjectRelatedFields()
+        #{
+        #    this.ProjTable = 0;
+        #    this.ProjLinePropertyId = '';
+        #    this.ProjActivityNumber = '';
+        #}
+      ENDSOURCE
+      SOURCE #computeNights
+        #public int computeNights()
+        #{
+        #    #TimeConstants
+        #
+        #    TrvParameters params = TrvParameters::find();
+        #    boolean nightDefined = false;
+        #    TrvRequisitionTable header;
+        #    int64 dateDifferenceSeconds;
+        #    int totalDays;
+        #    boolean sameDays = false;
+        #    boolean lastDayToNight = false;
+        #    boolean firstDayFromNight = false;
+        #    utcDateTime modifiedStartDate;
+        #    utcDateTime modifiedEndDate;
+        #
+        #    header = TrvRequisitionTable::find(this.TrvRequisitionTable);
+        #    if (params.RecId && params.NightFrom != 0 && params.NightTo != 0)
+        #    {
+        #        nightDefined = true;
+        #    }
+        #
+        #    sameDays = DateTimeUtil::date(TrvRequisitionBusinessTripPlanLines::firstLine(header.RequisitionNumber)) == DateTimeUtil::date(TrvRequisitionBusinessTripPlanLines::lastLine(header.RequisitionNumber));
+        #    /*
+        #    if (DateTimeUtil::year(header.StartDateTime) == DateTimeUtil::year(header.EndDateTime) &&
+        #        DateTimeUtil::month(header.StartDateTime) == DateTimeUtil::month(header.EndDateTime) &&
+        #        DateTimeUtil::day(header.StartDateTime) == DateTimeUtil::day(header.EndDateTime)
+        #       )
+        #    {
+        #        sameDays = true;
+        #    }
+        #    */
+        #
+        #    modifiedStartDate = DateTimeUtil::addHours(TrvRequisitionBusinessTripPlanLines::firstLine(header.RequisitionNumber), -DateTimeUtil::hour(TrvRequisitionBusinessTripPlanLines::firstLine(header.RequisitionNumber)));
+        #    modifiedEndDate = DateTimeUtil::addHours(TrvRequisitionBusinessTripPlanLines::lastLine(header.RequisitionNumber), -DateTimeUtil::hour(TrvRequisitionBusinessTripPlanLines::lastLine(header.RequisitionNumber)));
+        #
+        #    modifiedStartDate = DateTimeUtil::addHours(modifiedStartDate, -DateTimeUtil::minute(modifiedStartDate));
+        #    modifiedEndDate = DateTimeUtil::addHours(modifiedEndDate, -DateTimeUtil::minute(modifiedEndDate));
+        #
+        #    dateDifferenceSeconds = DateTimeUtil::getDifference(modifiedEndDate, modifiedStartDate);
+        #    totalDays = int642int(dateDifferenceSeconds div #secondsPerDay); // dateDifferenceSeconds/(60*60*24);
+        #
+        #    if (sameDays)
+        #    {
+        #        totalDays = 0;
+        #    }
+        #
+        #    /*
+        #    if (!nightDefined)
+        #    {
+        #        //do nothing
+        #    }
+        #    else
+        #    */
+        #    if (nightDefined)
+        #    {
+        #        //is last day to night
+        #        lastDayToNight = DateTimeUtil::hour(TrvRequisitionBusinessTripPlanLines::lastLine(header.RequisitionNumber)) >= params.NightFrom;
+        #        //is first day from night
+        #        firstDayFromNight = DateTimeUtil::hour(TrvRequisitionBusinessTripPlanLines::firstLine(header.RequisitionNumber)) <= params.NightTo;
+        #
+        #        if (lastDayToNight)
+        #        {
+        #            totalDays++;
+        #        }
+        #
+        #        if (firstDayFromNight)
+        #        {
+        #            totalDays++;
+        #        }
+        #    }
+        #
+        #    return totalDays;
+        #
+        #}
+      ENDSOURCE
+      SOURCE #delete
+        #public void delete()
+        #{
+        #    super();
+        #
+        #    if(TrvParameters::find().WhenToEvaluatePolicy == TrvEvaluateExpensePolicies::OnLineSave)
+        #    {
+        #        TrvPolicyEvalEngine::evaluateViolationsForHdr(this.TrvRequisitionTable, SysPolicyTypeEnum::TrvRequisitionPolicy);
+        #    }
+        #
+        #    // + TomZan
+        #    this.aqsUpdateHeaderAccommodationStatus();
+        #    // - TomZan
+        #}
+      ENDSOURCE
+      SOURCE #editExchangeRate
+        #//BP Deviation Documented
+        #public edit ExchRate editExchangeRate(boolean _set, ExchRate _exchRate)
+        #{
+        #    ExchangeRateHelper exchangeRateHelper = ExchangeRateHelper::newCurrency(Ledger::primaryLedger(CompanyInfo::findDataArea(curext()).RecId), this.TransactionCurrencyCode);
+        #
+        #    if (_set)
+        #    {
+        #        if (_exchRate >= 0)
+        #        {
+        #            this.ExchangeRate = exchangeRateHelper.prepareExchangeRateForStorage(_exchRate);
+        #            this.calculateAccountingCurrencyAmount();
+        #        }
+        #        else
+        #        {
+        #            checkFailed(strFmt("@SYS71086", fieldPName(ExchangeRate, ExchangeRate), 0));
+        #            _exchRate = exchangeRateHelper.displayStoredExchangeRate(this.ExchangeRate);
+        #        }
+        #    }
+        #    else
+        #    {
+        #        _exchRate = exchangeRateHelper.displayStoredExchangeRate(this.ExchangeRate);
+        #    }
+        #
+        #    return _exchRate;
+        #}
+      ENDSOURCE
+      SOURCE #editProject
+        #public edit ProjId editProject(boolean _set, ProjId _projId)
+        #{
+        #    ProjTable projTable;
+        #    ProjId projId;
+        #    ProjParameters projParameters;
+        #    ProjValCheckTrans projValCheckTrans;
+        #    boolean passedProjectValidation = true;
+        #    RefRecId oldProjTable;
+        #
+        #    if (_set)
+        #    {
+        #        if (_projId)
+        #        {
+        #            if(CategoryTable::find(this.Category).UseInProject == NoYes::No)
+        #            {
+        #                checkFailed("@SYS327727");
+        #                this.clearProjectRelatedFields();
+        #            }
+        #            else
+        #            {
+        #                projTable = ProjTable::find(_projId);
+        #
+        #                if(projTable)
+        #                {
+        #                    projParameters = ProjParameters::find();
+        #                    if(projParameters.ValidationEmplProj || projParameters.ValidationProjCategory)
+        #                    {
+        #                        // the validation API will access trvExpTrans.ProjTable field.
+        #                        // assign it to the new value first, and revert back after validation
+        #                        oldProjTable = this.ProjTable;
+        #                        this.ProjTable = projTable.RecId;
+        #                        projValCheckTrans = new ProjValCheckTrans();
+        #                        if(!projValCheckTrans.validateMandatory(this))
+        #                        {
+        #                            passedProjectValidation = false;
+        #                        }
+        #                        this.ProjTable = oldProjTable;
+        #                    }
+        #
+        #                    if(passedProjectValidation)
+        #                    {
+        #                        this.ProjTable = projTable.RecId;
+        #                        this.setProjectFields();
+        #                        this.setDefaultDimension();
+        #                        this.ProjActivityNumber = '';
+        #                    }
+        #                }
+        #            }
+        #        }
+        #        else
+        #        {
+        #            this.clearProjectRelatedFields();
+        #            this.setDefaultDimension();
+        #        }
+        #
+        #        //set the value to return
+        #        if(this.ProjTable)
+        #        {
+        #            projId = ProjTable::findRecId(this.ProjTable).ProjId;
+        #        }
+        #        else
+        #        {
+        #            projId = '';
+        #        }
+        #    }
+        #    else
+        #    {
+        #        if(this.ProjTable)
+        #        {
+        #            projId = ProjTable::findRecId(this.ProjTable).ProjId;
+        #        }
+        #    }
+        #
+        #    return projId;
+        #}
+      ENDSOURCE
+      SOURCE #evaluatePolicies
+        #/// <summary>
+        #/// Evaluate policies on the travel requisition line.
+        #/// </summary>
+        #public void evaluatePolicies()
+        #{
+        #    TrvParameters trvParameters = TrvParameters::find();
+        #
+        #    if(trvParameters.WhenToEvaluatePolicy == TrvEvaluateExpensePolicies::OnLineSave)
+        #    {
+        #        TrvPolicyEvalEngine::evaluateViolationsForLine(this.RecId, SysPolicyTypeEnum::TrvRequisitionPolicy);
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #fillAfterPrivateCarKilometersSet
+        #public void fillAfterPrivateCarKilometersSet()
+        #{
+        #    TrvVehicleCompensation comp;
+        #    real resultUsedFule = 0;
+        #    real resultCompensation = 0;
+        #
+        #    if (this.PrivateCarKilometers) //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti/>
+        #    {
+        #        //<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #        this.PrivateCarFuelPrice = this.getFuelPriceCur();
+        #        this.TransactionCurrencyAmount = Currency::amount(this.PrivateCarKilometers * this.privateCarTotalCompensationPerUnit());
+        #        //</CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #    }
+        #
+        #    /*<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #    if (this.PrivateCarKilometers != 0)
+        #    {
+        #        //select comp order by comp.FromDate desc where comp.TrvVehicleKindId == this.PrivateCarVehicleKindId && comp.FromDate <= this.EstimatedDate;
+        #        comp = TrvVehicleCompensation::findId(this.PrivateCarVehicleKindId, this.EstimatedDate); //INC38159
+        #
+        #        if (comp.RecId != 0)
+        #        {
+        #            resultUsedFule = this.PrivateCarKilometers * this.PrivateCarConsumption * this.PrivateCarFuelPrice / 100; //fuel used
+        #            resultCompensation = !this.PrivateCarTrailer ? (comp.Compensation)
+        #                                                         : (comp.Compensation + comp.Compensation * comp.Trailer / 100);
+        #            resultCompensation = resultCompensation * this.PrivateCarKilometers;
+        #
+        #            this.TransactionCurrencyAmount = resultUsedFule + resultCompensation;
+        #        }
+        #    }
+        #    </CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>*/
+        #}
+      ENDSOURCE
+      SOURCE #fillAfterPrivateCarSet
+        #public void fillAfterPrivateCarSet()
+        #{
+        #    TrvRequisitionPrivateCar    car;
+        #    TrvFuelPrice                trvFuelPrice;
+        #    TransDate                   transDate;
+        #
+        #
+        #    select  car where car.RecId == this.PrivateCarId;
+        #
+        #
+        #    transDate = this.EstimatedDate;
+        #    if (!transDate)
+        #    {
+        #        transDate = systemDateGet();
+        #    }
+        #    if (car.TrvFuelId)
+        #    {
+        #        trvFuelPrice = TrvFuelPrice::findId(car.TrvFuelId, transDate);               //INC38159
+        #    }
+        #
+        #
+        #    this.PrivateCarFuelId = car.TrvFuelId;
+        #    this.PrivateCarLicencePlate = car.LicencePlate;
+        #    this.PrivateCarVehicleKindId = car.TrvVehicleKindId;
+        #    this.PrivateCarConsumption = car.Consumption;
+        #    this.PrivateCarFuelPrice = trvFuelPrice.Price;
+        #
+        #    this.fillAfterPrivateCarKilometersSet();
+        #}
+      ENDSOURCE
+      SOURCE #findDailyRate
+        #public Amount findDailyRate()
+        #{
+        #    TrvPerDiems diem;
+        #
+        #    select MealAllowance from diem where diem.Location == this.PerdiemLocation && diem.DateFrom<=this.PerdiemDate && (diem.DateTo>=this.PerdiemDate || diem.DateTo == dateNull());
+        #
+        #    return diem.MealAllowance;
+        #}
+      ENDSOURCE
+      SOURCE #findPocketMoneyPercent
+        #public Percent findPocketMoneyPercent()
+        #{
+        #    return TrvParameters::find().PocketMoneyPercent;
+        #}
+      ENDSOURCE
+      SOURCE #getFuelPriceCur
+        #//<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu/>
+        #public CostAmount getFuelPriceCur()
+        #{
+        #    CostAmount  ret;
+        #
+        #    /*<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>
+        #    ret = TrvRequisitionPrivateCar::find(this.PrivateCarId).getFuelPrice(this.EstimatedDate);
+        #    ret = Currency::curAmount(ret, this.TransactionCurrencyCode, this.EstimatedDate);
+        #    </CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>*/
+        #
+        #    //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>
+        #    TrvRequisitionPrivateCar reqPrivateCar = TrvRequisitionPrivateCar::find(this.PrivateCarId);
+        #
+        #    ret = reqPrivateCar.getFuelPrice(this.EstimatedDate);
+        #    ret = Currency::curAmount2CurAmount(ret, reqPrivateCar.getFuelPriceCurrency(), this.TransactionCurrencyCode, this.EstimatedDate);
+        #    //</CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #initValue
+        #public void initValue()
+        #{
+        #    super();
+        #
+        #    this.LegalEntity            = CompanyInfo::find().RecId;
+        #    this.ReferenceDataAreaId    = curext();
+        #    this.ReconciliationStatus   = TrvRequisitionReconciliationStatus::Open;
+        #
+        #    /*<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>
+        #    this.TransactionCurrencyCode    = CompanyInfo::standardCurrency();
+        #    this.ExchangeRate               = 100;
+        #    </CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>*/
+        #
+        #    this.TransactionCurrencyCode = SystemParameters::getSystemCurrencyCode(); //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti/>
+        #
+        #    this.setDefaultDimension(true);
+        #}
+      ENDSOURCE
+      SOURCE #insert
+        #public void insert(boolean _evaluatePolicies = true)
+        #{
+        #    TrvParameters trvParameters = TrvParameters::find();
+        #
+        #    this.calculateExpType();
+        #    this.calculatePerdiem();
+        #    this.calculateMileage();
+        #    this.calculateAccountingCurrencyAmount();
+        #
+        #    ttsbegin;
+        #
+        #    // The state transition model will update distributions, and check budget as required
+        #    // Eg only if budget check on line save is on, distributions would be created, and move to fully distributed state
+        #    // clear the source line value before insert.  If a previous attempt to insert threw an error this files is not empty
+        #    this.SourceDocumentLine = 0;
+        #
+        #    SourceDocumentProcessorFacade::submitSourceDocumentLineImplementation(this);
+        #
+        #    super();
+        #
+        #    ttscommit;
+        #
+        #    if (_evaluatePolicies && trvParameters.WhenToEvaluatePolicy == TrvEvaluateExpensePolicies::OnLineSave)
+        #    {
+        #        TrvPolicyEvalEngine::evaluateViolationsForLine(this.RecId, SysPolicyTypeEnum::TrvRequisitionPolicy);
+        #        TrvPolicyEvalEngine::evaluateViolationsForHdr(this.TrvRequisitionTable, SysPolicyTypeEnum::TrvRequisitionPolicy);
+        #    }
+        #
+        #    // + TomZan
+        #    this.aqsUpdateHeaderAccommodationStatus();
+        #    // - TomZan
+        #}
+      ENDSOURCE
+      SOURCE #isApprover
+        #public boolean isApprover()
+        #{
+        #    WorkflowTrackingStatusTable status;
+        #
+        #    status = Workflow::findTrackingStatusForCurrentUser(this);
+        #
+        #    if (status.TrackingStatus == WorkflowTrackingStatus::Pending)
+        #    {
+        #        return true;
+        #    }
+        #
+        #    return false;
+        #}
+      ENDSOURCE
+      SOURCE #isBudgetCheckDone
+        #// BP deviation documented
+        #display boolean isBudgetCheckDone()
+        #{
+        #    boolean ret = false;
+        #
+        #    if (this.SourceDocumentLine)
+        #    {
+        #        ret = BudgetSourceSourceDocumentLine::existBudgetSource(this.SourceDocumentLine);
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #isCategoryIntegratedWithProject
+        #/// <summary>
+        #/// Indicates whether the category on the travel requisition line, is integrated with project.
+        #/// </summary>
+        #/// <returns>
+        #/// true if the travel requisition line category is integrated with project; otherwise, false.
+        #/// </returns>
+        #[SysClientCacheDataMethodAttribute(true)]
+        #public display boolean isCategoryIntegratedWithProject()
+        #{
+        #    return CategoryTable::find(this.Category).UseInProject;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #modifiedField
+        #public void modifiedField(FieldId _fieldId)
+        #{
+        #    // modifiedField() might be called even though there is no change! Refer to AX6:24597 bug.
+        #    // Skip the business logic for this case, as it might result in undesired value re-initialization
+        #    //if (this.(_fieldId) == this.orig().(_fieldId))
+        #    //{
+        #    //    return;
+        #    //}
+        #
+        #    TrvRequisitionTable requisitionTable;//<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #
+        #    super(_fieldId);
+        #
+        #    switch(_fieldId)
+        #    {
+        #        case (fieldNum(TrvRequisitionLine, PerdiemDateFrom)):
+        #        case (fieldNum(TrvRequisitionLine, PerdiemDateTo)):
+        #            this.calculatePerdiem();
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, Mileage)):
+        #            this.calculateMileage();
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, Category)):
+        #            this.calculateExpType();
+        #            this.calculatePrivateCar(); //INC41179
+        #            this.Merchant = '';
+        #            if (this.isCategoryIntegratedWithProject())
+        #            {
+        #                this.clearProjectRelatedFields();
+        #            }
+        #            if (this.ProjTable)
+        #            {
+        #                this.setProjectFields();
+        #            }
+        #            if (this.ExpType == TrvExpType::Hotel)
+        #            {
+        #                this.NightsNumber = max(0, this.computeNights() - TrvRequisitionLine::AQSNightsSum(this.TrvRequisitionTable));
+        #
+        #                //info(strFmt('Night number: %1', this.NightsNumber));
+        #
+        #                this.changeTransactionCurrencyAmount();
+        #            }
+        #            if (this.ExpType == TrvExpType::Allowance)
+        #            {
+        #                this.PermDiemPocketMoneyPercent = this.findPocketMoneyPercent();
+        #            }
+        #            //<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #            if (this.ExpType == TrvExpType::PrivateCar)
+        #            {
+        #                requisitionTable = TrvRequisitionTable::find(this.TrvRequisitionTable);
+        #                this.PrivateCarId = TrvRequisitionPrivateCar::findDefaultPrivateCarWorker(requisitionTable.CreatingWorker, requisitionTable.RequisitionDate).RecId;
+        #                this.fillAfterPrivateCarSet();
+        #            }
+        #            //</CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, EstimatedDate)):
+        #            this.calculateExchangeRate(); //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti/>
+        #            this.calculatePrivateCar(); //INC41179
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, ProjTable)):
+        #            this.setDefaultDimension();
+        #
+        #            break;
+        #        case (fieldNum(TrvRequisitionLine, TransactionCurrencyAmount)):
+        #            this.calculateAccountingCurrencyAmount();
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, TransactionCurrencyCode)):
+        #            this.fillAfterPrivateCarKilometersSet(); //<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu/>
+        #            this.calculateExchangeRate();
+        #            this.calculateAccountingCurrencyAmount();
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, ExchangeRate)):
+        #            this.calculateAccountingCurrencyAmount();
+        #            break;
+        #        //private car
+        #        case (fieldNum(TrvRequisitionLine, PrivateCarId)):
+        #            this.fillAfterPrivateCarSet();
+        #            break;
+        #        //private car - number of km
+        #        case (fieldNum(TrvRequisitionLine, PrivateCarKilometers)):
+        #        case (fieldNum(TrvRequisitionLine, PrivateCarTrailer)):
+        #        case (fieldNum(TrvRequisitionLine, PrivateCarConsumption)):
+        #        case (fieldNum(TrvRequisitionLine, PrivateCarFuelPrice)):
+        #            this.fillAfterPrivateCarKilometersSet();
+        #            break;
+        #        //PerdiemLocation
+        #        case (fieldNum(TrvRequisitionLine, PerdiemLocation)):
+        #            this.calculatePerdiem();
+        #            this.PermDiemDailyRate = this.findDailyRate();
+        #            break;
+        #        // Hotel
+        #        case (fieldNum(TrvRequisitionLine, UnitPrice)):
+        #            this.calculateEstimatedAmount();
+        #            break;
+        #        case (fieldNum(TrvRequisitionLine, NightsNumber)):
+        #            this.calculateEstimatedAmount();
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, AccomodationCategoryId)):
+        #            this.changeTransactionCurrencyAmount();
+        #            break;
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #parmExchangeRateDate
+        #public AccountingDate parmExchangeRateDate()
+        #{
+        #    return this.EstimatedDate;
+        #}
+      ENDSOURCE
+      SOURCE #parmParentSourceDocumentLine
+        #public SourceDocumentLine parmParentSourceDocumentLine()
+        #{
+        #    return null;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #parmSourceDocLineTypeEnumName
+        #public EnumName parmSourceDocLineTypeEnumName()
+        #{
+        #    return enumStr(SourceDocumentLine_TravelRequisition);
+        #}
+      ENDSOURCE
+      SOURCE #parmSourceDocLineTypeEnumValue
+        #public SourceDocumentTypeEnumValue parmSourceDocLineTypeEnumValue()
+        #{
+        #    return SourceDocumentLine_TravelRequisition::TravelRequisitionLine;
+        #}
+      ENDSOURCE
+      SOURCE #parmSourceDocumentHeader
+        #public SourceDocumentHeader parmSourceDocumentHeader()
+        #{
+        #    SourceDocumentHeader    sourceDocumentHeader;
+        #    TrvRequisitionTable     trvRequisitionTable;
+        #
+        #    if(this.TrvRequisitionTable)
+        #    {
+        #        select firstonly sourceDocumentHeader exists join trvRequisitionTable
+        #            where trvRequisitionTable.SourceDocumentHeader == sourceDocumentHeader.RecId &&
+        #                trvRequisitionTable.RecId == this.TrvRequisitionTable;
+        #    }
+        #
+        #    return sourceDocumentHeader;
+        #}
+      ENDSOURCE
+      SOURCE #perDiemCurrency
+        #//<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti/>
+        #display CurrencyCode perDiemCurrency()
+        #{
+        #    TrvPerDiems     trvPerDiems;
+        #    DataAreaId      dataAreaId = CompanyInfo::findRecId(this.LegalEntity).DataArea;
+        #
+        #    changecompany(dataAreaId)
+        #    {
+        #        trvPerDiems = null;
+        #
+        #        select Currency from trvPerDiems
+        #            where trvPerDiems.Location == this.PerdiemLocation
+        #               && trvPerDiems.DateFrom <= this.PerdiemDate
+        #               && (! trvPerDiems.DateTo || trvPerDiems.DateTo >= this.PerdiemDate);
+        #    }
+        #
+        #    return trvPerDiems.Currency;
+        #}
+      ENDSOURCE
+      SOURCE #policyViolationLevelMsg
+        #//BP deviation documented
+        #display TrvPolicyMessage policyViolationLevelMsg()
+        #{
+        #    TrvPolicyMessage trvPolicyMessage;
+        #    str firstChar, message;
+        #    ;
+        #    trvPolicyMessage = TrvPolicyEvalEngine::displayPolicyViolationLevelMsg(this.RecId, SysPolicyTypeEnum::TrvRequisitionPolicy);
+        #
+        #    if(strLen(trvPolicyMessage) > 0)
+        #    {
+        #        firstChar = subStr(trvPolicyMessage, 0, 1);
+        #        message = subStr(trvPolicyMessage, 2, strLen(trvPolicyMessage)-1);
+        #    }
+        #    else
+        #    {
+        #        // No violations
+        #        firstChar = int2str(enum2int(TrvPolicyViolationLevel::None));
+        #        message = ' ';
+        #    }
+        #
+        #    if (firstChar != int2str(enum2int(TrvPolicyViolationLevel::None)))
+        #    {
+        #        return firstChar + message;
+        #    }
+        #    else
+        #    {
+        #        // return empty string when there are no policy violations
+        #        return "";
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #privateCarCompensationPerUnit
+        #//<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #display TrvPrivateCarCompensationPerUnit privateCarCompensationPerUnit()
+        #{
+        #    TrvRequisitionPrivateCar reqPrivateCar = TrvRequisitionPrivateCar::find(this.PrivateCarId); //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti/>
+        #    CostAmount  ret;
+        #
+        #    ret = TrvRequisitionPrivateCar::getCompensation(this.PrivateCarId, this.PrivateCarTrailer, this.EstimatedDate);
+        #    //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti/> ret = Currency::curAmount(ret, this.TransactionCurrencyCode, this.EstimatedDate);
+        #    ret = Currency::curAmount2CurAmount(ret, reqPrivateCar.getCompensationCurrency(), this.TransactionCurrencyCode, this.EstimatedDate); //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti/>
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #privateCarTotalCompensationPerUnit
+        #//<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu>
+        #display TrvPrivateCarTotalComensationPerUnit privateCarTotalCompensationPerUnit()
+        #{
+        #    return Currency::amount(this.PrivateCarFuelPrice / 100 * this.PrivateCarConsumption) + this.privateCarCompensationPerUnit();
+        #}
+      ENDSOURCE
+      SOURCE #projectBudgetCheckResult
+        #/// <summary>
+        #/// Gets the project budget check result for a travel requisition line.
+        #/// </summary>
+        #/// <returns>
+        #/// The project budget check result for a travel requisition line.
+        #/// </returns>
+        #display ProjBudgetCheckResult projectBudgetCheckResult()
+        #{
+        #    ProjBudgetCheckResult   budgetCheckResult;
+        #
+        #    budgetCheckResult = ProjBudgetTransactionManager::getProjBudgetSourceCheckResult(this.SourceDocumentLine);
+        #
+        #    return budgetCheckResult;
+        #}
+      ENDSOURCE
+      SOURCE #requisitionNumber
+        #/// <summary>
+        #/// Gets the requisition number of the travel requisition.
+        #/// </summary>
+        #/// <returns>
+        #/// The requisition number of the travel requisition.
+        #/// </returns>
+        #display TrvRequisitionNumber requisitionNumber()
+        #{
+        #    TrvRequisitionTable trvRequisitionTable;
+        #    select firstonly RequisitionNumber from trvRequisitionTable where trvRequisitionTable.RecId == this.TrvRequisitionTable;
+        #
+        #    return trvRequisitionTable.RequisitionNumber;
+        #}
+      ENDSOURCE
+      SOURCE #setDefaultDimension
+        #/// <summary>
+        #/// Sets the default dimension for the travel requisition line.
+        #/// </summary>
+        #/// <param name="_calledFromInit">
+        #/// A Boolean value that indicates whether this method is called from the
+        #/// <c>TrvRequisitionLine.initValue</c> method or any other location; optional.
+        #/// </param>
+        #/// <remarks>
+        #/// If this method is called from the <c>TrvRequisitionLine.initValue</c> method, the default dimension
+        #/// is derived from the project table and header.Otherwise, it is derived from the project table and
+        #/// worker.
+        #/// </remarks>
+        #public void setDefaultDimension(boolean _calledFromInit = false,
+        #                                TrvHcmWorkerRecId _creatingWorker = 0) //<CDR214702,ldan,2021_11_02,CestovniZadanky_VyuctovaniVydaju_plneni_dimenze_Partner/>
+        #{
+        #    DimensionDefault    dimensionDefaultFromPoject = 0;
+        #    DimensionDefault    dimensionDefaultFromHeaderOrWorker = 0;
+        #    TrvRequisitionTable trvRequisitionTable;
+        #    TrvHcmWorkerRecId   creatingWorker; //<CDR214702,ldan,2021_11_02,CestovniZadanky_VyuctovaniVydaju_plneni_dimenze_Partner/>
+        #
+        #    trvRequisitionTable = TrvRequisitionTable::find(this.TrvRequisitionTable);
+        #    creatingWorker = _creatingWorker ? _creatingWorker : trvRequisitionTable.CreatingWorker; //<CDR214702,ldan,2021_11_02,CestovniZadanky_VyuctovaniVydaju_plneni_dimenze_Partner/>
+        #
+        #    if(_calledFromInit)
+        #    {
+        #        // Use header defaultDimension, if called from initValue method
+        #        dimensionDefaultFromHeaderOrWorker = trvRequisitionTable.DefaultDimension;
+        #    }
+        #    else
+        #    {
+        #        // Use worker defaultDimension, when project change
+        #        //<CDR214702,ldan,2021_11_02,CestovniZadanky_VyuctovaniVydaju_plneni_dimenze_Partner/> dimensionDefaultFromHeaderOrWorker = HcmEmployment::findByWorkerLegalEntity(trvRequisitionTable.CreatingWorker, this.LegalEntity).DefaultDimension;
+        #        dimensionDefaultFromHeaderOrWorker = HcmEmployment::findByWorkerLegalEntity(creatingWorker, this.LegalEntity).DefaultDimension; //<CDR214702,ldan,2021_11_02,CestovniZadanky_VyuctovaniVydaju_plneni_dimenze_Partner/>
+        #    }
+        #
+        #    if(this.ProjTable)
+        #    {
+        #        dimensionDefaultFromPoject = ProjTable::findRecId(this.ProjTable).DefaultDimension;
+        #    }
+        #
+        #    this.DefaultDimension = DimensionDefaultingService::serviceMergeDefaultDimensions(dimensionDefaultFromPoject, dimensionDefaultFromHeaderOrWorker);
+        #}
+      ENDSOURCE
+      SOURCE #setProjectFields
+        #private void setProjectFields()
+        #{
+        #    this.ProjLinePropertyId = ProjLinePropertySetup::findLinePropertyId(ProjTable::findRecId(this.ProjTable).ProjId, this.Category);
+        #}
+        #
+      ENDSOURCE
+      SOURCE #trvAccDescription
+        #public display Description trvAccDescription()
+        #{
+        #    return TrvRequisitionAccomodationCategory::find(this.AccomodationCategoryId).Description;
+        #}
+      ENDSOURCE
+      SOURCE #update
+        #public void update()
+        #{
+        #    TrvParameters trvParameters = TrvParameters::find();
+        #    boolean       changeTransAmount;
+        #
+        #
+        #    this.calculateExchangeRate(); // INC39877 load actual exchange rate for currency
+        #
+        #    this.calculateExpType();
+        #    this.calculatePerdiem();
+        #    this.calculateMileage();
+        #    this.calculateAccountingCurrencyAmount();
+        #
+        #    changeTransAmount = this.orig().TransactionCurrencyAmount != this.TransactionCurrencyAmount;
+        #
+        #    ttsbegin;
+        #
+        #    super();
+        #
+        #    if (changeTransAmount)
+        #    {
+        #        //TrvRequisitionTable::find(this.TrvRequisitionTable).updateAccomodationOverStatus();
+        #        // + TomZan
+        #        this.aqsUpdateHeaderAccommodationStatus();
+        #        // - TomZan
+        #    }
+        #
+        #    // The state transition model will update distributions, and check budget as required
+        #    // based on existing state, budget settings and any fields in the state container that changed
+        #    SourceDocumentProcessorFacade::submitSourceDocumentLineImplementation(this);
+        #
+        #    ttscommit;
+        #
+        #    if(trvParameters.WhenToEvaluatePolicy == TrvEvaluateExpensePolicies::OnLineSave)
+        #    {
+        #        TrvPolicyEvalEngine::evaluateViolationsForLine(this.RecId, SysPolicyTypeEnum::TrvRequisitionPolicy);
+        #        TrvPolicyEvalEngine::evaluateViolationsForHdr(this.TrvRequisitionTable, SysPolicyTypeEnum::TrvRequisitionPolicy);
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #validateCategory
+        #public boolean validateCategory()
+        #{
+        #    if (this.ExpType == TrvExpType::Empty)
+        #    {
+        #        this.calculateExpType();
+        #    }
+        #
+        #    if (this.ExpType == TrvExpType::Advance || this.ExpType == TrvExpType::Personal)
+        #    {
+        #        return checkFailed("@SYS341929");
+        #    }
+        #
+        #    if (TrvCostType::find(this.Category).IsInactive == NoYes::Yes)
+        #    {
+        #        return checkFailed(strFmt("@GLS360265",this.Category));
+        #    }
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #validateExpTypeRequiredFields
+        #public boolean validateExpTypeRequiredFields()
+        #{
+        #    boolean retval = true;
+        #    #ISOCountryRegionCodes
+        #    ;
+        #
+        #    switch(this.ExpType)
+        #    {
+        #        case TrvExpType::Allowance:
+        #            if (SysCountryRegionCode::isLegalEntityInCountryRegion([#isoCZ]))
+        #            {
+        #                if(!this.PerdiemLocation || !this.PerdiemDate)
+        #                {
+        #                    //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti/> retval = checkFailed("@SYS138265");
+        #                    //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>
+        #                    retval = checkFailed(strFmt("%1: %2, %3",
+        #                                                "@SYS138265",
+        #                                                new SysDictField(tablenum(TrvRequisitionLine), fieldnum(TrvRequisitionLine, PerdiemLocation)).label(),
+        #                                                new SysDictField(tablenum(TrvRequisitionLine), fieldnum(TrvRequisitionLine, PerdiemDate)).label()));
+        #                    //</CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>
+        #                }
+        #            }
+        #            else
+        #            {
+        #                if(!this.PerdiemLocation || !this.PerdiemDateFrom || !this.PerdiemDateTo)
+        #                {
+        #                    //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti/> retval = checkFailed("@SYS138265");
+        #                    //<CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>
+        #                    retval = checkFailed(strFmt("%1: %2, %3, %4",
+        #                                                "@SYS138265",
+        #                                                new SysDictField(tablenum(TrvRequisitionLine), fieldnum(TrvRequisitionLine, PerdiemLocation)).label(),
+        #                                                new SysDictField(tablenum(TrvRequisitionLine), fieldnum(TrvRequisitionLine, PerdiemDateFrom)).label(),
+        #                                                new SysDictField(tablenum(TrvRequisitionLine), fieldnum(TrvRequisitionLine, PerdiemDateTo)).label()));
+        #                    //</CDR252208,ldan,2025_04_17,CestovniZadanky_Upravy_EUR_spolecnosti>
+        #                }
+        #            }
+        #        break;
+        #
+        #        case TrvExpType::Transport:
+        #            if(this.Mileage <= 0)
+        #            {
+        #                retval = checkFailed("@SYS138266");
+        #            }
+        #        break;
+        #
+        #    }
+        #    return retval;
+        #}
+      ENDSOURCE
+      SOURCE #validateField
+        #public boolean validateField(FieldId _p1)
+        #{
+        #    boolean ret;
+        #
+        #    ret = super(_p1);
+        #
+        #    switch (_p1)
+        #    {
+        #        case (fieldNum(TrvRequisitionLine, Category)):
+        #            this.calculateExpType();
+        #            ret = ret && this.validateCategory();
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, PerdiemDateFrom)):
+        #        case (fieldNum(TrvRequisitionLine, PerdiemDateTo)):
+        #            ret = ret && this.validatePerdiemDates();
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, Mileage)):
+        #            if(this.Mileage <= 0)
+        #            {
+        #                ret = checkFailed("@SYS138266");
+        #            }
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, ExchangeRate)):
+        #            if(this.ExchangeRate <= 0)
+        #            {
+        #                ret = ret && checkFailed("@SYS107000");
+        #            }
+        #            break;
+        #
+        #        case (fieldNum(TrvRequisitionLine, TransactionCurrencyAmount)):
+        #            if(this.TransactionCurrencyAmount < 0)
+        #            {
+        #                ret = ret && checkFailed("@SYS105575");
+        #            }
+        #            switch (this.ExpType)
+        #            {
+        #                case TrvExpType::Hotel :
+        #                    ret = ret && checkFailed(strFmt("@AQS1278",TrvExpType::Hotel));
+        #                    break;
+        #            }
+        #
+        #            break;
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #validatePerdiemDates
+        #public boolean validatePerdiemDates()
+        #{
+        #    ;
+        #    if (this.ExpType == TrvExpType::Allowance)
+        #    {
+        #        if (this.PerdiemDateFrom && this.PerdiemDateTo && this.PerdiemDateTo < this.PerdiemDateFrom)
+        #        {
+        #            return checkFailed(strFmt("@SYS101492", datetime2str(this.PerdiemDateFrom, DateFlags::FormatAll), datetime2str(this.PerdiemDateTo, DateFlags::FormatAll)));
+        #        }
+        #    }
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #validatePerdiemOther
+        #public boolean validatePerdiemOther()
+        #{
+        #    TrvPerDiems diem;
+        #    TrvLocations loc;
+        #    boolean innerRet = true;
+        #
+        #    if (this.ExpType == TrvExpType::Allowance)
+        #    {
+        #        select diem where diem.Location == this.PerdiemLocation;
+        #        loc = TrvLocations::find(this.PerdiemLocation);
+        #
+        #        if  (loc.TrvRequisionBusinessTripType == TrvRequisionBusinessTripType::HomeCountry)
+        #        {
+        #            if (this.PermDiemDailyRate < diem.MinAmount)
+        #            {
+        #                innerRet = innerRet && checkFailed("@AQS512");
+        #            }
+        #        }
+        #        else
+        #        {
+        #            if (this.PermDiemDailyRate < roundUp((diem.MinPercent * diem.MealAllowance / 100), 1))
+        #            {
+        #                innerRet = innerRet && checkFailed("@AQS513");
+        #            }
+        #        }
+        #
+        #        if (!this.RecId && TrvRequisitionTable::find(this.TrvRequisitionTable).ApprovalStatus != TrvRequisitionApprovalStatus::Returned)
+        #        {
+        #            if (this.PermDiemPocketMoneyPercent!=this.orig().PermDiemPocketMoneyPercent && this.orig().PermDiemPocketMoneyPercent !=0) //INC38167 podmienka na 0 poc stav pridana
+        #            {
+        #                innerRet = innerRet && checkFailed("@AQS516");
+        #            }
+        #            if (this.PermDiemDailyRate!=this.orig().PermDiemDailyRate && this.orig().PermDiemDailyRate !=0) //INC38167 podmienka na 0 poc stav pridana
+        #            {
+        #                innerRet = innerRet && checkFailed("@AQS517");
+        #            }
+        #        }
+        #    }
+        #
+        #    return innerRet;
+        #}
+      ENDSOURCE
+      SOURCE #validateTransactionAmount
+        #/// <summary>
+        #/// Validates the estimated amount that is entered by the user is not zero.
+        #/// </summary>
+        #/// <returns>
+        #/// true if the amount is not zero; otherwise, false.
+        #/// </returns>
+        #/// <remarks>
+        #/// For mileage or per diem expense types, the amount cannot be entered and is not validated.
+        #/// </remarks>
+        #public boolean validateTransactionAmount()
+        #{
+        #    if (this.ExpType != TrvExpType::Transport &&
+        #        this.ExpType != TrvExpType::Allowance)
+        #    {
+        #        if (this.TransactionCurrencyAmount == 0)
+        #        {
+        #            error(strFmt("@SYS84378", "@SYS153133"));
+        #            return false;
+        #        }
+        #    }
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #validateWrite
+        #public boolean validateWrite()
+        #{
+        #    boolean ret;
+        #    ProjTable projTable;
+        #    ProjValCheckTrans projValCheckTrans;
+        #
+        #    ret = this.validateExpTypeRequiredFields();
+        #
+        #    ret = ret && super();
+        #
+        #    if(this.ProjTable)
+        #    {
+        #        projTable = ProjTable::findRecId(this.ProjTable);
+        #        if(projTable.RecId)
+        #        {
+        #            if((projTable.Status == ProjStatus::Completed) || (projTable.Header == NoYes::Yes))
+        #            {
+        #                ret = checkFailed("@SYS327728");
+        #            }
+        #
+        #            if(ret)
+        #            {
+        #                projValCheckTrans = new ProjValCheckTrans();
+        #                if(!projValCheckTrans.validateMandatory(this))
+        #                {
+        #                    return false;
+        #                }
+        #            }
+        #        }
+        #    }
+        #
+        #    ret = ret && this.validateCategory();
+        #
+        #    ret = ret && this.validatePerdiemDates();
+        #
+        #    ret = ret && this.validatePerdiemOther();
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #vendName
+        #display VendName vendName()
+        #{
+        #    return VendTable::find(this.VendAccount).name();
+        #}
+      ENDSOURCE
+      SOURCE #AQSNightsSum
+        #// TomZan
+        #public static Counter AQSNightsSum(RecId _trvRequisitionTableRecId, TrvExpType _trvExpType = TrvExpType::Hotel)
+        #{
+        #    TrvRequisitionLine      sumTrvRequisitionLine;
+        #
+        #    if (_trvRequisitionTableRecId)
+        #    {
+        #        select sum(NightsNumber) from sumTrvRequisitionLine
+        #            where   sumTrvRequisitionLine.TrvRequisitionTable   == _trvRequisitionTableRecId
+        #                &&  sumTrvRequisitionLine.ExpType               == _trvExpType;
+        #    }
+        #
+        #    return sumTrvRequisitionLine.NightsNumber;
+        #}
+      ENDSOURCE
+      SOURCE #exist
+        #public static boolean exist(RefRecId _recId)
+        #{
+        #    return (select firstonly RecId from trvRequisitionLine where trvRequisitionLine.RecId == _recId).RecId != 0;
+        #}
+      ENDSOURCE
+      SOURCE #find
+        #public static TrvRequisitionLine find(RefRecId _recId, boolean _forUpdate = false)
+        #{
+        #    TrvRequisitionLine trvRequisitionLine;
+        #    if (_recId)
+        #    {
+        #        trvRequisitionLine.selectForUpdate(_forUpdate);
+        #        select firstonly trvRequisitionLine where trvRequisitionLine.RecId == _recId;
+        #    }
+        #    return trvRequisitionLine;
+        #}
+      ENDSOURCE
+      SOURCE #findBySourceDocumentLine
+        #/// <summary>
+        #/// Finds a <c>TrvRequisitionLine</c> record using a <c>SourceDocumentLine</c> record ID.
+        #/// </summary>
+        #/// <param name="_sourceDocumentLine">
+        #/// A <c>SourceDocumentLine</c> record ID.
+        #/// </param>
+        #/// <returns>
+        #/// A <c>TrvRequisitionLine</c> record.
+        #/// </returns>
+        #public static TrvRequisitionLine findBySourceDocumentLine(RefRecId _sourceDocumentLine)
+        #{
+        #    TrvRequisitionLine    trvRequisitionLine;
+        #
+        #    select firstonly trvRequisitionLine
+        #        where trvRequisitionLine.SourceDocumentLine == _sourceDocumentLine;
+        #
+        #    return trvRequisitionLine;
+        #}
+      ENDSOURCE
+      SOURCE #findReqCategoryDate
+        #//<CDR201653,LD,20200907,CestovniZadanky_AktivaceProvozu/>
+        #public static TrvRequisitionLine findReqCategoryDate(RecId _reqTableRecId,
+        #                                                     TrvCostTypeEDT _category,
+        #                                                     //<CDR201422,ldan,2021_06_08,BankovniKartyEvidenceVydajuPlateb/> TrvDateStd _reqEstimatedDate,
+        #                                                     TrvDateStd _reqEstimatedDate = dateNull(), //<CDR201422,ldan,2021_06_08,BankovniKartyEvidenceVydajuPlateb/>
+        #                                                     boolean _forUpdate = false)
+        #{
+        #    TrvRequisitionLine  reqLine,
+        #                        reqLineCount; //<CDR201422,ldan,2021_06_08,BankovniKartyEvidenceVydajuPlateb/>
+        #
+        #    reqLine.selectForUpdate(_forUpdate);
+        #
+        #    //<CDR201422,ldan,2021_06_08,BankovniKartyEvidenceVydajuPlateb>
+        #    select count(RecId) from reqLineCount
+        #        where reqLineCount.TrvRequisitionTable == _reqTableRecId
+        #           && reqLineCount.Category == _category;
+        #
+        #    if (reqLineCount.RecId == 1)
+        #    {
+        #        select firstonly reqLine
+        #            where reqLine.TrvRequisitionTable == _reqTableRecId
+        #                && reqLine.Category == _category;
+        #    }
+        #    else if (reqLineCount.RecId > 1)
+        #    {
+        #        select firstonly reqLine
+        #            order by EstimatedDate desc
+        #            where reqLine.TrvRequisitionTable == _reqTableRecId
+        #               && reqLine.Category == _category
+        #               && (! _reqEstimatedDate || reqLine.EstimatedDate <= _reqEstimatedDate);
+        #    }
+        #    //</CDR201422,ldan,2021_06_08,BankovniKartyEvidenceVydajuPlateb>
+        #
+        #    /*<CDR201422,ldan,2021_06_08,BankovniKartyEvidenceVydajuPlateb>
+        #    select firstonly reqLine
+        #        where reqLine.TrvRequisitionTable == _reqTableRecId
+        #           && reqLine.Category == _category
+        #           && reqLine.EstimatedDate == _reqEstimatedDate;
+        #    </CDR201422,ldan,2021_06_08,BankovniKartyEvidenceVydajuPlateb>*/
+        #
+        #    return reqLine;
+        #}
+      ENDSOURCE
+      SOURCE #visualizeLineGroups
+        #//INC_38167
+        #public static void visualizeLineGroups(FormRun formRun, TrvExpType _type)
+        #{
+        #    #define.privateCar('privateCar')
+        #    #define.transaction_PerDiem('transaction_PerDiem')
+        #    #define.hotel('hotel')
+        #    #define.transaction_Mileage('transaction_Mileage')
+        #    #define.transaction_CarRental('transaction_CarRental')
+        #    #define.transaction_Airline('transaction_Airline')
+        #
+        #    FormGroupControl    privateCar, transaction_PerDiem, hotel, transaction_Mileage;
+        #    FormGroupControl    transaction_CarRental, transaction_Airline;
+        #    ;
+        #
+        #    privateCar              = formRun.design().controlName(#privateCar);
+        #    transaction_PerDiem     = formRun.design().controlName(#transaction_PerDiem);
+        #    hotel                   = formRun.design().controlName(#hotel);
+        #    transaction_Mileage     = formRun.design().controlName(#transaction_Mileage);
+        #    transaction_CarRental   = formRun.design().controlName(#transaction_CarRental);
+        #    transaction_Airline     = formRun.design().controlName(#transaction_Airline);
+        #
+        #    privateCar.visible(false);
+        #    transaction_PerDiem.visible(false);
+        #    hotel.visible(false);
+        #    transaction_Mileage.visible(false);
+        #    transaction_CarRental.visible(false);
+        #    transaction_Airline.visible(false);
+        #
+        #
+        #    switch(_type)
+        #    {
+        #        case(TrvExpType::PrivateCar):
+        #            privateCar.visible(true);
+        #            break;
+        #
+        #        case(TrvExpType::Allowance):
+        #            transaction_PerDiem.visible(true);
+        #            break;
+        #
+        #        case(TrvExpType::Hotel):
+        #            hotel.visible(true);
+        #            break;
+        #
+        #        case(TrvExpType::Transport):
+        #            transaction_Mileage.visible(true);
+        #            break;
+        #
+        #        case(TrvExpType::CarRental):
+        #            transaction_CarRental.visible(true);
+        #            break;
+        #
+        #        case(TrvExpType::Airline):
+        #            transaction_Airline.visible(true);
+        #            break;
+        #    }
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDTABLE
+  
+
+***Element: END

@@ -1,0 +1,2217 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: DBT
+
+; Microsoft Dynamics AX Table : CzVendAdvanceInvoiceTable unloaded
+; --------------------------------------------------------------------------------
+  TABLEVERSION 1
+  
+  TABLE #CzVendAdvanceInvoiceTable
+    EnforceFKRelation 0
+    PROPERTIES
+      Name                #CzVendAdvanceInvoiceTable
+      Label               #@GLS107927
+      FormRef             #CzVendAdvanceInvoice
+      TitleField1         #InvoiceId
+      TitleField2         #InvoiceAccount
+      ConfigurationKey    #CzCustVendAdvanceInvoices
+      SecurityKey         #VendTables
+      CacheLookup         #NotInTTS
+      CreateRecIdIndex    #Yes
+      TableGroup          #WorksheetHeader
+      PrimaryIndex        #RecId
+      ClusterIndex        #InvoiceAccountIdx
+      CreatedDateTime     #Yes
+      DEL_createdTime     #Yes
+      CreatedBy           #Yes
+      DeveloperDocumentation  #@GLS221107
+      CountryRegionCodes  #CZ,HU,PL
+      Origin              #{2C194040-0000-1000-1131-6F899EB3451A}
+      LegacyId            #16448
+    ENDPROPERTIES
+    
+    FIELDS
+      FIELD #AmountLastSettlement
+        REAL
+        PROPERTIES
+          Name                #AmountLastSettlement
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{34A774C1-E1C9-4D3A-9A95-2D777B28C980}
+          ExtendedDataType    #AmountLastSettlement
+        ENDPROPERTIES
+        
+      FIELD #AmountToPay
+        REAL
+        PROPERTIES
+          Name                #AmountToPay
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{51CDA658-2304-4FF9-86F9-FBC309149789}
+          ExtendedDataType    #AmountToPay
+        ENDPROPERTIES
+        
+      FIELD #BankAccount
+        STRING
+        PROPERTIES
+          Name                #BankAccount
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{B8D246A5-497A-4331-99F4-94182AE7D1B6}
+          ExtendedDataType    #VendBankAccountId
+          StringSize          #25
+        ENDPROPERTIES
+        
+      FIELD #BankConstantSymbol
+        STRING
+        PROPERTIES
+          Name                #BankConstantSymbol
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A123EA5-4040-1000-33AD-7B94CDF17582}
+          LegacyId            #16037
+          ExtendedDataType    #CzConstantSymbol
+        ENDPROPERTIES
+        
+      FIELD #BankSpecificSymbol
+        STRING
+        PROPERTIES
+          Name                #BankSpecificSymbol
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{31FB94EB-F27E-4520-8D70-C23B99525A57}
+          ExtendedDataType    #SpecificSymbol
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #ContactPersonId
+        STRING
+        PROPERTIES
+          Name                #ContactPersonId
+          HelpText            #@SYS26087
+          Visible             #No
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0F3E9A-4040-1000-EAE2-08CC01F537A2}
+          LegacyId            #16026
+          ExtendedDataType    #ContactPersonId
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #CurrencyCode
+        STRING
+        PROPERTIES
+          Name                #CurrencyCode
+          HelpText            #@SYS20785
+          Mandatory           #Yes
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0C3E86-4040-1000-5466-FD70E27D6379}
+          LegacyId            #16006
+          ExtendedDataType    #VendCurrencyCode
+          StringSize          #3
+        ENDPROPERTIES
+        
+      FIELD #DefaultDimension
+        INT64
+        PROPERTIES
+          Name                #DefaultDimension
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A100000-4040-1000-57EE-C379732145E3}
+          ExtendedDataType    #DimensionDefault
+        ENDPROPERTIES
+        
+      FIELD #DocumentDate
+        DATE
+        PROPERTIES
+          Name                #DocumentDate
+          HelpText            #@SYS724
+          Visible             #No
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0C3EA4-4040-1000-700D-7BE3EC746E74}
+          LegacyId            #16036
+          ExtendedDataType    #DocumentDate
+        ENDPROPERTIES
+        
+      FIELD #DueDate
+        DATE
+        PROPERTIES
+          Name                #DueDate
+          Label               #@SYS14021
+          HelpText            #@SYS7525
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A073E85-4040-1000-4475-654461746500}
+          LegacyId            #16005
+          ExtendedDataType    #DueDate
+        ENDPROPERTIES
+        
+      FIELD #InvoiceAccount
+        STRING
+        PROPERTIES
+          Name                #InvoiceAccount
+          HelpText            #@SYS3548
+          Mandatory           #Yes
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0E3E83-4040-1000-BAFE-59CAF37E2E53}
+          LegacyId            #16003
+          ExtendedDataType    #VendInvoiceAccount
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #InvoiceAmount
+        REAL
+        PROPERTIES
+          Name                #InvoiceAmount
+          Label               #@SYS9458
+          HelpText            #@SYS12633
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #CzVendAdvanceInvoiceTable
+          RelationContext     #Currency
+          Origin              #{2A0D3EA6-4040-1000-C8C9-D2F9842C7741}
+          LegacyId            #16038
+          ExtendedDataType    #AmountCur
+        ENDPROPERTIES
+        
+      FIELD #InvoiceDate
+        DATE
+        PROPERTIES
+          Name                #InvoiceDate
+          HelpText            #@SYS2388
+          Mandatory           #Yes
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0B3E84-4040-1000-847B-E4EE78636544}
+          LegacyId            #16004
+          ExtendedDataType    #TransDate
+        ENDPROPERTIES
+        
+      FIELD #InvoiceDescription
+        STRING
+        PROPERTIES
+          Name                #InvoiceDescription
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{208B1A93-CE84-4B31-907B-5D46E80EA9AC}
+          ExtendedDataType    #InvoiceDescription
+          StringSize          #100
+        ENDPROPERTIES
+        
+      FIELD #InvoiceId
+        STRING
+        PROPERTIES
+          Name                #InvoiceId
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A093E9C-4040-1000-D5B4-856F69636549}
+          LegacyId            #16028
+          ExtendedDataType    #CzVendAdvanceInvoiceId
+          StringSize          #25
+        ENDPROPERTIES
+        
+      FIELD #LanguageId
+        STRING
+        PROPERTIES
+          Name                #LanguageId
+          HelpText            #@SYS4905
+          Mandatory           #Yes
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0A3E91-4040-1000-FF13-C07675616765}
+          LegacyId            #16017
+          ExtendedDataType    #VendLanguageId
+          StringSize          #7
+        ENDPROPERTIES
+        
+      FIELD #Listcode
+        ENUM
+        PROPERTIES
+          Name                #Listcode
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A083E88-4040-1000-4C69-7374636F6465}
+          LegacyId            #16008
+          ExtendedDataType    #ListcodeId
+          EnumType            #Listcode
+        ENDPROPERTIES
+        
+      FIELD #Log
+        STRING
+        PROPERTIES
+          Name                #Log
+          HelpText            #@SYS38796
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A033E92-4040-1000-4C6F-670000000000}
+          LegacyId            #16018
+          ExtendedDataType    #LogText
+          StringSize          #255
+        ENDPROPERTIES
+        
+      FIELD #MessageforPayee
+        STRING
+        PROPERTIES
+          Name                #MessageforPayee
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{C00AF463-100D-46E2-B022-6A928363D815}
+          ExtendedDataType    #MessageforPayee
+          StringSize          #140
+        ENDPROPERTIES
+        
+      FIELD #Name
+        STRING
+        PROPERTIES
+          Name                #Name
+          HelpText            #@SYS58064
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A043E93-4040-1000-4E61-6D6500000000}
+          LegacyId            #16019
+          ExtendedDataType    #VendName
+          StringSize          #100
+        ENDPROPERTIES
+        
+      FIELD #NumberSequenceGroup
+        STRING
+        PROPERTIES
+          Name                #NumberSequenceGroup
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A133E90-4040-1000-EE5A-C5A9C4494D53}
+          LegacyId            #16016
+          ExtendedDataType    #NumberSequenceGroupId
+        ENDPROPERTIES
+        
+      FIELD #OneTimeVendor
+        ENUM
+        PROPERTIES
+          Name                #OneTimeVendor
+          HelpText            #@SYS16864
+          Visible             #No
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0D3E8C-4040-1000-F675-CE6073E87656}
+          LegacyId            #16012
+          ExtendedDataType    #OneTimeSupplier
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #OrderAccount
+        STRING
+        PROPERTIES
+          Name                #OrderAccount
+          HelpText            #@SYS2496
+          Mandatory           #Yes
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0C3E82-4040-1000-04BE-EE803B536363}
+          LegacyId            #16002
+          ExtendedDataType    #VendAccount
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #Payment
+        STRING
+        PROPERTIES
+          Name                #Payment
+          HelpText            #@SYS4296
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A073E89-4040-1000-5061-796D656E7400}
+          LegacyId            #16009
+          ExtendedDataType    #VendPaymTermId
+        ENDPROPERTIES
+        
+      FIELD #PaymentSched
+        STRING
+        PROPERTIES
+          Name                #PaymentSched
+          Visible             #No
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0C3E8D-4040-1000-C178-1277BB7D7453}
+          LegacyId            #16013
+          ExtendedDataType    #PaymSchedId
+          StringSize          #30
+        ENDPROPERTIES
+        
+      FIELD #PaymMode
+        STRING
+        PROPERTIES
+          Name                #PaymMode
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A083E9E-4040-1000-5061-796D4D6F6465}
+          LegacyId            #16030
+          ExtendedDataType    #VendPaymMode
+        ENDPROPERTIES
+        
+      FIELD #PaymSpec
+        STRING
+        PROPERTIES
+          Name                #PaymSpec
+          HelpText            #@SYS314595
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A083E9F-4040-1000-5061-796D53706563}
+          LegacyId            #16031
+          ExtendedDataType    #PaymSpec
+        ENDPROPERTIES
+        
+      FIELD #PostalAddress
+        INT64
+        PROPERTIES
+          Name                #PostalAddress
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0D0000-4040-1000-DCBB-9314230F5364}
+          ExtendedDataType    #LogisticsPostalAddressRecId
+        ENDPROPERTIES
+        
+      FIELD #Posted
+        ENUM
+        PROPERTIES
+          Name                #Posted
+          HelpText            #@SYS23023
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A063E9B-4040-1000-506F-737465640000}
+          LegacyId            #16027
+          ExtendedDataType    #Posted
+          EnumType            #NoYes
+        ENDPROPERTIES
+        
+      FIELD #PostingProfile
+        STRING
+        PROPERTIES
+          Name                #PostingProfile
+          Label               #@SYS59471
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0E3E8B-4040-1000-568E-3B2DE7A4E55F}
+          LegacyId            #16011
+          ExtendedDataType    #VendPostingProfile
+        ENDPROPERTIES
+        
+      FIELD #PurchId
+        STRING
+        PROPERTIES
+          Name                #PurchId
+          HelpText            #@SYS28220
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A073EA8-4040-1000-5075-726368496400}
+          LegacyId            #16040
+          ExtendedDataType    #PurchIdBase
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #Status
+        ENUM
+        PROPERTIES
+          Name                #Status
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A061F41-4040-1000-5374-617475730000}
+          LegacyId            #8001
+          EnumType            #CzAdvanceInvoiceStatus
+        ENDPROPERTIES
+        
+      FIELD #VendGroup
+        STRING
+        PROPERTIES
+          Name                #VendGroup
+          Label               #@SYS3815
+          HelpText            #@SYS6773
+          Mandatory           #Yes
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A093E81-4040-1000-2681-7F6447726F75}
+          LegacyId            #16001
+          ExtendedDataType    #VendGroupId
+        ENDPROPERTIES
+        
+      FIELD #VendInvoiceId
+        STRING
+        PROPERTIES
+          Name                #VendInvoiceId
+          Label               #@GLS107999
+          HelpText            #@GLS107999
+          Mandatory           #Yes
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A0D3EA9-4040-1000-69E0-44940BC0856F}
+          LegacyId            #16041
+          ExtendedDataType    #InvoiceId
+          StringSize          #25
+        ENDPROPERTIES
+        
+      FIELD #WFApprovalStatus
+        ENUM
+        PROPERTIES
+          Name                #WFApprovalStatus
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{4CCD93F5-42D1-47BF-A9DE-7805AB1E722A}
+          EnumType            #VendAdvanceInvoiceWFApprovalStatus
+        ENDPROPERTIES
+        
+      FIELD #WorkerSalesTaker
+        INT64
+        PROPERTIES
+          Name                #WorkerSalesTaker
+          Label               #@SYS4466
+          HelpText            #@SYS82126
+          Table               #CzVendAdvanceInvoiceTable
+          Origin              #{2A100000-4040-1000-BB95-11E8869961E5}
+          ExtendedDataType    #SalesTaker
+        ENDPROPERTIES
+        
+    ENDFIELDS
+    GROUPS
+      GROUP #AutoReport
+        PROPERTIES
+          Name                #AutoReport
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #VendInvoiceId
+          #OrderAccount
+          #InvoiceAccount
+          #InvoiceDate
+          #CurrencyCode
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #AutoLookup
+        PROPERTIES
+          Name                #AutoLookup
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #InvoiceId
+          #InvoiceDate
+          #InvoiceAmount
+          #contactPersonName
+          #CurrencyCode
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Address
+        PROPERTIES
+          Name                #Address
+          Label               #@SYS9362
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Name
+          #PostalAddress
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Address_RU
+        PROPERTIES
+          Name                #Address_RU
+          Label               #@SYS9362
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Name
+          #PostalAddress
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Administration
+        PROPERTIES
+          Name                #Administration
+          Label               #@SYS9853
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Status
+          #PurchId
+          #WorkerSalesTaker
+          #LanguageId
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Amount
+        PROPERTIES
+          Name                #Amount
+          Label               #@SYS12227
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #InvoiceAmount
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #BankAccount
+        PROPERTIES
+          Name                #BankAccount
+          Label               #@GLS108002
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #BankConstantSymbol
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Dimension
+        PROPERTIES
+          Name                #Dimension
+          Label               #@SYS14926
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #DefaultDimension
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #ForeignTrade
+        PROPERTIES
+          Name                #ForeignTrade
+          Label               #@SYS27650
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Listcode
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Grid
+        PROPERTIES
+          Name                #Grid
+          Label               #@SYS26263
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #InvoiceDate
+          #OrderAccount
+          #InvoiceAccount
+          #OneTimeVendor
+          #InvoiceDescription
+          #VendInvoiceId
+          #InvoiceId
+          #InvoiceAmount
+          #contactPersonName
+          #CurrencyCode
+          #PurchId
+          #Status
+          #WFApprovalStatus
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Invoice
+        PROPERTIES
+          Name                #Invoice
+          Label               #@SYS12128
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #InvoiceDate
+          #DueDate
+          #DocumentDate
+          #InvoiceDescription
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #InvoiceAccount
+        PROPERTIES
+          Name                #InvoiceAccount
+          Label               #@SYS21836
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #InvoiceAccount
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Log
+        PROPERTIES
+          Name                #Log
+          Label               #@SYS2515
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #Log
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Payment
+        PROPERTIES
+          Name                #Payment
+          Label               #@SYS828
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #CurrencyCode
+          #Payment
+          #PaymMode
+          #PaymSpec
+          #PaymentSched
+          #BankConstantSymbol
+          #MessageforPayee
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Posting
+        PROPERTIES
+          Name                #Posting
+          Label               #@SYS5943
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #PostingProfile
+          #NumberSequenceGroup
+          #Posted
+          #VendInvoiceId
+          #InvoiceId
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Reference
+        PROPERTIES
+          Name                #Reference
+          Label               #@SYS15217
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #ContactPersonId
+          #editContactPersonName
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #Vendor
+        PROPERTIES
+          Name                #Vendor
+          Label               #@SYS8079
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #OrderAccount
+          #OneTimeVendor
+          #VendGroup
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #WorkflowApprovalDetails
+        PROPERTIES
+          Name                #WorkflowApprovalDetails
+          Label               #@AQS2637
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #InvoiceId
+          #InvoiceDescription
+          #VendInvoiceId
+          #PurchId
+          #InvoiceAccount
+          #DocumentDate
+          #InvoiceDate
+          #DueDate
+          #CurrencyCode
+          #InvoiceAmount
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #WorkflowDocument
+        PROPERTIES
+          Name                #WorkflowDocument
+          Label               #@SYS108665
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #AmountToPay
+          #InvoiceAccount
+          #InvoiceAmount
+          #InvoiceId
+          #InvoiceDate
+          #Name
+          #WFApprovalStatus
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #WorkflowStatus
+        PROPERTIES
+          Name                #WorkflowStatus
+          Label               #@WBW610
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #WFApprovalStatus
+        ENDGROUPFIELDS
+      ENDGROUP
+    ENDGROUPS
+    
+    INDICES
+      #InvoiceAccountIdx
+      PROPERTIES
+        Name                #InvoiceAccountIdx
+        Origin              #{2B113E81-4040-1000-6253-6CCAF37EE105}
+        LegacyId            #16001
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #InvoiceAccount
+        #InvoiceDate
+      ENDINDEXFIELDS
+      
+      #OrderAccountIdx
+      PROPERTIES
+        Name                #OrderAccountIdx
+        Origin              #{2B0F3E82-4040-1000-04BE-EE80EE055DC7}
+        LegacyId            #16002
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #OrderAccount
+        #InvoiceDate
+      ENDINDEXFIELDS
+      
+      #InvoiceIdIdx
+      PROPERTIES
+        Name                #InvoiceIdIdx
+        Origin              #{2B0C3E83-4040-1000-D567-3869CD756549}
+        LegacyId            #16003
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #InvoiceId
+        #InvoiceDate
+        #NumberSequenceGroup
+      ENDINDEXFIELDS
+      
+      #VendInvoiceIdIdx
+      PROPERTIES
+        Name                #VendInvoiceIdIdx
+        Origin              #{D5174900-954B-4631-A729-746BDA7C07C3}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #VendInvoiceId
+        #InvoiceAccount
+      ENDINDEXFIELDS
+      
+      #InvoiceDateIdx
+      PROPERTIES
+        Name                #InvoiceDateIdx
+        Origin              #{48015E70-8443-4486-A3BB-078444F850F8}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #InvoiceDate
+      ENDINDEXFIELDS
+      
+      #AQSPurchIdIdx
+      PROPERTIES
+        Name                #AQSPurchIdIdx
+        Origin              #{7A04EA1D-D226-4457-B33F-3AC9EB048391}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #PurchId
+      ENDINDEXFIELDS
+      
+    ENDINDICES
+    FULLTEXTINDICES
+    ENDFULLTEXTINDICES
+    REFERENCES
+      REFERENCE #BankConstantSymbol
+        PROPERTIES
+          Name                #BankConstantSymbol
+          Table               #BankConstantSymbol
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #BankConstantSymbol
+            RelatedField        #ConstantSymbol
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #ContactPerson
+        PROPERTIES
+          Name                #ContactPerson
+          Table               #ContactPerson
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #ContactPersonId
+            RelatedField        #ContactPersonId
+            SourceEDT           #ContactPersonId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #Currency
+        PROPERTIES
+          Name                #Currency
+          Table               #Currency
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #CurrencyCode
+            RelatedField        #CurrencyCode
+            SourceEDT           #VendCurrencyCode
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #DefaultDimension
+        PROPERTIES
+          Name                #DefaultDimension
+          Table               #DimensionAttributeValueSet
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #DefaultDimension
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #LanguageTable
+        PROPERTIES
+          Name                #LanguageTable
+          Table               #LanguageTable
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #LanguageId
+            RelatedField        #LanguageId
+            SourceEDT           #VendLanguageId
+          ENDPROPERTIES
+          
+          REFERENCETYPE EXTERNFIXED
+          PROPERTIES
+            Value               #1
+            Table               #LanguageTable
+            RelatedField        #LabelFile
+            SourceEDT           #VendLanguageId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #NumberSequenceGroup
+        PROPERTIES
+          Name                #NumberSequenceGroup
+          Table               #NumberSequenceGroup
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #NumberSequenceGroup
+            RelatedField        #numberSequenceGroupId
+            SourceEDT           #NumberSequenceGroupId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #PaymentSched
+        PROPERTIES
+          Name                #PaymentSched
+          Table               #PaymSched
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #PaymentSched
+            RelatedField        #Name
+            SourceEDT           #PaymSchedId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #PaymTerm
+        PROPERTIES
+          Name                #PaymTerm
+          Table               #PaymTerm
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #Payment
+            RelatedField        #PaymTermId
+            SourceEDT           #VendPaymTermId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #PostalAddress
+        PROPERTIES
+          Name                #PostalAddress
+          Table               #LogisticsPostalAddress
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #PostalAddress
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #PurchTable
+        PROPERTIES
+          Name                #PurchTable
+          Table               #PurchTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #PurchId
+            RelatedField        #PurchId
+            SourceEDT           #PurchIdBase
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendAdvanceInvoiceTable
+        PROPERTIES
+          Name                #VendAdvanceInvoiceTable
+          Table               #CzVendAdvanceInvoiceTable
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ExactlyOne
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #RecId
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendBankAccount
+        PROPERTIES
+          Name                #VendBankAccount
+          Table               #VendBankAccount
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          RelatedTableRole    #VendBankAccount
+          Role                #CzVendAdvanceInvoiceTable
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #InvoiceAccount
+            RelatedField        #VendAccount
+          ENDPROPERTIES
+          
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #BankAccount
+            RelatedField        #AccountID
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendGroup
+        PROPERTIES
+          Name                #VendGroup
+          Table               #VendGroup
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #VendGroup
+            RelatedField        #VendGroup
+            SourceEDT           #VendGroupId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendLedger
+        PROPERTIES
+          Name                #VendLedger
+          Table               #VendLedger
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #PostingProfile
+            RelatedField        #PostingProfile
+            SourceEDT           #VendPostingProfile
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendPaymModeSpec
+        PROPERTIES
+          Name                #VendPaymModeSpec
+          Table               #VendPaymModeSpec
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #PaymMode
+            RelatedField        #PaymMode
+          ENDPROPERTIES
+          
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #PaymSpec
+            RelatedField        #Specification
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendPaymModeTable
+        PROPERTIES
+          Name                #VendPaymModeTable
+          Table               #VendPaymModeTable
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #PaymMode
+            RelatedField        #PaymMode
+            SourceEDT           #VendPaymMode
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendTable_InvoiceAccount
+        PROPERTIES
+          Name                #VendTable_InvoiceAccount
+          Table               #VendTable
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          RelatedTableRole    #VendTable_InvoiceAccount
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #InvoiceAccount
+            RelatedField        #AccountNum
+            SourceEDT           #VendInvoiceAccount
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #VendTable_OrderAccount
+        PROPERTIES
+          Name                #VendTable_OrderAccount
+          Table               #VendTable
+          RelatedTableCardinality   #ExactlyOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+          RelatedTableRole    #VendTable_OrderAccount
+          EDTRelation         #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #OrderAccount
+            RelatedField        #AccountNum
+            SourceEDT           #VendAccount
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #WorkerSalesTaker_FK
+        PROPERTIES
+          Name                #WorkerSalesTaker_FK
+          Table               #HcmWorker
+          RelatedTableCardinality   #ZeroOne
+          Cardinality         #ZeroMore
+          RelationshipType    #Association
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #WorkerSalesTaker
+            RelatedField        #RecId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+    ENDREFERENCES
+    
+    DELETEACTIONS
+      #PrintMgmtDocInstance(VendAdvanceInvoiceTable)
+      PROPERTIES
+        Table               #PrintMgmtDocInstance
+        DeleteAction        #Cascade
+        Relation            #VendAdvanceInvoiceTable
+      ENDPROPERTIES
+      
+      #CzVendAdvanceInvoiceLink
+      PROPERTIES
+        Table               #CzVendAdvanceInvoiceLink
+        DeleteAction        #Cascade
+      ENDPROPERTIES
+      
+      #CzVendAdvanceInvoiceLine
+      PROPERTIES
+        Table               #CzVendAdvanceInvoiceLine
+        DeleteAction        #Cascade
+      ENDPROPERTIES
+      
+      #MarkupTrans
+      PROPERTIES
+        Table               #MarkupTrans
+        DeleteAction        #Cascade
+      ENDPROPERTIES
+      
+      #VendPaymSched
+      PROPERTIES
+        Table               #VendPaymSched
+        DeleteAction        #Cascade
+      ENDPROPERTIES
+      
+    ENDDELETEACTIONS
+    
+    METHODS
+      SOURCE #allowEditDueWorkflow
+        #// AQS
+        #public boolean allowEditDueWorkflow()
+        #{
+        #    if((CZVendAdvanceInvoiceTable::checkWorkflowApprovalEnabled()
+        #       && this.WFApprovalStatus >= VendAdvanceInvoiceWFApprovalStatus::Approved)
+        #       || (this.WFApprovalStatus >= VendAdvanceInvoiceWFApprovalStatus::Submitted
+        #       && !this.isTaskApprover()))
+        #    {
+        #        return false;
+        #    }
+        #
+        #    return true;
+        #}
+      ENDSOURCE
+      SOURCE #AmountCurBalance
+        #// + WBW_0015_AdvanceInvoice
+        #public display AdvanceAmountCurBalance AmountCurBalance()
+        #{
+        #    return this.InvoiceAmount - this.calcAmountCurBalance();
+        #}
+      ENDSOURCE
+      SOURCE #amountMST
+        #public AmountMST amountMST(AmountCur _amountCur)
+        #{
+        #    return Currency::mstAmount(_amountCur,
+        #                               this.CurrencyCode,
+        #                               this.InvoiceDate,
+        #                               Currency::noYes2UnknownNoYes(this.euroTriangulation()),
+        #                               this.exchRate(),
+        #                               this.exchRateSecondary());
+        #}
+      ENDSOURCE
+      SOURCE #bankConstantSymbol
+        #// + WBW_0015_AdvanceInvoice
+        #public BankConstantSymbol bankConstantSymbol(boolean _update = false)
+        #{
+        #    return BankConstantSymbol::findConstantSymbol(this.BankConstantSymbol, _update);
+        #}
+      ENDSOURCE
+      SOURCE #calcAmountCurBalance
+        #private server amountcur calcAmountCurBalance()
+        #{
+        #    AmountCur                   ret;
+        #    Amount                      tempAmount;
+        #    CurrencyCode                tempCurrencyCode;
+        #    CzVendAdvanceInvoiceLink    czVendAdvanceInvoiceLink;
+        #
+        #    while select czVendAdvanceInvoiceLink
+        #           where czVendAdvanceInvoiceLink.AdvanceInvoiceRecId == this.RecId
+        #              && czVendAdvanceInvoiceLink.InvoiceCompany      == this.dataAreaId
+        #    {
+        #        [tempAmount,tempCurrencyCode] = czVendAdvanceInvoiceLink.paymentAmount();
+        #
+        #        if (tempCurrencyCode != this.CurrencyCode)
+        #        {
+        #            ret  += Currency::curAmount2CurAmount(tempAmount, tempCurrencyCode, this.CurrencyCode);
+        #        }
+        #        else
+        #        {
+        #            ret += tempAmount;
+        #        }
+        #
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #calcDue
+        #public void calcDue()
+        #{
+        #    if (! this.DueDate)
+        #    {
+        #        this.DueDate = this.paymentDueDate();
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #calcInvoiceAmount
+        #public void calcInvoiceAmount()
+        #{
+        #    CzVendAdvanceInvoiceLine invoiceLine;
+        #
+        #    select sum(AmountCur)
+        #    from invoiceLine
+        #        where invoiceLine.ParentRecId == this.RecId;
+        #
+        #    this.InvoiceAmount = invoiceLine.AmountCur;
+        #    this.AmountToPay = this.InvoiceAmount;
+        #}
+      ENDSOURCE
+      SOURCE #canSubmitToWorkflow
+        #//WBW_0028_AdvanceInvoiceWorkflow
+        #public boolean canSubmitToWorkflow(str _workflowType = '')
+        #{
+        #
+        #    ;
+        #    if (this.WFApprovalStatus != VendAdvanceInvoiceWFApprovalStatus::NotSubmitted)
+        #        return false;
+        #
+        #
+        #    if (this.InvoiceAmount == 0)
+        #        return false;
+        #
+        #
+        #    return true;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #checkCurrencyCode
+        #private client server void checkCurrencyCode()
+        #{
+        #    if (this &&
+        #        this.CurrencyCode != this.orig().CurrencyCode &&
+        #        MarkupTrans::existDifferentCurrency(this.TableId,
+        #                                            this.RecId,
+        #                                            this.CurrencyCode))
+        #    {
+        #        warning("@SYS24528");
+        #
+        #        this.CurrencyCode = this.orig().CurrencyCode;
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #checkExist
+        #display ImageRes checkExist()
+        #{
+        #    CheckVendorRegisterResult   checkVendorRegisterResult;
+        #    VendTable                   vendTable;
+        #    ImageListAppl_Infolog       imageListApplCheck;
+        #
+        #    ImageRes                    res;
+        #    Exception                   status;
+        #
+        #    #resAppl;
+        #
+        #    imageListApplCheck = new ImageListAppl_Infolog();
+        #    checkVendorRegisterResult = CheckVendorRegisterResult::find(curUserId(), this.RecId, this.TableId);
+        #
+        #    if (checkVendorRegisterResult)
+        #    {
+        #        status = checkVendorRegisterResult.ResultStatus;
+        #
+        #        switch(status)
+        #        {
+        #            case Exception::Error:
+        #                res = imageListApplCheck.image(#ImageError);
+        #                break;
+        #
+        #            case Exception::Warning :
+        #                res = imageListApplCheck.image(#ImageWarning);
+        #                break;
+        #
+        #            case Exception::Info :
+        #                res = imageListApplCheck.image(#Image_OK);
+        #                break;
+        #
+        #            default :
+        #                res = imageListApplCheck.image(#Image_NotOK);
+        #        }
+        #    }
+        #    else
+        #    {
+        #        res = -1;
+        #    }
+        #         //ImageNote //ImageOK //ImageWarning //ImageInfo
+        #
+        #    return res;
+        #}
+      ENDSOURCE
+      SOURCE #clearingLedgerDimension
+        #//WBW_0034_AdvanceInvoicePrepayment +
+        #public LedgerDimensionDefaultAccount clearingLedgerDimension()
+        #{
+        #    return VendLedgerAccounts::clearingLedgerDimension(this.InvoiceAccount, this.PostingProfile);
+        #}
+      ENDSOURCE
+      SOURCE #clearingPeriod
+        #//BP Deviation Documented
+        #//WBW_0034_AdvanceInvoicePrepayment +
+        #display ClearingPeriod clearingPeriod()
+        #{
+        #    return VendTable::find(this.InvoiceAccount).clearingPeriod();
+        #}
+      ENDSOURCE
+      SOURCE #contactPersonName
+        #//BP Deviation documented
+        #display ContactPersonName contactPersonName()
+        #{
+        #    return ContactPerson::name(this.ContactPersonId);
+        #}
+      ENDSOURCE
+      SOURCE #convertCurrencyCode
+        #public server void convertCurrencyCode(CurrencyCode _currency)
+        #{
+        #    CzVendAdvanceInvoiceLine invoiceLine;
+        #    MarkupTrans              markupTrans;
+        #
+        #    ttsbegin;
+        #
+        #    while select forupdate invoiceLine
+        #        where invoiceLine.ParentRecId == this.RecId
+        #    {
+        #        invoiceLine.convertCurrencyCode(_currency, this.InvoiceDate);
+        #        invoiceLine.doUpdate();
+        #    }
+        #
+        #    while select forupdate markupTrans
+        #        where markupTrans.TransTableId == this.TableId &&
+        #              markupTrans.TransRecId   == this.RecId
+        #    {
+        #        markupTrans.convertCurrencyCode(_currency,  this.InvoiceDate);
+        #        markupTrans.doUpdate();
+        #    }
+        #
+        #    CustPaymSched::deleteCustPaymSched(this.TableId, this.RecId);
+        #
+        #    this.calcInvoiceAmount();
+        #    this.CurrencyCode = _currency;
+        #
+        #    ttscommit;
+        #}
+      ENDSOURCE
+      SOURCE #createOneTimeAccount
+        #private void createOneTimeAccount()
+        #{
+        #    this.OrderAccount = VendTable::createOneTimeAccount(this);
+        #
+        #    if (! this.InvoiceAccount)
+        #    {
+        #        this.InvoiceAccount = this.OrderAccount;
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #delete
+        #public void delete()
+        #{
+        #    AddAttachmentAndMetadataToSP_CzVendAdvan attSHP; //INC30667 - odebrani priloh z DMS
+        #
+        #    attSHP = new AddAttachmentAndMetadataToSP_CzVendAdvan();
+        #
+        #    ttsbegin;
+        #
+        #    SpecTransManager::construct(this).deleteAll();
+        #
+        #    super();
+        #
+        #    //TODO: nevim, zdali by toto nemelo vt mimo transakci, vola se SHP a pokud by to failovalo, tak se tady nic nesmaze
+        #    attSHP.DeleteAttachmentIfExists(this); //INC30667 - odebrani priloh z DMS
+        #
+        #    ttscommit;
+        #}
+      ENDSOURCE
+      SOURCE #displayInvoiceAccountName
+        #/// <summary>
+        #///     Finds the name of the Invoice account Vendor.
+        #/// </summary>
+        #/// <returns>
+        #///     Display name of the Invoice account Vendor.
+        #/// </returns>
+        #display DirPartyName displayInvoiceAccountName()
+        #{
+        #    return VendTable::find(this.InvoiceAccount).name();
+        #}
+      ENDSOURCE
+      SOURCE #displayOrderAccountName
+        #/// <summary>
+        #///     Finds the name of the order account Vendor.
+        #/// </summary>
+        #/// <returns>
+        #///     Display name of the order account Vendor.
+        #/// </returns>
+        #display DirPartyName displayOrderAccountName()
+        #{
+        #    return VendTable::find(this.OrderAccount).name();
+        #}
+      ENDSOURCE
+      SOURCE #editContactPersonName
+        #//BP Deviation documented
+        #client server edit ContactPersonName editContactPersonName(boolean           _set,
+        #                                                           ContactPersonName _name)
+        #{
+        #    ContactPersonName name = _name;
+        #    ContactPerson     contactPerson;
+        #    DirPartyTable     partyTable;
+        #    ContactPersonId   contactPersonId;
+        #    VendTable         vendTable;
+        #
+        #    if (_set)
+        #    {
+        #        if (name)
+        #        {
+        #            contactPersonId = this.ContactPersonId;
+        #            contactPerson = contactPerson::find(_name);
+        #            this.ContactPersonId = contactPerson.ContactPersonId;
+        #
+        #            if (this.ContactPersonId)
+        #            {
+        #                name = contactPerson.personName();
+        #            }
+        #            else
+        #            {
+        #                select firstonly contactPerson
+        #                    join AccountNum, Party from vendTable
+        #                        where vendTable.AccountNum == this.OrderAccount &&
+        #                              vendTable.Party      == contactPerson.ContactForParty
+        #                    join Name from partyTable
+        #                        where partyTable.RecId == contactPerson.Party &&
+        #                              partyTable.Name like name;
+        #
+        #                if (contactPerson.RecId)
+        #                {
+        #                    this.ContactPersonId = contactPerson.ContactPersonId;
+        #                    name = partyTable.Name;
+        #                }
+        #            }
+        #        }
+        #        else
+        #        {
+        #            this.ContactPersonId = '';
+        #        }
+        #    }
+        #    else
+        #    {
+        #        name = ContactPerson::name(this.ContactPersonId);
+        #    }
+        #
+        #    return name;
+        #}
+      ENDSOURCE
+      SOURCE #euroTriangulation
+        #private EUROTriangulation euroTriangulation(date _date = this.InvoiceDate)
+        #{
+        #    return Currency::triangulation(this.CurrencyCode, _date);
+        #}
+      ENDSOURCE
+      SOURCE #exchRate
+        #private CustExchRate exchRate(date _date = this.InvoiceDate)
+        #{
+        #    return Currency::exchRate(this.CurrencyCode, _date);
+        #}
+      ENDSOURCE
+      SOURCE #exchRateSecondary
+        #private ExchrateSecondary exchRateSecondary(date _date = this.InvoiceDate)
+        #{
+        #    return (Currency::exchRateSecond(this.CurrencyCode, _date));
+        #}
+      ENDSOURCE
+      SOURCE #initFromPayment
+        #public void initFromPayment()
+        #{
+        #    this.PaymentSched = this.payment().PaymSched;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #initFromVendBankAccount
+        #//WBW_0015_AdvanceInvoice
+        #public void initFromVendBankAccount(VendBankAccount _VendBankAccount = this.vendBankAccount())
+        #{
+        #    if (_VendBankAccount)
+        #    {
+        #        this.BankConstantSymbol = BankConstantSymbol::find(_VendBankAccount.BankConstantSymbol).ConstantSymbol;
+        #        this.BankSpecificSymbol = _VendBankAccount.SpecificSymbol;
+        #    }
+        #}
+        #
+      ENDSOURCE
+      SOURCE #initFromVendTable
+        #private server void initFromVendTable(VendTable _vendTable)
+        #{
+        #    this.Payment              = _vendTable.PaymTermId;
+        #    this.initFromPayment();
+        #
+        #    if (_vendTable.PaymSched)
+        #    {
+        #        this.PaymentSched     = _vendTable.PaymSched;
+        #    }
+        #
+        #    this.PaymMode             = _vendTable.PaymMode;
+        #    this.PaymSpec             = _vendTable.PaymSpec;
+        #
+        #    if (!this.InvoiceDate)
+        #        this.InvoiceDate      = systemdateget();
+        #
+        #    this.calcDue();
+        #
+        #    this.LanguageId           = DirPartyTable::findRec(_vendTable.Party).LanguageId;
+        #    this.VendGroup            = _vendTable.VendGroup;
+        #
+        #    this.OrderAccount         = _vendTable.AccountNum;
+        #    this.InvoiceAccount       = this.InvoiceAccount ?
+        #                                this.InvoiceAccount :
+        #                                (_vendTable.InvoiceAccount ?
+        #                                 _vendTable.InvoiceAccount :
+        #                                 _vendTable.AccountNum);
+        #
+        #    this.NumberSequenceGroup  = _vendTable.NumberSequenceGroup ?
+        #                                _vendTable.NumberSequenceGroup : this.initNumberSequenceGroup(); // AQS
+        #
+        #    this.DefaultDimension     = _vendTable.DefaultDimension;
+        #
+        #    this.PostingProfile       = VendParameters::find().PrepaymentPostingProfile;
+        #    if (! this.PostingProfile)
+        #    {
+        #        this.PostingProfile   = VendParameters::find().PostingProfile;
+        #    }
+        #
+        #    this.CurrencyCode         = _vendTable.Currency;
+        #
+        #    this.setInvoiceAddress();
+        #
+        #    this.setListcode();
+        #
+        #    //WBW_0015_AdvanceInvoice + Pheg
+        #    this.BankAccount          = this.vendTable_InvoiceAccount().BankAccount;
+        #    this.initFromVendBankAccount();
+        #    //WBW_0015_AdvanceInvoice - pheg
+        #}
+      ENDSOURCE
+      SOURCE #initNumberSequenceGroup
+        #// AQS
+        #private NumberSequenceGroupId initNumberSequenceGroup()
+        #{
+        #    NumberSequenceGroupId   ret;
+        #
+        #    ret = VendTable::find(this.InvoiceAccount).numberSequenceGroup;
+        #
+        #    if (! ret)
+        #    {
+        #        //<CDR220521,ldan,2022_02_21,CiselneRady_ZastupneZnaky>
+        #        if (SystemParameters::find().NumberSeqUsePlaceholders)
+        #        {
+        #            ret = NumberSequenceGroup::findDefault().NumberSequenceGroupId;
+        #        }
+        #        else
+        #        //</CDR220521,ldan,2022_02_21,CiselneRady_ZastupneZnaky>
+        #            ret = NumberSequenceGroup::findDate(this.InvoiceDate, this.dataAreaId).numberSequenceGroupId;
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #initRecord
+        #public server void initRecord()
+        #{
+        #    VendTable   vendTable = this.vendTable_OrderAccount();
+        #    VendTable   invoiceTable;
+        #
+        #    this.initFromVendTable(vendTable);
+        #
+        #    if (! this.RecId && this.InvoiceAccount !=  this.OrderAccount)
+        #    {
+        #        invoiceTable = VendTable::find(this.InvoiceAccount);
+        #
+        #        if (Box::yesNo("@SYS24000"+ '\n\n' +
+        #                       VendTable::promptAddress(this.OrderAccount)+ '\n\n' +
+        #                       "@SYS15413" + '\n\n' +
+        #                       invoiceTable.InvoiceAccount + '\n\n' +
+        #                       "@SYS6182",
+        #                       DialogButton::Yes,
+        #                       "@SYS29051",
+        #                       "@SYS29052") == DialogButton::No)
+        #        {
+        #            this.initFromVendTable(vendTable);
+        #        }
+        #        else
+        #        {
+        #            this.initFromVendTable(invoiceTable);
+        #            this.OrderAccount = vendTable.AccountNum;
+        #        }
+        #    }
+        #
+        #    this.calcDue();
+        #}
+      ENDSOURCE
+      SOURCE #initValue
+        #public void initValue()
+        #{
+        #    super();
+        #
+        #    if(CZVendAdvanceInvoiceTable::checkWorkflowApprovalEnabled())
+        #    {
+        #        this.WFApprovalStatus = VendAdvanceInvoiceWFApprovalStatus::NotSubmitted;
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #insert
+        #public void insert()
+        #{
+        #    ttsbegin;
+        #
+        #    if (this.OneTimeVendor && ! this.OrderAccount)
+        #        this.createOneTimeAccount();
+        #
+        #    if (! this.InvoiceAccount)
+        #    {
+        #        this.InvoiceAccount = this.OrderAccount;
+        #    }
+        #
+        #    this.Status = CzAdvanceInvoiceStatus::Open;
+        #
+        #    super();
+        #
+        #    ttscommit;
+        #}
+      ENDSOURCE
+      SOURCE #invoiceAmountOpen
+        #//WBW_0025_BankDefinition
+        #//VAP_1003_BankDefinition
+        #Amount invoiceAmountOpen(transDate    _perDate    = maxdate())
+        #{
+        #    CzVendAdvanceInvoiceLink    vendAdvanceInvoiceLink;
+        #    ;
+        #    select sum(AmountPay) from vendAdvanceInvoiceLink
+        #                         where vendAdvanceInvoiceLink.AdvanceInvoiceRecId == this.RecId
+        #                            && vendAdvanceInvoiceLink.TransDate           <= _perDate;
+        #
+        #    return this.InvoiceAmount - vendAdvanceInvoiceLink.AmountPay;
+        #}
+      ENDSOURCE
+      SOURCE #isTaskApprover
+        #private boolean isTaskApprover()
+        #{
+        #    container   cont;
+        #    List        workItems;
+        #    boolean     ret;
+        #
+        #    if (this.WFApprovalStatus == VendAdvanceInvoiceWFApprovalStatus::PendingApproval)
+        #    {
+        #        [cont] = Workflow::internalFindWorkItemsForCurrentUser(this);
+        #        workItems = List::create(cont);
+        #        ret = workItems.elements() > 0;
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #isWFApprovalApproved
+        #public boolean isWFApprovalApproved()
+        #{
+        #    ;
+        #
+        #    return this.WFApprovalStatus == VendAdvanceInvoiceWFApprovalStatus::Approved;
+        #}
+      ENDSOURCE
+      SOURCE #location
+        #/// <summary>
+        #///     Finds the <c>LogisticsPostalAddress</c> for the postal address.
+        #/// </summary>
+        #/// <returns>
+        #///     <c>RecId</c> of the <c>LogisticsPostalAddress</c> record.
+        #/// </returns>
+        #public LogisticsLocationRecId location()
+        #{
+        #    return LogisticsPostalAddress::getLocation(this.PostalAddress);
+        #}
+      ENDSOURCE
+      SOURCE #modifiedField
+        #// AQS
+        #public void modifiedField(FieldId _fieldId)
+        #{
+        #    super(_fieldId);
+        #
+        #    switch (_fieldId)
+        #    {
+        #        case fieldnum(CzVendAdvanceInvoiceTable, OrderAccount) :
+        #            this.InvoiceDescription = this.displayOrderAccountName();
+        #            break;
+        #
+        #        case fieldnum(CzVendAdvanceInvoiceTable, InvoiceDate) :
+        #            this.NumberSequenceGroup = this.initNumberSequenceGroup();
+        #            break;
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #payment
+        #private PaymTerm payment(boolean _update = false)
+        #{
+        #    return PaymTerm::find(this.Payment, _update);
+        #}
+        #
+      ENDSOURCE
+      SOURCE #paymentDueDate
+        #private DueDate paymentDueDate()
+        #{
+        #    return PaymTerm::find(this.Payment).due(this.InvoiceDate);
+        #}
+      ENDSOURCE
+      SOURCE #setInvoiceAddress
+        #private void setInvoiceAddress()
+        #{
+        #    LogisticsLocation location;
+        #    VendTable   vendTable;
+        #    PurchTable  purchTable;
+        #
+        #    if (this.PurchId)
+        #    {
+        #        purchTable = PurchTable::find(this.PurchId);
+        #
+        #        if (purchTable)
+        #        {
+        #            this.Name = purchTable.DeliveryName;
+        #            this.PostalAddress = purchTable.DeliveryPostalAddress;
+        #        }
+        #    }
+        #
+        #    if (!purchTable)
+        #    {
+        #        vendTable = this.vendTable_InvoiceAccount();
+        #        this.Name = vendTable.name();
+        #
+        #        location = LogisticsLocationDefault::findSimpleDefault(vendTable,
+        #            LogisticsLocationRole::findBytype(LogisticsLocationRoleType::Invoice));
+        #    }
+        #
+        #    if (location)
+        #    {
+        #        this.PostalAddress      = LogisticsPostalAddress::findByLocation(location.RecId).RecId;
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #setListCode
+        #/// <summary>
+        #///     Sets the value for the <c>ListCode</c> field based on the postal address.
+        #/// </summary>
+        #void setListCode()
+        #{
+        #    LogisticsPostalAddress postalAddress = LogisticsPostalAddress::findRecId(this.PostalAddress);
+        #
+        #    this.Listcode = EUSalesList::resolveListCode(postalAddress.CountryRegionId);
+        #}
+      ENDSOURCE
+      SOURCE #summaryLedgerDimension
+        #//WBW_0034_AdvanceInvoicePrepayment +
+        #public LedgerDimensionDefaultAccount summaryLedgerDimension(VendPostingProfile _postingProfile = this.PostingProfile)
+        #{
+        #    return VendLedgerAccounts::summaryLedgerDimension(this.InvoiceAccount, _postingProfile);
+        #}
+      ENDSOURCE
+      SOURCE #taxItemGroup
+        #//INC30243_ZpracovaniZaloh, 27/02/2016, NEW
+        #public TaxItemGroup taxItemGroup()
+        #{
+        #    CzVendAdvanceInvoiceLine   advanceInvoiceLine;
+        #;
+        #    select firstOnly TaxItemGroup from advanceInvoiceLine
+        #        where advanceInvoiceLine.ParentRecId  == this.RecId
+        #           && advanceInvoiceLine.TaxItemGroup;
+        #
+        #    return advanceInvoiceLine.TaxItemGroup;
+        #}
+      ENDSOURCE
+      SOURCE #update
+        #public void update()
+        #{
+        #    CzVendAdvanceInvoiceTable this_Orig = this.orig();
+        #
+        #    ttsbegin;
+        #
+        #    this.checkCurrencyCode();
+        #
+        #    super();
+        #
+        #    if (! this.InvoiceAccount)
+        #    {
+        #        this.InvoiceAccount = this.OrderAccount;
+        #    }
+        #
+        #    if (this_Orig.PaymentSched &&
+        #        this_Orig.PaymentSched != this.PaymentSched)
+        #    {
+        #        CustPaymSched::deleteCustPaymSched(this.TableId, this.RecId);
+        #    }
+        #
+        #    ttscommit;
+        #}
+      ENDSOURCE
+      SOURCE #updateLedgerCov
+        #//WBW_0034_AdvanceInvoicePrepayment +
+        #server void updateLedgerCov()
+        #{
+        #    LedgerCoverage                      ledgerCoverage;
+        #    TransDate                           commissionBaseDate;
+        #    AmountCur                           amount;
+        #
+        #    ledgerCoverage      = new LedgerCoverage(this);
+        #
+        #    commissionBaseDate  = this.DueDate ? this.DueDate : this.InvoiceDate;
+        #    commissionBaseDate  = PaymTerm::advanceDate(this.clearingPeriod(),commissionBaseDate);
+        #    amount              = this.InvoiceAmount;
+        #
+        #    ledgerCoverage.updateSum(commissionBaseDate,
+        #                                LedgerPostingType::VendAdvanceInvoice,
+        #                                DimensionStorage::getMainAccountFromLedgerDimension(this.summaryLedgerDimension()).RecId,
+        #                                this.DefaultDimension,
+        #                                this.CurrencyCode,
+        #                                amount);
+        #
+        #    ledgerCoverage.updateSum(commissionBaseDate,
+        #                                LedgerPostingType::VendAdvanceInvoice,
+        #                                DimensionStorage::getMainAccountFromLedgerDimension(this.clearingLedgerDimension()).RecId,
+        #                                this.DefaultDimension,
+        #                                this.CurrencyCode,
+        #                                -amount);
+        #
+        #    if (this.PurchId) //if purchId identification then - transfer also till balance with opposite amount
+        #    {
+        #        ledgerCoverage.updateSum(commissionBaseDate,
+        #                                LedgerPostingType::VendAdvanceInvoice_Balance,
+        #                                DimensionStorage::getMainAccountFromLedgerDimension(this.summaryLedgerDimension()).RecId,
+        #                                this.DefaultDimension,
+        #                                this.CurrencyCode,
+        #                                -amount);
+        #
+        #        ledgerCoverage.updateSum(commissionBaseDate,
+        #                                LedgerPostingType::VendAdvanceInvoice_Balance,
+        #                                DimensionStorage::getMainAccountFromLedgerDimension(this.clearingLedgerDimension()).RecId,
+        #                                this.DefaultDimension,
+        #                                this.CurrencyCode,
+        #                                amount);
+        #
+        #    }
+        #
+        #    ledgerCoverage.endCov();
+        #}
+      ENDSOURCE
+      SOURCE #validateWrite
+        #public boolean validateWrite()
+        #{
+        #    boolean     ret = super();
+        #    boolean     onlyDescriptionUpdated;
+        #    container   con;
+        #
+        #    con = changedFieldsOfRecord(this);
+        #    if (conLen(con) == 1 && conPeek(con,1) == fieldNum(CzVendAdvanceInvoiceTable,InvoiceDescription))
+        #        onlyDescriptionUpdated = true;
+        #
+        #    if (!this.allowEditDueWorkflow())
+        #    {
+        #        con = changedFieldsOfRecord(this);
+        #        if (conLen(con) > 1 || conPeek(con,1) != fieldId2Ext(fieldNum(CzVendAdvanceInvoiceTable,InvoiceDescription),1))   // Not only InvoiceDescription havs been modified
+        #            ret = checkFailed("@AQS773");
+        #    }
+        #
+        #    if (PaymTerm::isCashAccount(this.Payment) && this.PaymentSched)
+        #    {
+        #        ret = checkFailed("@SYS27358");
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #vendBankAccount
+        #//WBW_0015_AdvanceInvoice
+        #public VendBankAccount vendBankAccount(boolean _update = false)
+        #{
+        #    return VendBankAccount::find(this.InvoiceAccount, this.BankAccount, _update);
+        #}
+      ENDSOURCE
+      SOURCE #vendTable_InvoiceAccount
+        #public VendTable vendTable_InvoiceAccount(boolean _update = false)
+        #{
+        #    return VendTable::find(this.InvoiceAccount, _update);
+        #}
+      ENDSOURCE
+      SOURCE #vendTable_OrderAccount
+        #private VendTable vendTable_OrderAccount(boolean _update = false)
+        #{
+        #    return VendTable::find(this.OrderAccount, _update);
+        #}
+      ENDSOURCE
+      SOURCE #amountPaymentLinkedPosted
+        #//WBW_0015_AdvanceInvoice
+        #static Container amountPaymentLinkedPosted(CompanyId                 _invoiceCompany,
+        #                                            CzVendAdvanceInvoiceRecId _recId)
+        #{
+        #    CzVendAdvanceInvoiceLink    ret;
+        #    VendTrans                   vendTrans;          // INC35103_ZalohoveFA, dkodes, 26.10.2017
+        #    Amount                      posted, linked;
+        #    ;
+        #    while select crosscompany ret
+        #        where  ret.InvoiceCompany       == _invoiceCompany
+        #           &&  ret.AdvanceInvoiceRecId  == _recId
+        #
+        #    {
+        #        // INC35103_ZalohoveFA, dkodes, 26.10.2017 +
+        #        select firstOnly crossCompany CurrencyCode from vendTrans
+        #            where   vendTrans.dataAreaId        == ret.PaymentCompany
+        #                &&  vendTrans.Voucher           == ret.Voucher
+        #                &&  vendTrans.TransDate         == ret.TransDate;
+        #        // INC35103_ZalohoveFA, dkodes, 26.10.2017 -
+        #
+        #        if(ret.isPaymentPosted())
+        #        {
+        #            // INC35103_ZalohoveFA, dkodes, 26.10.2017 +
+        #            // posted += ret.AmountPay;
+        #            posted += Currency::curAmount2CurAmount(ret.AmountPay, vendTrans.CurrencyCode, CzVendAdvanceInvoiceTable::findRecId(_recId).CurrencyCode, ret.TransDate);
+        #            // INC35103_ZalohoveFA, dkodes, 26.10.2017 -
+        #        }
+        #        else
+        #        {
+        #            // INC35103_ZalohoveFA, dkodes, 26.10.2017 +
+        #            // linked += ret.AmountPay;
+        #            linked += Currency::curAmount2CurAmount(ret.AmountPay, vendTrans.CurrencyCode, CzVendAdvanceInvoiceTable::findRecId(_recId).CurrencyCode, ret.TransDate);
+        #            // INC35103_ZalohoveFA, dkodes, 26.10.2017 -
+        #        }
+        #    }
+        #
+        #    return [linked, posted];
+        #}
+      ENDSOURCE
+      SOURCE #checkWorkflowApprovalEnabled
+        #//WBW_0028_AdvanceInvoiceWorkflow
+        #public static boolean checkWorkflowApprovalEnabled(boolean _displayInfoLog = false)
+        #{
+        #    boolean                     isWorkflowApprovalEnabled = false;
+        #    WorkflowVersionTable        workflowVersionTable;
+        #    VendParameters              vendParameters = VendParameters::find();
+        #    #AdvanceInvoiceWorflow
+        #    ;
+        #
+        #    //  Is the "Approval" active and is there a "Configuration"
+        #    if (vendParameters.WorkflowApproval &&
+        #        vendParameters.AdvanceInvoiceWFConfiguration)
+        #    {
+        #        //  Find the "Configuration".
+        #        //workflowVersionTable = WorkflowVersionTable::findSequenceNumber(vendParameters.AdvanceInvoiceWFConfiguration);
+        #        workflowVersionTable = WorkflowVersionTable::findDefaultActiveTemplate(#VendAdvanceInvoiceWFType);
+        #
+        #        //  Does it exist, and is it correct for the JournalType\Workflow Template, and is it enabled?
+        #        if (workflowVersionTable.RecId        != 0 &&
+        #            workflowVersionTable.Enabled)
+        #        {
+        #            isWorkflowApprovalEnabled = true;
+        #        }
+        #        else
+        #        {
+        #            if (_displayInfoLog)
+        #            {
+        #                info("@SYS112225");
+        #            }
+        #        }
+        #
+        #    }
+        #
+        #    return isWorkflowApprovalEnabled;
+        #}
+      ENDSOURCE
+      SOURCE #existApprovedForPurchId
+        #// AQS tomzan INC29070
+        #public static boolean existApprovedForPurchId(PurchId _purchId)
+        #{
+        #    CzVendAdvanceInvoiceTable   vendAdvanceInvoiceTable;
+        #
+        #    if (_purchId)
+        #    {
+        #        select firstOnly RecId from vendAdvanceInvoiceTable
+        #            where   vendAdvanceInvoiceTable.PurchId == _purchId
+        #                &&  vendAdvanceInvoiceTable.WFApprovalStatus == VendAdvanceInvoiceWFApprovalStatus::Approved;
+        #    }
+        #
+        #    return vendAdvanceInvoiceTable.RecId != 0;
+        #}
+      ENDSOURCE
+      SOURCE #existsPurchId
+        #/// <summary>
+        #///     Determines whether an advance invoice exists for a specific purchase order.
+        #/// </summary>
+        #/// <param name="_purchId">
+        #///     <c>PurchId</c> of the purchase order.
+        #/// </param>
+        #/// <returns>
+        #/// true if an advance invoice exists; otherwise false.
+        #/// </returns>
+        #public static boolean existsPurchId(PurchId _purchId)
+        #{
+        #    return (select firstonly RecId from CzVendAdvanceInvoiceTable where
+        #                CzVendAdvanceInvoiceTable.PurchId == _purchId).RecId ? true : false;
+        #}
+      ENDSOURCE
+      SOURCE #findAllForPaymentDifferentTaxGroups
+        #/// <summary>
+        #/// Finds the advance invoices linked to the specified payment that contain different tax groups than the payment.
+        #/// </summary>
+        #/// <param name="_payment">
+        #/// A payment that may be linked to one or more advance invoices.
+        #/// </param>
+        #/// <returns>
+        #/// A dataset of advance invoices with different tax groups than the given payment, positioned on the first
+        #/// record; otherwise, an empty record buffer.
+        #/// </returns>
+        #/// <remarks>
+        #/// The use of the 'firstonly' keyword is intentionally avoided so callers can iterate the possible dataset.
+        #/// </remarks>
+        #public server static CzVendAdvanceInvoiceTable findAllForPaymentDifferentTaxGroups(LedgerJournalTrans _payment)
+        #{
+        #    CzVendAdvanceInvoiceLink link;
+        #    CzVendAdvanceInvoiceLine advanceInvoiceLine;
+        #    CzVendAdvanceInvoiceTable advanceInvoiceTable;
+        #
+        #    select crosscompany advanceInvoiceTable
+        #        exists join advanceInvoiceLine
+        #            where advanceInvoiceLine.ParentRecId == advanceInvoiceTable.RecId &&
+        #                  (advanceInvoiceLine.TaxGroup     != _payment.TaxGroup ||
+        #                   advanceInvoiceLine.TaxItemGroup != _payment.TaxItemGroup)
+        #        exists join link
+        #            where link.InvoiceCompany      == advanceInvoiceTable.DataAreaId &&
+        #                  link.AdvanceInvoiceRecId == advanceInvoiceTable.RecId &&
+        #                  link.PaymentCompany      == _payment.DataAreaId &&
+        #                  link.Voucher             == _payment.Voucher &&
+        #                  link.TransDate           == _payment.TransDate;
+        #
+        #    return advanceInvoiceTable;
+        #}
+      ENDSOURCE
+      SOURCE #findByCompany
+        #public static CzVendAdvanceInvoiceTable findByCompany(
+        #    CompanyId   _companyId,
+        #    recId       _recId ,
+        #    boolean     _forupdate = false)
+        #{
+        #    CzVendAdvanceInvoiceTable advanceInvoiceTable;
+        #    ;
+        #
+        #    if (_companyId)
+        #    {
+        #        changecompany (_companyId)
+        #        {
+        #            advanceInvoiceTable = CzVendAdvanceInvoiceTable::findRecId(_recId, _forupdate);
+        #        }
+        #    }
+        #
+        #    return advanceInvoiceTable;
+        #}
+        #
+      ENDSOURCE
+      SOURCE #findInvoiceId
+        #public server static CzVendAdvanceInvoiceTable findInvoiceId(InvoiceId _invoiceId,
+        #                                                             boolean   _update = false)
+        #{
+        #    CzVendAdvanceInvoiceTable table;
+        #
+        #    table.selectForUpdate(_update);
+        #
+        #    if (_invoiceId)
+        #    {
+        #        select firstonly table
+        #            where table.InvoiceId == _invoiceId;
+        #    }
+        #
+        #    return table;
+        #}
+      ENDSOURCE
+      SOURCE #findRecId
+        #public static CzVendAdvanceInvoiceTable findRecId(RecId _recId, boolean _update = false)
+        #{
+        #    CzVendAdvanceInvoiceTable table;
+        #
+        #    table.selectForUpdate(_update);
+        #
+        #    select firstonly table
+        #        where table.RecId == _recId;
+        #
+        #    return table;
+        #}
+      ENDSOURCE
+      SOURCE #promptConvertCurrencyCode
+        #public client static boolean promptConvertCurrencyCode()
+        #{
+        #    return (Box::okCancel("@SYS54756", DialogButton::Ok) == DialogButton::Ok);
+        #}
+      ENDSOURCE
+      SOURCE #setWFStatus
+        #//WBW_0028_AdvanceInvoiceWorkflow
+        #public static void setWFStatus(RecId _advnceInvoiceRecId, VendAdvanceInvoiceWFApprovalStatus _status)
+        #{
+        #    CzVendAdvanceInvoiceTable vendAdvanceInvoiceTable;
+        #    vendAdvanceInvoiceTable.skipDataMethods(true);
+        #    ttsBegin;
+        #    select forupdate vendAdvanceInvoiceTable where vendAdvanceInvoiceTable.RecId == _advnceInvoiceRecId;
+        #    if(vendAdvanceInvoiceTable.RecId)
+        #    {
+        #        vendAdvanceInvoiceTable.WFApprovalStatus = _status;
+        #        vendAdvanceInvoiceTable.update();
+        #    }
+        #    ttsCommit;
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDTABLE
+  
+
+***Element: END

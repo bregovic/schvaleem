@@ -28,6 +28,7 @@ model User {
   passwordHash String
   role         Role     @default(APPROVER)
   active       Boolean  @default(true)
+  locale       String   @default("cs") // jazyk UI: "cs" | "en"
   erpUserId    String?  @unique // userId z ERP – podle něj vidí uživatel své workitemy
   createdAt    DateTime @default(now())
 

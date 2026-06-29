@@ -1,11 +1,13 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
+import { getDict, DEFAULT_LOCALE } from "@/lib/i18n";
 import { LoginForm } from "./LoginForm";
 
 export default async function LoginPage() {
   const user = await getCurrentUser();
   if (user) redirect("/zaznamy");
+  const t = getDict(DEFAULT_LOCALE);
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
@@ -22,7 +24,7 @@ export default async function LoginPage() {
             />
           </div>
         </div>
-        <LoginForm />
+        <LoginForm t={t} />
       </div>
     </main>
   );

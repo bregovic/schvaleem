@@ -107,6 +107,28 @@ static void Schvaleem_GenInvoiceJson(Args _args)
         return acc;
     }
 
+    // Rozdělí text podle oddělovače na container ŘETĚZCŮ.
+    // (Nelze použít str2con – ten číselné tokeny převede na čísla a uřízne
+    //  vodící nuly, např. "0030400626" -> 30400626.)
+    container splitStr(str _s, str _sep)
+    {
+        container c = conNull();
+        str       rest = _s;
+        int       idx;
+        while (rest)
+        {
+            idx = strFind(rest, _sep, 1, strLen(rest));
+            if (!idx)
+            {
+                c += strLRTrim(rest);
+                break;
+            }
+            c   += strLRTrim(subStr(rest, 1, idx - 1));
+            rest = subStr(rest, idx + strLen(_sep), strLen(rest));
+        }
+        return c;
+    }
+
     // -------------------------------------------------------------------------
     // Vstup: čísla faktur + cílový adresář
     // -------------------------------------------------------------------------
@@ -118,7 +140,7 @@ static void Schvaleem_GenInvoiceJson(Args _args)
 
     numsRaw     = dfNums.value();
     dir         = dfDir.value();
-    invoiceNums = str2con(numsRaw, ",");
+    invoiceNums = splitStr(numsRaw, ",");   // ŘETĚZCE – zachová vodící nuly
 
     // -------------------------------------------------------------------------
     // Hlavní smyčka přes faktury

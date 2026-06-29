@@ -61,6 +61,23 @@ export async function changeOwnPassword(
 }
 
 // ---------------------------------------------------------------------------
+// Změna jazyka UI (per účet)
+// ---------------------------------------------------------------------------
+
+export type LocaleState = { ok?: boolean };
+
+export async function changeLocale(
+  _prev: LocaleState,
+  formData: FormData,
+): Promise<LocaleState> {
+  const user = await requireUser();
+  const locale = formData.get("locale") === "en" ? "en" : "cs";
+  await prisma.user.update({ where: { id: user.id }, data: { locale } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
 // Rozhodnutí o workitemech (jeden i hromadně), s vynucením pravidel z konfigurace.
 // ---------------------------------------------------------------------------
 

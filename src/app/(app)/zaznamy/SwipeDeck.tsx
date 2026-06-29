@@ -9,6 +9,7 @@ import {
   animate,
 } from "framer-motion";
 import { amountLabel, type ApprovalItem } from "./types";
+import type { Dict } from "@/lib/i18n";
 
 type Action = "APPROVE" | "REJECT" | "DEFER";
 
@@ -24,10 +25,12 @@ export function SwipeDeck({
   queue,
   onDecision,
   pending,
+  t,
 }: {
   queue: ApprovalItem[];
   onDecision: (id: string, action: Action, comment: string) => void;
   pending: boolean;
+  t: Dict;
 }) {
   const [comment, setComment] = useState("");
   const [needComment, setNeedComment] = useState(false);
@@ -79,7 +82,7 @@ export function SwipeDeck({
   if (!item) {
     return (
       <p className="rounded-2xl border border-line bg-surface p-12 text-center text-sm text-muted">
-        Nic ke schválení.
+        {t.records.empty}
       </p>
     );
   }
@@ -89,7 +92,7 @@ export function SwipeDeck({
 
   return (
     <div className="mx-auto w-full max-w-md select-none">
-      <p className="mb-3 text-center text-xs text-muted">{queue.length} ve frontě</p>
+      <p className="mb-3 text-center text-xs text-muted">{queue.length} {t.records.inQueue}</p>
 
       <div className="relative h-[26rem]">
         {/* karta v pozadí (peek) */}
@@ -109,13 +112,13 @@ export function SwipeDeck({
         >
           {/* overlay štítky podle směru tažení */}
           <motion.div style={{ opacity: okOpacity }} className="pointer-events-none absolute left-4 top-4 rotate-[-12deg] rounded-md border-2 border-green-500 px-3 py-1 text-lg font-bold text-green-600">
-            SCHVÁLIT
+            {t.swipe.approve}
           </motion.div>
           <motion.div style={{ opacity: noOpacity }} className="pointer-events-none absolute right-4 top-4 rotate-[12deg] rounded-md border-2 border-red-500 px-3 py-1 text-lg font-bold text-red-600">
-            ZAMÍTNOUT
+            {t.swipe.reject}
           </motion.div>
           <motion.div style={{ opacity: deferOpacity }} className="pointer-events-none absolute inset-x-0 bottom-4 text-center text-base font-bold text-amber-600">
-            ↓ ODLOŽIT
+            {t.swipe.deferDown}
           </motion.div>
 
           <div className="flex items-start justify-between gap-2">
@@ -127,34 +130,34 @@ export function SwipeDeck({
                 </span>
               )}
               {item.priority === "high" && (
-                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700">
-                  priorita
+                <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-xs font-medium text-orange-300">
+                  {t.records.priority}
                 </span>
               )}
               {item.deferred && (
                 <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
-                  odloženo
+                  {t.records.deferred}
                 </span>
               )}
             </div>
           </div>
 
-          <h2 className="mt-1 line-clamp-2 text-xl font-semibold text-brand">{item.title}</h2>
+          <h2 className="mt-1 line-clamp-2 text-xl font-semibold text-fg">{item.title}</h2>
           <p className="text-sm text-muted">
             {item.documentTypeName} · {item.dataAreaName ?? item.dataArea}
           </p>
           {(item.dueAt || item.originator) && (
             <p className="mt-1 text-xs">
               {item.dueAt && (
-                <span className={item.overdue ? "font-medium text-red-600" : "text-amber-600"}>
-                  termín {fmtDate(item.dueAt)}
-                  {item.overdue ? " (po termínu)" : ""}
+                <span className={item.overdue ? "font-medium text-red-400" : "text-amber-400"}>
+                  {t.swipe.due} {fmtDate(item.dueAt)}
+                  {item.overdue ? t.swipe.overdue : ""}
                 </span>
               )}
-              {item.originator && <span className="text-muted"> · od {item.originator}</span>}
+              {item.originator && <span className="text-muted"> · {t.swipe.from} {item.originator}</span>}
             </p>
           )}
-          {amt && <p className="mt-3 text-3xl font-bold text-brand">{amt}</p>}
+          {amt && <p className="mt-3 text-3xl font-bold text-fg">{amt}</p>}
 
           {/* zvolená preview pole */}
           {item.previewFields.length > 0 && (
@@ -162,7 +165,7 @@ export function SwipeDeck({
               {item.previewFields.map((f) => (
                 <div key={f.label} className="flex justify-between gap-3">
                   <dt className="text-muted">{f.label}</dt>
-                  <dd className="truncate text-brand">{f.value || "–"}</dd>
+                  <dd className="truncate text-fg">{f.value || "–"}</dd>
                 </div>
               ))}
             </dl>
@@ -191,13 +194,13 @@ export function SwipeDeck({
 
           <div className="mt-auto pt-3">
             {item.suggestedAction === "APPROVE" && failed.length === 0 && (
-              <p className="mb-1 text-xs text-green-600">Návrh: schválit (vše v pořádku)</p>
+              <p className="mb-1 text-xs text-green-500">{t.swipe.suggestApprove}</p>
             )}
             <Link
               href={`/zaznamy/${item.id}`}
-              className="text-sm font-medium text-brand-accent hover:underline"
+              className="text-sm font-medium text-accent hover:underline"
             >
-              Otevřít detail →
+              {t.swipe.openDetail}
             </Link>
           </div>
         </motion.div>
@@ -207,8 +210,8 @@ export function SwipeDeck({
       <input
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        placeholder={needComment ? "Komentář je u zamítnutí povinný…" : "Komentář (volitelné)…"}
-        className={`mt-4 w-full rounded-md border px-3 py-2 text-sm outline-none focus:border-brand-accent ${
+        placeholder={needComment ? t.swipe.commentRequired : t.swipe.commentOptional}
+        className={`mt-4 w-full rounded-md border bg-surface-2 px-3 py-2 text-sm text-fg outline-none focus:border-accent ${
           needComment ? "border-red-400" : "border-line"
         }`}
       />
@@ -220,22 +223,22 @@ export function SwipeDeck({
           disabled={pending}
           className="rounded-xl bg-red-600 py-3 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
         >
-          ✕ Zamítnout
+          {t.swipe.btnReject}
         </button>
         <button
           onClick={() => fly("DEFER")}
           disabled={pending}
           className="rounded-xl bg-amber-500 py-3 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-50"
         >
-          ↓ Odložit
+          {t.swipe.btnDefer}
         </button>
         <button
           onClick={() => fly("APPROVE")}
           disabled={pending || item.approveBlocked}
-          title={item.approveBlocked ? "Nad limit – nelze schválit v aplikaci" : ""}
+          title={item.approveBlocked ? t.swipe.approveBlocked : ""}
           className="rounded-xl bg-green-600 py-3 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50"
         >
-          ✓ Schválit
+          {t.swipe.btnApprove}
         </button>
       </div>
     </div>

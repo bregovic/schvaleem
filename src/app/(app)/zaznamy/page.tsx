@@ -1,19 +1,20 @@
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { getDict } from "@/lib/i18n";
 import { resolveWorkflowDisplay, parseAmount } from "@/lib/config";
 import { ApprovalHub } from "./ApprovalHub";
 import type { ApprovalItem } from "./types";
 
 export default async function ZaznamyPage() {
   const user = await getCurrentUser();
+  const t = getDict(user?.locale);
 
   if (!user?.erpUserId) {
     return (
       <div>
-        <h1 className="mb-2 text-2xl font-semibold text-brand">Ke schválení</h1>
+        <h1 className="mb-2 text-2xl font-semibold text-fg">{t.records.erpMissingTitle}</h1>
         <p className="rounded-lg bg-surface p-6 text-muted ring-1 ring-line">
-          Tvůj účet nemá přiřazené <strong>ERP userId</strong>, takže ti nechodí žádné
-          workitemy ke schválení. Doplň ho ve Správě (jen administrátor).
+          {t.records.erpMissing}
         </p>
       </div>
     );
@@ -98,5 +99,5 @@ export default async function ZaznamyPage() {
     return a.createdAt.localeCompare(b.createdAt);
   });
 
-  return <ApprovalHub items={items} />;
+  return <ApprovalHub items={items} t={t} />;
 }

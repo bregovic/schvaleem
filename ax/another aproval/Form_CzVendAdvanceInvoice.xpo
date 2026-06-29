@@ -1,0 +1,3332 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: FRM
+
+; Microsoft Dynamics AX Forms unloaded
+; --------------------------------------------------------------------------------
+FRMVERSION 12
+
+FORM #CzVendAdvanceInvoice
+  PROPERTIES
+    Name                #CzVendAdvanceInvoice
+    Origin              #{0B140000-0000-1000-6AC3-5F89C2A311AF}
+  ENDPROPERTIES
+  
+  METHODS
+    SOURCE #classDeclaration
+      #class FormRun extends ObjectRun
+      #{
+      #    tableId             callerTableId;
+      #
+      #    FormStringControl   orderAccountContol;
+      #
+      #    QueryBuildRange     statusRange;
+      #
+      #    DimensionDefaultingController   dimensionDefaultingControllerHeader;
+      #
+      #    boolean             inPrompt;
+      #    //WBW_0015_AdvanceInvoice + Pheg
+      #    boolean             countryRegionCZ;
+      #    //WBW_0015_AdvanceInvoice - Pheg
+      #
+      #    Map                         mapCheckResult;
+      #    ImageListAppl_Infolog       imageListApplCheck;
+      #    Set                         infoRecId;
+      #    Set                         setSendRecord;
+      #
+      #    // INC35103_ZalohoveFA, dkodes, 26.10.2017 +
+      #    boolean                     expandHeaderSummary;
+      #    boolean                     expandLineDetails;
+      #
+      #    #define.CurrentVersion(1)
+      #    #localmacro.CurrentList
+      #        expandHeaderSummary,
+      #        expandLineDetails
+      #    #endmacro
+      #    // INC35103_ZalohoveFA, dkodes, 26.10.2017 -
+      #}
+    ENDSOURCE
+    SOURCE #advanceInvoiceLink
+      #// INC35103_ZalohoveFA, dkodes, 26.10.2017
+      #public CzVendAdvanceInvoiceLink advanceInvoiceLink()
+      #{
+      #    return VendAdvanceInvoiceLink;
+      #}
+    ENDSOURCE
+    SOURCE #allowEdit
+      #void allowEdit()
+      #{
+      #    FormDataObject oneTimeVendor = vendAdvanceInvoiceTable_ds.object(fieldnum(CzVendAdvanceInvoiceTable,OneTimeVendor));
+      #    // <INC36921>
+      #    FormDataObject invoiceDescription = vendAdvanceInvoiceTable_ds.object(fieldnum(CzVendAdvanceInvoiceTable,InvoiceDescription));
+      #    FormDataObject bankAccount = vendAdvanceInvoiceTable_ds.object(fieldnum(CzVendAdvanceInvoiceTable,BankAccount));
+      #    boolean        allowEditDueWorkflow = this.allowEditDueWorkflow();
+      #    // </INC36921>
+      #    ;
+      #    //+WBW_0028_AdvanceInvoiceWorkflow
+      #    //if (vendAdvanceInvoiceTable.Posted)
+      #    if (vendAdvanceInvoiceTable.Posted || !allowEditDueWorkflow)
+      #    //-WBW_0028_AdvanceInvoiceWorkflow
+      #    {
+      #        // <INC36921>
+      #        allowEditFieldsOnFormDS_W(vendAdvanceInvoiceTable_ds, false);
+      #        invoiceDescription.allowEdit(true);
+      #        if (allowEditDueWorkflow && vendAdvanceInvoiceTable.Status == CzAdvanceInvoiceStatus::Open)
+      #            bankAccount.allowEdit(true);
+      #        // </INC36921>
+      #
+      #        vendAdvanceInvoiceTable_ds.allowDelete(false);
+      #
+      #        buttonVendPostAdvanceInvoice.enabled(false);
+      #
+      #        buttonStatusChange.enabled(true);
+      #        buttonAdvanceInvoiceLink.enabled(vendAdvanceInvoiceTable.Status != CzAdvanceInvoiceStatus::Closed);
+      #    }
+      #    else
+      #    {
+      #        vendAdvanceInvoiceTable_ds.allowDelete(true);
+      #        allowEditFieldsOnFormDS_W(vendAdvanceInvoiceTable_ds, true);
+      #
+      #        buttonVendPostAdvanceInvoice.enabled(vendAdvanceInvoiceTable.RecId);
+      #
+      #        buttonStatusChange.enabled(false);
+      #        buttonAdvanceInvoiceLink.enabled(false);
+      #    }
+      #    //+WBW_0028_AdvanceInvoiceWorkflow
+      #    //if (CZVendAdvanceInvoiceTable::checkWorkflowApprovalEnabled())                                  //INC31526, 18/07/2016, DEL
+      #    if (!vendAdvanceInvoiceTable.Posted && CZVendAdvanceInvoiceTable::checkWorkflowApprovalEnabled()) //INC31526, 18/07/2016, INS
+      #    {
+      #        buttonVendPostAdvanceInvoice.enabled(vendAdvanceInvoiceTable.WFApprovalStatus == VendAdvanceInvoiceWFApprovalStatus::Approved);
+      #    }
+      #    //-WBW_0028_AdvanceInvoiceWorkflow
+      #
+      #    element.allowEditLines();
+      #
+      #    buttonSetPurchOrder.enabled(vendAdvanceInvoiceTable.RecId && vendAdvanceInvoiceTable.Status != CzAdvanceInvoiceStatus::Closed);
+      #
+      #    buttonErrorMessage.enabled(vendAdvanceInvoiceTable.Log ? true : false);
+      #
+      #    purchTableButton.enabled(vendAdvanceInvoiceTable.PurchId ? true : false);
+      #
+      #    if (vendAdvanceInvoiceTable.OneTimeVendor || vendAdvanceInvoiceTable.OrderAccount)
+      #    {
+      #        oneTimeVendor.skip(true);
+      #        oneTimeVendor.allowEdit(false);
+      #    }
+      #    else
+      #    {
+      #        oneTimeVendor.skip(false);
+      #        oneTimeVendor.allowEdit(true);
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #allowEditDueWorkflow
+      #//WBW_0028_AdvanceInvoiceWorkflow
+      #private boolean allowEditDueWorkflow()
+      #{
+      #    return vendAdvanceInvoiceTable.allowEditDueWorkflow();
+      #}
+    ENDSOURCE
+    SOURCE #allowEditLines
+      #void allowEditLines()
+      #{
+      #    // <INC36921>
+      #    FormDataObject description = vendAdvanceInvoiceLine_ds.object(fieldnum(CzVendAdvanceInvoiceLine,Description));
+      #    FormDataObject taxItemGroup = vendAdvanceInvoiceLine_ds.object(fieldnum(CzVendAdvanceInvoiceLine,TaxItemGroup));
+      #    boolean        allowEditDueWorkflow = this.allowEditDueWorkflow();
+      #    // </INC36921>
+      #    ;
+      #    //+WBW_0028_AdvanceInvoiceWorkflow
+      #    if (!vendAdvanceInvoiceTable.RecId)
+      #    //-WBW_0028_AdvanceInvoiceWorkflow
+      #    {
+      #        vendAdvanceInvoiceLine_ds.allowCreate(false);
+      #        vendAdvanceInvoiceLine_ds.allowEdit(false);
+      #        vendAdvanceInvoiceLine_ds.allowDelete(false);
+      #    }
+      #    // <INC36921>
+      #    else if (vendAdvanceInvoiceTable.Posted || !allowEditDueWorkflow)
+      #    {
+      #        vendAdvanceInvoiceLine_ds.allowEdit(true);
+      #        vendAdvanceInvoiceLine_ds.allowCreate(false);
+      #        vendAdvanceInvoiceLine_ds.allowDelete(false);
+      #
+      #        allowEditFieldsOnFormDS_W(vendAdvanceInvoiceLine_ds, false);
+      #
+      #        description.allowEdit(true);
+      #        if (allowEditDueWorkflow && vendAdvanceInvoiceTable.Status == CzAdvanceInvoiceStatus::Open)
+      #            taxItemGroup.allowEdit(true);
+      #    }
+      #    // </INC36921>
+      #    else
+      #    {
+      #        vendAdvanceInvoiceLine_ds.allowEdit(true);
+      #        vendAdvanceInvoiceLine_ds.allowCreate(true);
+      #        vendAdvanceInvoiceLine_ds.allowDelete(true);
+      #
+      #        allowEditFieldsOnFormDS_W(vendAdvanceInvoiceLine_ds, true);
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #canSubmitToWorkflow
+      #//WBW_0028_AdvanceInvoiceWorkflow
+      #public boolean canSubmitToWorkflow()
+      #{
+      #    boolean ret;
+      #
+      #
+      #
+      #    ret = VendAdvanceInvoiceTable.canSubmitToWorkflow();
+      #
+      #    return ret;
+      #}
+    ENDSOURCE
+    SOURCE #createListSendRecord
+      #public void createListSendRecord()
+      #{
+      #    CzVendAdvanceInvoiceTable    czVendAdvanceInvoiceTableMarked;
+      #
+      #    setSendRecord = new Set(Types::Int64);
+      #
+      #    if (VendAdvanceInvoiceTable_DS.anyMarked())
+      #    {
+      #        for(czVendAdvanceInvoiceTableMarked = getFirstSelection(VendAdvanceInvoiceTable_DS);
+      #            czVendAdvanceInvoiceTableMarked;
+      #            czVendAdvanceInvoiceTableMarked = VendAdvanceInvoiceTable_DS.getNext())
+      #        {
+      #            setSendRecord.add(czVendAdvanceInvoiceTableMarked.RecId);
+      #        }
+      #    }
+      #    else
+      #    {
+      #        setSendRecord.add(vendAdvanceInvoiceTable.RecId);
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #enableFieldsActive_W
+      #// AQS
+      #void enableFieldsActive_W()
+      #{
+      #    boolean taxDocCreateVisible;
+      #    boolean taxDocCreateEnabled;
+      #    boolean taxDocViewVisible;
+      #
+      #    [ taxDocCreateVisible,
+      #      taxDocCreateEnabled,
+      #      taxDocViewVisible ] = CzTaxDocumentTable::taxDocumentButtons(vendTrans);
+      #
+      #    PaymentsButtons.enabled(vendTrans.RecId);
+      #
+      #    CzTaxDocumentCreate.visible(taxDocCreateVisible);
+      #    CzTaxDocumentCreate.enabled(taxDocCreateEnabled);
+      #    // <AQ> INC33589 Zpracovani dan. dokladu zalohove faktury
+      #    if (taxDocCreateEnabled)
+      #    {
+      #        CzTaxDocumentCreate.enabled(false);
+      #        CzTaxDocument.enabled(taxDocViewVisible);
+      #    }
+      #    // <AQ> INC33589 Zpracovani dan. dokladu zalohove faktury
+      #
+      #    TaxDocumentTable_CZ.visible(taxDocViewVisible);
+      #    TaxDocumentPrint_CZ.visible(taxDocViewVisible);
+      #    CzTaxDocumentTable_CustVendOrig.visible(taxDocViewVisible);
+      #
+      #    PrepaymentHandlingButton.enabled(! vendTrans.Invoice && ! vendTrans.Closed);
+      #}
+    ENDSOURCE
+    SOURCE #init
+      #void init()
+      #{
+      #    PurchTable  localPurchTable;
+      #    //WBW_0015_AdvanceInvoice + Pheg
+      #    #isoCountryRegionCodes
+      #    countryRegionCZ = SysCountryRegionCode::isLegalEntityInCountryRegion([#isoCZ]);
+      #    //WBW_0015_AdvanceInvoice - Pheg
+      #
+      #    super();
+      #
+      #    FormSecurity::setFormDataSourceMaxAccessRight(this);
+      #
+      #    if (element.args().parmEnum() == NoYes::Yes)
+      #    {
+      #        if (element.args().record())
+      #        {
+      #            callerTableId = element.args().record().TableId;
+      #        }
+      #    }
+      #    else
+      #    {
+      #        vendAdvanceInvoiceTable_ds.insertIfEmpty(false);
+      #        vendAdvanceInvoiceLine_ds.insertIfEmpty(false);
+      #    }
+      #
+      #    statusDisplay.selection(CzAdvanceInvoiceStatusDisplay::All);
+      #    element.statusFilterChanged();
+      #
+      #    dimensionDefaultingControllerHeader = DimensionDefaultingController::constructInGroupWithValues(false, true, true, 0, this, groupFinancialDimensionHeader , "@SYS101181");
+      #    dimensionDefaultingControllerHeader.parmAttributeValueSetDataSource(vendAdvanceInvoiceTable_ds, fieldStr(CzVendAdvanceInvoiceTable, DefaultDimension));
+      #
+      #    // Needed to check validity of address
+      #    logisticsPostalAddress_ds.addFieldToSelectionList(fieldNum(LogisticsPostalAddress, ValidFrom));
+      #    logisticsPostalAddress_ds.addFieldToSelectionList(fieldNum(LogisticsPostalAddress, ValidTo));
+      #    logisticsPostalAddress_ds.addFieldToSelectionList(fieldNum(LogisticsPostalAddress, CountryRegionId));
+      #
+      #    if (callerTableId == tableNum(PurchTable))
+      #    {
+      #        localPurchTable = element.args().record();
+      #
+      #        if (!CzVendAdvanceInvoiceTable::existsPurchId(localPurchTable.PurchId))
+      #        {
+      #            vendAdvanceInvoiceTable_ds.create();
+      #        }
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #initOrderAccountControl
+      #void initOrderAccountControl()
+      #{
+      #    int idx = 1;
+      #
+      #    while (! orderAccountContol && idx <= element.design().controlCount())
+      #    {
+      #        element.loopCtrl(element.design().controlNum(idx));
+      #        idx ++;
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #loadUserSetting
+      #// INC35103_ZalohoveFA, dkodes, 26.10.2017
+      #public void loadUserSetting()
+      #{
+      #    super();
+      #
+      #    element.unpack(xSysLastValue::getValue(curext(), curUserId(), UtilElementType::Form, element.name()));
+      #}
+    ENDSOURCE
+    SOURCE #loadWorkflowConfiguration
+      #//WBW_0028_AdvanceInvoiceWorkflow
+      #public Common loadWorkflowConfiguration()
+      #{
+      #    WorkflowVersionTable        workflowConfigurationTable;
+      #    #AdvanceInvoiceWorflow
+      #    ;
+      #
+      #    if (CZVendAdvanceInvoiceTable::checkWorkflowApprovalEnabled())
+      #    {
+      #        //workflowConfigurationTable = WorkflowVersionTable::findSequenceNumber(VendParameters::find().AdvanceInvoiceWFConfiguration);
+      #        workflowConfigurationTable = WorkflowVersionTable::findDefaultActiveTemplate(#VendAdvanceInvoiceWFType);
+      #    }
+      #
+      #    return workflowConfigurationTable;
+      #}
+    ENDSOURCE
+    SOURCE #loopCtrl
+      #void loopCtrl(Object _ctrl)
+      #{
+      #    int idx = 1;
+      #
+      #    FormStringControl tmpControl;
+      #    DictField         tmpFieldDict,
+      #                      tmpControlDict;
+      #
+      #    switch (classidget(_ctrl))
+      #    {
+      #        case classnum(FormStringControl)  :
+      #            tmpControl = _ctrl;
+      #
+      #            if (tmpControl.dataSource() == vendAdvanceInvoiceTable_DS.id())
+      #            {
+      #                tmpControlDict = new DictField(tablenum(CzVendAdvanceInvoiceTable),
+      #                                               tmpControl.dataField());
+      #                tmpFieldDict   = new DictField(tablenum(CzVendAdvanceInvoiceTable),
+      #                                               fieldnum(CzVendAdvanceInvoiceTable,
+      #                                                        OrderAccount));
+      #                if (tmpControlDict.name() == tmpFieldDict.name())
+      #                {
+      #                    orderAccountContol = tmpControl;
+      #                }
+      #            }
+      #            break;
+      #        case classnum(FormGroupControl)   :
+      #        case classnum(FormTabControl)     :
+      #        case classnum(FormGridControl)    :
+      #        case classnum(FormTabPageControl) :
+      #            while (! orderAccountContol && idx <= _ctrl.controlCount())
+      #            {
+      #                element.loopCtrl(_ctrl.controlNum(idx));
+      #                idx ++;
+      #            }
+      #            return;
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #pack
+      #// INC35103_ZalohoveFA, dkodes, 26.10.2017
+      #public container pack()
+      #{
+      #    return [#CurrentVersion, #CurrentList];
+      #}
+    ENDSOURCE
+    SOURCE #run
+      #public void run()
+      #{
+      #    super();
+      #
+      #    if (element.args().formViewOption() == FormViewOption::Grid ||
+      #        (vendAdvanceInvoiceTable_ds.numberOfRowsLoaded() > 0 &&
+      #            element.args().record() &&
+      #            element.args().record().TableId == tableNum(PurchTable)))
+      #    {
+      #        tabPageGrid.activatePage();
+      #        editRecord.clicked();
+      #    }
+      #    else
+      #    {
+      #        tabPageDetails.activatePage();
+      #
+      #        if ( element.args().parmEnum() == NoYes::Yes &&
+      #            element.args().record().TableId != tableNum(PurchTable))
+      #        {
+      #            headerSummaryTabPage.expand();
+      #        }
+      #        // INC35103_ZalohoveFA, dkodes, 26.10.2017 +
+      #        else
+      #        {
+      #            if (expandHeaderSummary)
+      #                headerSummaryTabPage.expand();
+      #            else
+      #                headerSummaryTabPage.collapse();
+      #
+      #            if (expandLineDetails)
+      #                LineDetailsTabPage.expand();
+      #            else
+      #                LineDetailsTabPage.collapse();
+      #        }
+      #        // INC35103_ZalohoveFA, dkodes, 26.10.2017 -
+      #    }
+      #
+      #}
+    ENDSOURCE
+    SOURCE #saveUserSetting
+      #// INC35103_ZalohoveFA, dkodes, 26.10.2017
+      #public void saveUserSetting()
+      #{
+      #    super();
+      #
+      #    expandHeaderSummary = headerSummaryTabPage.isExpanded();
+      #    expandLineDetails   = LineDetailsTabPage.isExpanded();
+      #
+      #    xSysLastValue::putValue(element.pack(), curext(), curUserId(), UtilElementType::Form, element.name());
+      #}
+    ENDSOURCE
+    SOURCE #setCheckResult
+      #public void setCheckResult(Map _mapCheckResult)
+      #{
+      #    mapCheckResult = _mapCheckResult;
+      #    infoRecId = new Set(Types::Int64);
+      #
+      #    VendAdvanceInvoiceTable_DS.first();
+      #    VendAdvanceInvoiceTable_DS.executeQuery();
+      #}
+    ENDSOURCE
+    SOURCE #setTitleText
+      #public void setTitleText()
+      #{
+      #    if (vendAdvanceInvoiceTable.InvoiceId)
+      #    {
+      #        advanceInvoiceId.text(strFmt('%1 : %2 - %3', vendAdvanceInvoiceTable.InvoiceId,
+      #                                                vendAdvanceInvoiceTable.InvoiceAccount,
+      #                                                vendAdvanceInvoiceTable.vendTable_InvoiceAccount().name()));
+      #    }
+      #    else
+      #    {
+      #        advanceInvoiceId.text(strFmt('%1 - %2', vendAdvanceInvoiceTable.InvoiceAccount,
+      #                                                vendAdvanceInvoiceTable.vendTable_InvoiceAccount().name()));
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #statusFilterChanged
+      #void statusFilterChanged()
+      #{
+      #    switch (statusDisplay.selection())
+      #    {
+      #        case CzAdvanceInvoiceStatusDisplay::All       :
+      #            statusRange.value(SysQuery::valueUnlimited());
+      #            break;
+      #
+      #        case CzAdvanceInvoiceStatusDisplay::Open      :
+      #            statusRange.value(SysQuery::value(CzAdvanceInvoiceStatus::Open));
+      #            break;
+      #
+      #        case CzAdvanceInvoiceStatusDisplay::NonClosed :
+      #            statusRange.value(queryRangeConcat(SysQuery::value(CzAdvanceInvoiceStatus::Open),
+      #                                               SysQuery::value(CzAdvanceInvoiceStatus::PartPaid)));
+      #            break;
+      #
+      #        case CzAdvanceInvoiceStatusDisplay::Paid      :
+      #            statusRange.value(queryRangeConcat(SysQuery::value(CzAdvanceInvoiceStatus::Closed),
+      #                                               SysQuery::value(CzAdvanceInvoiceStatus::PartPaid)));
+      #            break;
+      #
+      #        case CzAdvanceInvoiceStatusDisplay::Closed    :
+      #            statusRange.value(SysQuery::value(CzAdvanceInvoiceStatus::Closed));
+      #            break;
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #unpack
+      #// INC35103_ZalohoveFA, dkodes, 26.10.2017
+      #public boolean unpack(container packedClass)
+      #{
+      #    int version;
+      #    ;
+      #
+      #    version = Runbase::getVersion(packedClass);
+      #
+      #    switch (version)
+      #    {
+      #        case #CurrentVersion:
+      #            [version, #CurrentList] = packedClass;
+      #            return true;
+      #        default :
+      #            return false;
+      #    }
+      #
+      #    return false;
+      #}
+    ENDSOURCE
+  ENDMETHODS
+  OBJECTBANK
+    PROPERTIES
+    ENDPROPERTIES
+    
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #VendAdvanceInvoiceTable
+          Table               #CzVendAdvanceInvoiceTable
+          Index               #InvoiceDateIdx
+          InsertAtEnd         #No
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+          DATAFIELD OrderAccount
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #lookup
+                #// AQS
+                #public void lookup(FormControl _formControl, str _filterStr)
+                #{
+                #    VendTable::lookupVendorSimple(_formControl);
+                #}
+              ENDSOURCE
+              SOURCE #modified
+                #void modified()
+                #{
+                #    super();
+                #
+                #    vendAdvanceInvoiceTable.initRecord();
+                #
+                #    // Reload default dimensions as the specification of the customer account loads new defaults
+                #    dimensionDefaultingControllerHeader.activated();
+                #    if (vendAdvanceInvoiceTable.InvoiceDate)
+                #    {
+                #        dimensionDefaultingControllerHeader.setNonActiveValueTolerance(ErrorTolerance::Warning, vendAdvanceInvoiceTable.InvoiceDate);
+                #    }
+                #
+                #    vendAdvanceInvoiceTable_ds.object(fieldnum(CzVendAdvanceInvoiceTable, OneTimeVendor)).allowEdit(false);
+                #    vendAdvanceInvoiceTable_ds.object(fieldnum(CzVendAdvanceInvoiceTable, OneTimeVendor)).skip(true);
+                #
+                #    vendAdvanceInvoiceTable_ds.cacheCalculateMethod(tablemethodstr(CzVendAdvanceInvoiceTable, displayOrderAccountName));
+                #
+                #    vendAdvanceInvoiceTable_ds.refresh();
+                #    vendAdvanceInvoiceLine_ds.allowCreate(true);
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD InvoiceAccount
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #lookup
+                #// AQS
+                #public void lookup(FormControl _formControl, str _filterStr)
+                #{
+                #    VendTable::lookupVendorSimple(_formControl);
+                #}
+              ENDSOURCE
+              SOURCE #modified
+                #public void modified()
+                #{
+                #    super();
+                #
+                #    // Reload default dimensions as the specification of the customer account loads new defaults
+                #    dimensionDefaultingControllerHeader.activated();
+                #    if (vendAdvanceInvoiceTable.InvoiceDate)
+                #    {
+                #        dimensionDefaultingControllerHeader.setNonActiveValueTolerance(ErrorTolerance::Warning, vendAdvanceInvoiceTable.InvoiceDate);
+                #    }
+                #
+                #    vendAdvanceInvoiceTable_ds.cacheCalculateMethod(tablemethodstr(CzVendAdvanceInvoiceTable, displayInvoiceAccountName));
+                #
+                #    vendAdvanceInvoiceTable.initRecord();
+                #    //WBW_0015_AdvanceInvoice + Pheg
+                #    if (countryRegionCZ)
+                #    {
+                #        vendAdvanceInvoiceTable.initFromVendBankAccount(VendBankAccount::find(vendAdvanceInvoiceTable.InvoiceAccount,vendAdvanceInvoiceTable.BankAccount));
+                #    }
+                #    //WBW_0015_AdvanceInvoice - Pheg
+                #    vendAdvanceInvoiceTable_ds.refresh();
+                #
+                #    vendAdvanceInvoiceLine_ds.allowCreate(true);
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD OneTimeVendor
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #modified
+                #public void modified()
+                #{
+                #    super();
+                #
+                #    if (! orderAccountContol)
+                #    {
+                #        element.initOrderAccountControl();
+                #    }
+                #
+                #    orderAccountContol.setFocus();
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          REFERENCEFIELD PostalAddress
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #lookupReference
+                #public Common lookupReference(FormReferenceControl _formReferenceControl)
+                #{
+                #    Common ret;
+                #    VendTable localVendTable = VendTable::find(vendAdvanceInvoiceTable.InvoiceAccount);
+                #
+                #    ret = LogisticsLocationSelectionLookup::lookupAddressForm(_formReferenceControl, localVendTable,
+                #        [LogisticsLocationRoleType::Invoice],
+                #        false, [vendAdvanceInvoiceTable.PostalAddress]);
+                #    return ret;
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDREFERENCEFIELD
+          
+          DATAFIELD BankAccount
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #lookup
+                #//WBW_0015_AdvanceInvoice + Pheg
+                #public void lookup(FormControl _formControl, str _filterStr)
+                #{;
+                #    VendBankAccount::lookupBankAccount(_formControl,
+                #                                        VendAdvanceInvoiceTable.InvoiceAccount,
+                #                                        VendAdvanceInvoiceTable.company(),
+                #                                        DateTimeUtil::getSystemDateTime());
+                #}
+              ENDSOURCE
+              SOURCE #jumpRef
+                #//WBW_0015_AdvanceInvoice + Pheg
+                #public void jumpRef()
+                #{
+                #    Args        args;
+                #    FormRun     formRun;
+                #    ;
+                #    args = new Args(formStr(VendBankAccounts));
+                #
+                #    args.record(VendAdvanceInvoiceTable);
+                #
+                #    formRun = classfactory.formRunClass(args);
+                #    formRun.init();
+                #    formRun.run();
+                #    formRun.detach();
+                #}
+              ENDSOURCE
+              SOURCE #modified
+                #public void modified()
+                #{
+                #    super();
+                #
+                #    //WBW_0015_AdvanceInvoice + Pheg
+                #    if (countryRegionCZ)
+                #    {
+                #        vendAdvanceInvoiceTable.initFromVendBankAccount();
+                #        vendAdvanceInvoiceTable_ds.refresh();
+                #    }
+                #    //WBW_0015_AdvanceInvoice - Pheg
+                #
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #delete
+          #public void delete()
+          #{
+          #    super();
+          #
+          #    dimensionDefaultingControllerHeader.deleted();
+          #}
+        ENDSOURCE
+        SOURCE #active
+          #int active()
+          #{
+          #    int ret = super();
+          #
+          #    element.allowEdit();
+          #
+          #    vendAdvanceInvoiceLink_ds.executeQuery();
+          #
+          #    dimensionDefaultingControllerHeader.activated();
+          #    if (vendAdvanceInvoiceTable.InvoiceDate)
+          #    {
+          #        dimensionDefaultingControllerHeader.setNonActiveValueTolerance(ErrorTolerance::Warning, vendAdvanceInvoiceTable.InvoiceDate);
+          #    }
+          #
+          #    element.setTitleText();
+          #
+          #    return ret;
+          #}
+        ENDSOURCE
+        SOURCE #create
+          #void create(boolean append = false)
+          #{
+          #    vendAdvanceInvoiceTable_ds.allowEdit(true);
+          #    vendAdvanceInvoiceTable_ds.allowCreate(true);
+          #    vendAdvanceInvoiceTable_ds.allowDelete(true);
+          #
+          #    vendAdvanceInvoiceTable_ds.object(fieldnum(CzVendAdvanceInvoiceTable, OneTimeVendor)).skip(false);
+          #    vendAdvanceInvoiceTable_ds.object(fieldnum(CzVendAdvanceInvoiceTable, OneTimeVendor)).allowEdit(true);
+          #
+          #    super(append);
+          #
+          #    if (callerTableId && !inPrompt)
+          #    {
+          #        switch (callerTableId)
+          #        {
+          #            case tablenum(PurchTable):
+          #                inPrompt = true;
+          #
+          #                if (CzAdvanceInvoiceCreate::createFromForm(element.args().record(),
+          #                                                       vendAdvanceInvoiceTable,
+          #                                                       vendAdvanceInvoiceLine))
+          #                {
+          #                    vendAdvanceInvoiceLine_ds.research();
+          #                    vendAdvanceInvoiceLine_ds.active();
+          #
+          #                    vendAdvanceInvoiceTable_ds.rereadReferenceDataSources();
+          #
+          #                    lineViewButton.clicked();
+          #                }
+          #
+          #                inPrompt = false;
+          #
+          #                break;
+          #        }
+          #    }
+          #
+          #    element.allowEdit();
+          #}
+        ENDSOURCE
+        SOURCE #executeQuery
+          #public void executeQuery()
+          #{
+          #    logisticsPostalAddress_ds.validTimeStateUpdate(ValidTimeStateUpdate::Correction);
+          #    logisticsPostalAddress_ds.query().validTimeStateDateTimeRange(DateTimeUtil::minValue(), DateTimeUtil::maxValue());
+          #
+          #    super();
+          #
+          #    element.allowEdit();
+          #}
+        ENDSOURCE
+        SOURCE #init
+          #public void init()
+          #{
+          #    super();
+          #
+          #    statusRange = SysQuery::findOrCreateRange(vendAdvanceInvoiceTable_DS.query().dataSourceTable(tablenum(CzVendAdvanceInvoiceTable)),
+          #                                              fieldnum(CzVendAdvanceInvoiceTable, Status));
+          #
+          #    this.cacheAddMethod(tablemethodstr(CzVendAdvanceInvoiceTable, contactPersonName));
+          #    this.cacheAddMethod(tablemethodstr(CzVendAdvanceInvoiceTable, editContactPersonName));
+          #    this.cacheAddMethod(tablemethodstr(CzVendAdvanceInvoiceTable, displayInvoiceAccountName));
+          #    this.cacheAddMethod(tablemethodstr(CzVendAdvanceInvoiceTable, displayOrderAccountName));
+          #}
+        ENDSOURCE
+        SOURCE #initValue
+          #public void initValue()
+          #{
+          #    super();
+          #
+          #    vendAdvanceInvoiceTable.WorkerSalesTaker = HcmWorker::userId2Worker(curuserid());
+          #}
+        ENDSOURCE
+        SOURCE #invoiceDateModified
+          #void invoiceDateModified()
+          #{
+          #    vendAdvanceInvoiceTable_ds.paymentModified();
+          #
+          #    vendAdvanceInvoiceTable_ds.refresh();
+          #    vendAdvanceInvoiceLine_ds.allowCreate(vendAdvanceInvoiceTable.InvoiceAccount != '');
+          #}
+        ENDSOURCE
+        SOURCE #paymentModified
+          #void paymentModified()
+          #{
+          #    vendAdvanceInvoiceTable.initFromPayment();
+          #    vendAdvanceInvoiceTable.DueDate = dateNull();
+          #    vendAdvanceInvoiceTable.calcDue();
+          #}
+        ENDSOURCE
+        SOURCE #write
+          #void write()
+          #{
+          #    ttsbegin;
+          #
+          #    if (vendAdvanceInvoiceTable.CurrencyCode != vendAdvanceInvoiceTable.orig().CurrencyCode &&
+          #        (CzVendAdvanceInvoiceLine::exist(vendAdvanceInvoiceTable.RecId) ||
+          #         MarkupTrans::exist(vendAdvanceInvoiceTable.TableId,
+          #                            vendAdvanceInvoiceTable.RecId))                                 &&
+          #        CzVendAdvanceInvoiceTable::promptConvertCurrencyCode())
+          #    {
+          #        vendAdvanceInvoiceTable.convertCurrencyCode(vendAdvanceInvoiceTable.CurrencyCode);
+          #    }
+          #
+          #    dimensionDefaultingControllerHeader.writing();
+          #
+          #    super();
+          #
+          #    ttscommit;
+          #}
+        ENDSOURCE
+      ENDMETHODS
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #VendAdvanceInvoiceLine
+          Table               #CzVendAdvanceInvoiceLine
+          CounterField        #LineNum
+          JoinSource          #VendAdvanceInvoiceTable
+          LinkType            #Active
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+          DATAFIELD AmountCur
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #modified
+                #public void modified()
+                #{
+                #    super();
+                #
+                #    if (vendAdvanceInvoiceLine_DS.validateWrite())
+                #    {
+                #        vendAdvanceInvoiceLine_DS.write();
+                #        vendAdvanceInvoiceLine_DS.refresh();
+                #        vendAdvanceInvoiceTable.calcInvoiceAmount();
+                #    }
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD TaxGroup
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #modified
+                #public void modified()
+                #{
+                #    super();
+                #
+                #    vendAdvanceInvoiceLine_ds.cacheCalculateMethod(tableMethodStr(CzVendAdvanceInvoiceLine, VATAmount));
+                #    vendAdvanceInvoiceLine_ds.cacheCalculateMethod(tableMethodStr(CzVendAdvanceInvoiceLine, VATBaseAmount));
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD TaxItemGroup
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #modified
+                #public void modified()
+                #{
+                #    super();
+                #
+                #    vendAdvanceInvoiceLine_ds.cacheCalculateMethod(tableMethodStr(CzVendAdvanceInvoiceLine, VATAmount));
+                #    vendAdvanceInvoiceLine_ds.cacheCalculateMethod(tableMethodStr(CzVendAdvanceInvoiceLine, VATBaseAmount));
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #init
+          #public void init()
+          #{
+          #    super();
+          #
+          #    this.cacheAddMethod(tableMethodStr(CzVendAdvanceInvoiceLine, VATBaseAmount));
+          #    this.cacheAddMethod(tableMethodStr(CzVendAdvanceInvoiceLine, VATAmount));
+          #}
+        ENDSOURCE
+        SOURCE #delete
+          #public void delete()
+          #{
+          #    super();
+          #
+          #    vendAdvanceInvoiceTable.calcInvoiceAmount();
+          #}
+        ENDSOURCE
+        SOURCE #initValue
+          #void initValue()
+          #{
+          #    super();
+          #
+          #    vendAdvanceInvoiceLine.Description = "@GLS108259";
+          #    vendAdvanceInvoiceLine.initFromVendAdvanceInvoiceTable(vendAdvanceInvoiceTable);
+          #}
+          #
+        ENDSOURCE
+      ENDMETHODS
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #VendAdvanceInvoiceLink
+          Table               #CzVendAdvanceInvoiceLink
+          AllowDelete         #No
+          CrossCompanyAutoQuery #Yes
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #executeQuery
+          #public void executeQuery()
+          #{
+          #    findOrCreateRange_W(this.query().dataSourceNo(1),
+          #                        fieldnum(CzVendAdvanceInvoiceLink, AdvanceInvoiceRecId),
+          #                        queryValue(vendAdvanceInvoiceTable.RecId));
+          #
+          #    findOrCreateRange_W(this.query().dataSourceNo(1),
+          #                        fieldnum(CzVendAdvanceInvoiceLink, InvoiceCompany),
+          #                        queryValue(vendAdvanceInvoiceTable.company()));
+          #
+          #    super();
+          #}
+        ENDSOURCE
+        SOURCE #init
+          #public void init()
+          #{
+          #    super();
+          #
+          #    this.cacheAddMethod(tablemethodstr(CzVendAdvanceInvoiceLink, isPaymentPosted));
+          #}
+        ENDSOURCE
+      ENDMETHODS
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #CustAdvanceInvoiceLink
+          Table               #CzCustAdvanceInvoiceLink
+          AllowEdit           #No
+          AllowCreate         #No
+          AllowDelete         #No
+          JoinSource          #VendAdvanceInvoiceTable
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+      ENDMETHODS
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #VendTrans
+          Table               #VendTrans
+          AllowCheck          #No
+          AllowEdit           #No
+          AllowCreate         #No
+          AllowDelete         #No
+          JoinSource          #VendAdvanceInvoiceLink
+          LinkType            #InnerJoin
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #init
+          #public void init()
+          #{
+          #    //AQS new
+          #    QueryBuildRange         qbrPrep,
+          #                            qbrRecId;
+          #
+          #    super();
+          #
+          #    qbrPrep = this.queryBuildDataSource().addRange(fieldNum(VendTrans, Prepayment));
+          #    qbrPrep.value(queryValue(NoYes::Yes));
+          #    qbrPrep.status(RangeStatus::Locked);
+          #
+          #    qbrRecId = this.queryBuildDataSource().addRange(fieldNum(VendTrans, RecId));
+          #    qbrRecId.value(strFmt('(%1.%2 != %1.%3) || (%1.%4 == %5)',
+          #                         this.name(),
+          #                         fieldStr(VendTrans, Voucher),
+          #                         fieldStr(VendTrans, LastSettleVoucher),
+          #                         fieldStr(VendTrans, Closed),
+          #                         0)
+          #                         );
+          #
+          #    qbrRecId.status(RangeStatus::Locked);
+          #}
+        ENDSOURCE
+        SOURCE #active
+          #// AQS
+          #public int active()
+          #{
+          #    int ret;
+          #
+          #    ret = super();
+          #
+          #    element.enableFieldsActive_W();
+          #
+          #    return ret;
+          #}
+        ENDSOURCE
+      ENDMETHODS
+    ENDDATASOURCE
+  ENDOBJECTBANK
+  
+  REFERENCEDATASOURCES
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #LogisticsPostalAddress
+          Table               #LogisticsPostalAddress
+          JoinSource          #VendAdvanceInvoiceTable
+          JoinRelation        #PostalAddress
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+      ENDMETHODS
+    ENDDATASOURCE
+  ENDREFERENCEDATASOURCES
+  
+  JOINS
+    VendAdvanceInvoiceLine VendAdvanceInvoiceTable
+    CustAdvanceInvoiceLink VendAdvanceInvoiceTable
+    VendTrans VendAdvanceInvoiceLink
+    LogisticsPostalAddress VendAdvanceInvoiceTable
+  ENDJOINS
+  
+  PARTREFERENCES
+  ENDPARTREFERENCES
+  
+  DESIGN
+    PROPERTIES
+      Caption             #@AQS863
+      TitleDatasource     #VendAdvanceInvoiceTable
+      DataSource          #VendAdvanceInvoiceTable
+      HideIfEmpty         #No
+      WorkflowEnabled     #Yes
+      WorkflowDatasource  #VendAdvanceInvoiceTable
+      WorkflowType        #VendAdvanceInvoiceWF
+      Style               #DetailsFormTransaction
+    ENDPROPERTIES
+    
+    CONTAINER
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #ActionPane
+          VerticalSpacing     #0
+          ElementPosition     #268435455
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #ActionPaneAddress
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #TabPageAddress
+          Style               #Strip
+          DataSource          #VendAdvanceInvoiceTable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #LinesActionPane
+          ElementPosition     #858993458
+          HierarchyParent     #LinesTabPage
+          Style               #Strip
+          DataSource          #VendAdvanceInvoiceLine
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #PaymentsActionPane
+          ElementPosition     #954437176
+          HierarchyParent     #TabPagePayments
+          Style               #Strip
+          DataSource          #VendTrans
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #AddressActionPaneTab
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPaneAddress
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #AdvanceInvoice
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPane
+          Caption             #@GLS107927
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #LinesActionPaneTab
+          ElementPosition     #1431655764
+          HierarchyParent     #LinesActionPane
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #PaymentsActionPaneTab
+          ElementPosition     #1431655764
+          HierarchyParent     #PaymentsActionPane
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Actions
+          ElementPosition     #1214350870
+          HierarchyParent     #AdvanceInvoice
+          Caption             #@SYS9342
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #AddressButtonGroup
+          ElementPosition     #1431655764
+          HierarchyParent     #AddressActionPaneTab
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #GeneralAttachment
+          ElementPosition     #2096353083
+          HierarchyParent     #AdvanceInvoice
+          Caption             #@SYS316708
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #LinesButtons
+          Left                #Auto (left)
+          VerticalSpacing     #0
+          ElementPosition     #1431655764
+          HierarchyParent     #LinesActionPaneTab
+          ArrangeMethod       #Horizontal, flush right
+          Columnspace         #0
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #List
+          AutoDeclaration     #Yes
+          ElementPosition     #1942961394
+          HierarchyParent     #AdvanceInvoice
+          Caption             #@SYS118440
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Maintain
+          ElementPosition     #485740348
+          HierarchyParent     #AdvanceInvoice
+          Caption             #@SYS316703
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #New
+          ElementPosition     #728610522
+          HierarchyParent     #AdvanceInvoice
+          Caption             #@SYS2055
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #OtherInformation
+          ElementPosition     #1457221044
+          HierarchyParent     #AdvanceInvoice
+          Caption             #@SYS310012
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #PaymentsButtons
+          AutoDeclaration     #Yes
+          Left                #Auto (left)
+          VerticalSpacing     #0
+          Enabled             #No
+          ElementPosition     #1431655764
+          HierarchyParent     #PaymentsActionPaneTab
+          ArrangeMethod       #Horizontal, flush right
+          Columnspace         #0
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Setup
+          ElementPosition     #2045222520
+          HierarchyParent     #AdvanceInvoice
+          Caption             #@SYS316454
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #Show
+          AutoDeclaration     #Yes
+          ElementPosition     #971480696
+          HierarchyParent     #AdvanceInvoice
+          Caption             #@SYS317437
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #View
+          ElementPosition     #1700091218
+          HierarchyParent     #AdvanceInvoice
+          Caption             #@SYS5252
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GRID
+        PROPERTIES
+          Name                #InvoiceGrid
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1431655764
+          HierarchyParent     #Group
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #Grid
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GRID
+        PROPERTIES
+          Name                #LinesGrid
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1288490187
+          HierarchyParent     #LinesTabPage
+          VisibleRows         #5
+          DataSource          #VendAdvanceInvoiceLine
+          DataGroup           #Grid
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GRID
+        PROPERTIES
+          Name                #PaymentsGrid
+          Width               #Column width
+          ElementPosition     #1431655764
+          HierarchyParent     #TabPagePayments
+          VisibleRows         #5
+          DataSource          #VendAdvanceInvoiceLink
+          DataGroup           #Payment
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Address
+          ElementPosition     #1610612733
+          HierarchyParent     #TabPageAddress
+          FrameType           #None
+          DataSource          #VendAdvanceInvoiceTable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #BankAccount
+          ElementPosition     #1288490187
+          HierarchyParent     #TabPagePayment
+          Caption             #@GLS108002
+          DataSource          #VendAdvanceInvoiceTable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Group
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1610612733
+          HierarchyParent     #TabPageGrid
+          Style               #BorderlessGridContainer
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupAdministration
+          ElementPosition     #920350134
+          HierarchyParent     #TabPageInvoice
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #Administration
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupFinancialDimensionHeader
+          AutoDeclaration     #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #TabPageDimension
+          FrameType           #None
+          DataSource          #VendAdvanceInvoiceTable
+          HideIfEmpty         #No
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupForeignTrade
+          ElementPosition     #1717986916
+          HierarchyParent     #TabPagePayment
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #ForeignTrade
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupInvoice
+          ElementPosition     #690262600
+          HierarchyParent     #TabPageInvoice
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #Invoice
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupInvoiceAccount
+          ElementPosition     #1610612733
+          HierarchyParent     #GroupVendorAccounts
+          FrameType           #None
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #InvoiceAccount
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupPayment
+          ElementPosition     #858993458
+          HierarchyParent     #TabPagePayment
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #Payment
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupPosting
+          ElementPosition     #766958444
+          HierarchyParent     #TabPageInvoice
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #Posting
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupReference
+          ElementPosition     #843654288
+          HierarchyParent     #TabPageInvoice
+          Caption             #@SYS14018
+          DataSource          #VendAdvanceInvoiceTable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupText
+          ElementPosition     #1717986916
+          HierarchyParent     #LinesTabPage
+          FrameType           #None
+          DataSource          #VendAdvanceInvoiceLine
+          Columns             #2
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+          AlignChildren       #No
+          AlignChild          #No
+          DataGroup           #Text
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupVendor
+          ElementPosition     #1073741822
+          HierarchyParent     #GroupVendorAccounts
+          FrameType           #None
+          DataSource          #VendAdvanceInvoiceTable
+          Columns             #2
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+          DataGroup           #Vendor
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupVendorAccounts
+          ElementPosition     #613566756
+          HierarchyParent     #TabPageInvoice
+          Caption             #@SYS8079
+          DataSource          #VendAdvanceInvoiceTable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #HeaderAccountNamesGroup
+          Width               #Column width
+          ElementPosition     #1073741822
+          HierarchyParent     #HeaderVendorGroup
+          Style               #MarginlessContainer
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #HeaderInfo
+          ElementPosition     #1073741822
+          HierarchyParent     #TabPageDetails
+          Style               #DetailTitleContainer
+          Columns             #Auto
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #HeaderInvoiceGroup
+          Width               #Column width
+          ElementPosition     #1476395005
+          HierarchyParent     #HeaderSummaryTabPage
+          Caption             #@SYS12128
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #HeaderVendorGroup
+          Width               #Column width
+          ElementPosition     #1073741822
+          HierarchyParent     #HeaderSummaryTabPage
+          Caption             #@SYS8079
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #IntercompanyAdmin
+          ElementPosition     #1431655764
+          HierarchyParent     #TabPageInterCompanySettings
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #IntercompanyAdmin
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #WorkflowStatus
+          ElementPosition     #1994091957
+          HierarchyParent     #TabPageInvoice
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #WorkflowStatus
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #WorkflowStatus1
+          ElementPosition     #1879048189
+          HierarchyParent     #HeaderSummaryTabPage
+          DataSource          #VendAdvanceInvoiceTable
+          DataGroup           #WorkflowStatus
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUBUTTON
+        PROPERTIES
+          Name                #CzTaxDocument
+          AutoDeclaration     #Yes
+          HelpText            #@GLS108302
+          ElementPosition     #1789569705
+          HierarchyParent     #PaymentsButtons
+          Text                #@GLS108299
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REFERENCEGROUP
+        PROPERTIES
+          Name                #Address_PostalAddress
+          HelpText            #@SYS344280
+          ElementPosition     #1288490187
+          HierarchyParent     #Address
+          DataSource          #VendAdvanceInvoiceTable
+          ReferenceField      #PostalAddress
+          ReplacementFieldGroup #LocationReference
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TAB
+        PROPERTIES
+          Name                #CombinedViewFastTab
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1431655764
+          HierarchyParent     #CombinedViewTabPage
+          Style               #FastTabs
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TAB
+        PROPERTIES
+          Name                #HeaderDetailsFastTab
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1431655764
+          HierarchyParent     #HeaderViewTabPage
+          Style               #FastTabs
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TAB
+        PROPERTIES
+          Name                #LineDetailsIndexTab
+          Width               #Column width
+          ElementPosition     #1431655764
+          HierarchyParent     #LineDetailsTabPage
+          Style               #IndexTabs
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TAB
+        PROPERTIES
+          Name                #TabDetails
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1610612734
+          HierarchyParent     #TabPageDetails
+          ShowTabs            #No
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TAB
+        PROPERTIES
+          Name                #TabMain
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1207959550
+          Tabs                #6
+          ShowTabs            #No
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #tabChanged
+            #public void tabChanged(int _fromTab, int _toTab)
+            #{
+            #    super(_fromTab, _toTab);
+            #
+            #    //Show when in Grid mode
+            #    list.visible(tabPageGrid.isActivePage());
+            #
+            #    //Show when in Details mode
+            #    editButton.visible(!tabPageGrid.isActivePage());
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #CombinedViewTabPage
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1073741822
+          HierarchyParent     #TabDetails
+          LeftMargin          #0
+          RightMargin         #0
+          Style               #DetailsFormDetails
+          PanelStyle          #DetailsLine
+          Scrollbars          #No
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #HeaderSummaryTabPage
+          AutoDeclaration     #Yes
+          Width               #Column width
+          ElementPosition     #858993458
+          HierarchyParent     #CombinedViewFastTab
+          Caption             #@GLS220246
+          DataSource          #VendAdvanceInvoiceTable
+          Columns             #3
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+              #0
+            ENDARRAY
+          FastTabExpanded     #Yes
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #HeaderViewTabPage
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1610612733
+          HierarchyParent     #TabDetails
+          LeftMargin          #0
+          RightMargin         #0
+          Style               #DetailsFormDetails
+          PanelStyle          #DetailsHeader
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #LineDetailsTabPage
+          AutoDeclaration     #Yes
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1717986916
+          HierarchyParent     #CombinedViewFastTab
+          Caption             #@GLS221131
+          TopMargin           #0
+          BottomMargin        #0
+          LeftMargin          #0
+          RightMargin         #0
+          FastTabExpanded     #No
+          Scrollbars          #No
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #LinesTabPage
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1288490187
+          HierarchyParent     #CombinedViewFastTab
+          Caption             #@SYS2166
+          DataSource          #VendAdvanceInvoiceLine
+          FastTabExpanded     #Always
+          Scrollbars          #No
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #TabPageAddress
+          Width               #Column width
+          ElementPosition     #1073741823
+          HierarchyParent     #HeaderDetailsFastTab
+          Caption             #@SYS9362
+          DataSource          #VendAdvanceInvoiceTable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #TabPageDetails
+          AutoDeclaration     #Yes
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1073741822
+          HierarchyParent     #TabMain
+          Style               #DetailsFormDetails
+          PanelStyle          #Details
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #TabPageDimension
+          Width               #Column width
+          ElementPosition     #1789569705
+          HierarchyParent     #HeaderDetailsFastTab
+          Caption             #@SYS14926
+          DataSource          #VendAdvanceInvoiceTable
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #pageActivated
+            #public void pageActivated()
+            #{
+            #    dimensionDefaultingControllerHeader.pageActivated();
+            #    super();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #TabPageGrid
+          AutoDeclaration     #Yes
+          Width               #Column width
+          ElementPosition     #1610612733
+          HierarchyParent     #TabMain
+          Caption             #@SYS9039
+          ViewEditMode        #Edit
+          Style               #DetailsFormGrid
+          PanelStyle          #Grid
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #TabPageInterCompanySettings
+          Width               #Column width
+          ConfigurationKey    #TradeInterCompany
+          ElementPosition     #1610612734
+          HierarchyParent     #HeaderDetailsFastTab
+          BackgroundColor     #Window background
+          Caption             #@SYS317558
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #TabPageInvoice
+          Width               #Column width
+          ElementPosition     #715827882
+          HierarchyParent     #HeaderDetailsFastTab
+          Caption             #@SYS2952
+          DataSource          #VendAdvanceInvoiceTable
+          Columns             #3
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+              #0
+            ENDARRAY
+          FastTabExpanded     #Yes
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #TabPagePayment
+          Width               #Column width
+          ElementPosition     #1431655764
+          HierarchyParent     #HeaderDetailsFastTab
+          Caption             #@SYS828
+          DataSource          #VendAdvanceInvoiceTable
+          Columns             #Auto
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL TABPAGE
+        PROPERTIES
+          Name                #TabPagePayments
+          Width               #Column width
+          ElementPosition     #1431655764
+          HierarchyParent     #LineDetailsIndexTab
+          Caption             #@SYS243
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #ButtonErrorMessage
+          AutoDeclaration     #Yes
+          HelpText            #@SYS68550
+          ElementPosition     #1610612733
+          HierarchyParent     #View
+          Text                #@SYS5283
+          ButtonDisplay       #Text & Image above
+          NormalImage         #10563
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    super();
+            #
+            #    if (vendAdvanceInvoiceTable.Log)
+            #        infolog.view(Info::infoStr2Con(vendAdvanceInvoiceTable.Log));
+            #    else
+            #        info(strfmt("@SYS19186"));
+            #}
+            #
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #PrintManagement
+          NeededPermission    #Manual
+          HelpText            #@SYS116252
+          ConfigurationKey    #LogisticsBasic
+          SecurityKey         #CustMisc
+          DisplayTarget       #Client
+          ElementPosition     #1789569705
+          HierarchyParent     #Setup
+          Text                #@SYS114627
+          NormalImage         #10698
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Primary             #Yes
+          NeedsRecord         #Yes
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    PrintMgmtSetupContext setupContext = new PrintMgmtSetupContext();
+            #
+            #    if (vendAdvanceInvoiceTable_ds.cursor() == null)
+            #    {
+            #        return;
+            #    }
+            #
+            #    super();
+            #
+            #    setupContext.addHierarchyContext(PrintMgmtHierarchyType::Purch, PrintMgmtNodeType::PurchaseAdvanceInvoice);
+            #
+            #    setupContext.parmCaller(element);
+            #    setupContext.parmReferencedTableBuffer(vendAdvanceInvoiceTable_ds.cursor());
+            #    setupContext.parmCountryRegionId(vendAdvanceInvoiceTable.vendTable_InvoiceAccount().postalAddress().CountryRegionId);
+            #    PrintMgmt::launchSetup(setupContext);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL CHECKBOX
+        PROPERTIES
+          Name                #Header_OneTimeCustomer
+          ElementPosition     #1610612733
+          HierarchyParent     #HeaderVendorGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #OneTimeVendor
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL CHECKBOX
+        PROPERTIES
+          Name                #InvoiceGrid_OneTimeVendor
+          Visible             #No
+          ElementPosition     #671088635
+          HierarchyParent     #InvoiceGrid
+          BackgroundColor     #Window background
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #OneTimeVendor
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #InvoiceGrid_Status
+          ElementPosition     #1879048178
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #Status
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #InvoiceGrid_WFApprovalStatus
+          ElementPosition     #2013265905
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #WFApprovalStatus
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #StatusDisplay
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #TabPageGrid
+          EnumType            #CzAdvanceInvoiceStatusDisplay
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #selectionChange
+            #public int selectionChange()
+            #{
+            #    int ret = super();
+            #
+            #    element.statusFilterChanged();
+            #
+            #    vendAdvanceInvoiceTable_ds.insertIfEmpty(false);
+            #    vendAdvanceInvoiceLine_ds.insertIfEmpty(false);
+            #
+            #    vendAdvanceInvoiceTable_DS.executeQuery();
+            #
+            #    return ret;
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #Attachment
+          ElementPosition     #1073741822
+          HierarchyParent     #GeneralAttachment
+          Text                #@SYS316708
+          ButtonDisplay       #Text & Image above
+          NormalImage         #10442
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #No
+          Big                 #Yes
+          NeedsRecord         #Yes
+          Command             #2853
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #Delete
+          NeededPermission    #Delete
+          HelpText            #@GLS220395
+          ElementPosition     #1395864369
+          HierarchyParent     #Maintain
+          Text                #@SYS14425
+          ButtonDisplay       #Text & Image above
+          NormalImage         #10121
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          SaveRecord          #No
+          MultiSelect         #Yes
+          Primary             #Yes
+          NeedsRecord         #Yes
+          Command             #2832
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #DeleteInvoiceLine
+          AutoDeclaration     #Yes
+          ElementPosition     #1610612733
+          HierarchyParent     #LinesButtons
+          Text                #@SYS135131
+          ButtonDisplay       #Text & Image left
+          NormalImage         #11400
+          ImageLocation       #EmbeddedResource
+          SaveRecord          #No
+          MultiSelect         #Yes
+          Big                 #Yes
+          Primary             #Yes
+          Command             #2832
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #DetailsView
+          AutoDeclaration     #Yes
+          Visible             #No
+          ElementPosition     #2004318068
+          HierarchyParent     #Maintain
+          Command             #1316
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #EditButton
+          AutoDeclaration     #Yes
+          NeededPermission    #Update
+          HelpText            #@GLS220392
+          ElementPosition     #930576246
+          HierarchyParent     #Maintain
+          Text                #@SYS317438
+          NormalImage         #10040
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Primary             #Yes
+          Command             #4471
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    if (!VendAdvanceInvoiceTable.Posted && VendAdvanceInvoiceTable.WFApprovalStatus == VendAdvanceInvoiceWFApprovalStatus::Approved)
+            #    {
+            #        if (Box::okCancel("@WBW615", DialogButton::Cancel) == DialogButton::Ok)
+            #        {
+            #            CzVendAdvanceInvoiceTable::setWFStatus(VendAdvanceInvoiceTable.RecId, VendAdvanceInvoiceWFApprovalStatus::NotSubmitted);
+            #            RefreshButton.clicked();
+            #        }
+            #        else
+            #        {
+            #            return;
+            #        }
+            #    }
+            #    super();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #EditRecord
+          AutoDeclaration     #Yes
+          Visible             #No
+          NeededPermission    #Update
+          ElementPosition     #2075900857
+          HierarchyParent     #Maintain
+          Command             #4471
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #ExportExcel
+          ElementPosition     #1610612733
+          HierarchyParent     #List
+          NormalImage         #10156
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #Yes
+          Big                 #Yes
+          Command             #4436
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #GridView
+          AutoDeclaration     #Yes
+          Visible             #No
+          ElementPosition     #1861152492
+          HierarchyParent     #Maintain
+          Command             #1317
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #HeaderViewButton
+          ElementPosition     #1073741822
+          HierarchyParent     #Show
+          NormalImage         #12133
+          ImageLocation       #EmbeddedResource
+          SaveRecord          #No
+          Big                 #Yes
+          Primary             #Yes
+          Command             #1320
+          ToggleButton        #Radio
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    super();
+            #
+            #    // Since the client doesn't reactivate the controls that were previously hidden we must force update to default dimensions
+            #    dimensionDefaultingControllerHeader.activated(true);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #LineViewButton
+          AutoDeclaration     #Yes
+          ElementPosition     #1610612734
+          HierarchyParent     #Show
+          NormalImage         #12134
+          ImageLocation       #EmbeddedResource
+          SaveRecord          #No
+          Big                 #Yes
+          Primary             #Yes
+          Command             #1321
+          ToggleButton        #Radio
+          ToggleValue         #On
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #NewAdvanceInvoiceCommand
+          AutoDeclaration     #Yes
+          NeededPermission    #Create
+          ElementPosition     #1431655764
+          HierarchyParent     #New
+          Text                #@GLS107927
+          NormalImage         #12744
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #Yes
+          Big                 #Yes
+          Primary             #Yes
+          Command             #260
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #NewInvoiceLine
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #LinesButtons
+          Text                #@SYS319116
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10009
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #Yes
+          Big                 #Yes
+          Primary             #Yes
+          Command             #260
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #RefreshButton
+          AutoDeclaration     #Yes
+          HelpText            #@SYS315818
+          ElementPosition     #1073741822
+          HierarchyParent     #List
+          NormalImage         #11437
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #Yes
+          Big                 #Yes
+          Command             #2875
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #GroupInvoice_InvoiceDate
+          ElementPosition     #858993458
+          HierarchyParent     #GroupInvoice
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceDate
+          FastTabSummary      #Yes
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #Header_DocumentDate
+          ElementPosition     #920350134
+          HierarchyParent     #HeaderInvoiceGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #DocumentDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #Header_DueDate
+          ElementPosition     #1124872386
+          HierarchyParent     #HeaderInvoiceGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #DueDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #Header_InvoiceDate
+          ElementPosition     #613566756
+          HierarchyParent     #HeaderInvoiceGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_InvoiceDate
+          ElementPosition     #178956968
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DROPDIALOGBUTTON
+        PROPERTIES
+          Name                #ButtonSetPurchOrder
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #OtherInformation
+          ButtonDisplay       #Text & Image above
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Big                 #Yes
+          Primary             #Yes
+          NeedsRecord         #Yes
+          MenuItemName        #VendAdvanceInvoicePurchOrder_W
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #AddAttachmentAndMetadataToSP
+          ElementPosition     #1610612733
+          HierarchyParent     #GeneralAttachment
+          ButtonDisplay       #Text & Image above
+          NormalImage         #12185
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          MultiSelect         #No
+          Big                 #Yes
+          DataSource          #VendAdvanceInvoiceTable
+          MenuItemType        #Action
+          MenuItemName        #AddAttachmentAndMetadataToSP
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #ButtonAdvanceInvoiceLink
+          AutoDeclaration     #Yes
+          ElementPosition     #1610612734
+          HierarchyParent     #OtherInformation
+          Text                #@SYS333693
+          ButtonDisplay       #Text & Image above
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Big                 #Yes
+          Primary             #Yes
+          DataSource          #VendAdvanceInvoiceTable
+          MenuItemName        #CzVendAdvanceInvoiceLink
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #ButtonStatusChange
+          AutoDeclaration     #Yes
+          Enabled             #No
+          ElementPosition     #1610612733
+          HierarchyParent     #Actions
+          NeedsRecord         #Yes
+          DataSource          #VendAdvanceInvoiceTable
+          MenuItemType        #Action
+          MenuItemName        #CzAdvanceInvoiceStatusChange_Vend
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #ButtonVendPostAdvanceInvoice
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #Actions
+          ButtonDisplay       #Text & Image above
+          NormalImage         #10285
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Big                 #Yes
+          Primary             #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendAdvanceInvoiceTable
+          MenuItemType        #Action
+          MenuItemName        #CzVendPostAdvanceInvoice
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #CheckVendorRegister
+          ElementPosition     #1207959549
+          HierarchyParent     #Actions
+          NormalImage         #10864
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #Yes
+          DataSource          #VendAdvanceInvoiceTable
+          MenuItemType        #Action
+          MenuItemName        #CheckVendorRegister
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    element.createListSendRecord();
+            #
+            #    super();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #CustTransButton
+          ElementPosition     #1073741823
+          HierarchyParent     #PaymentsButtons
+          MenuItemName        #VendTrans
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #CzTaxDocumentCreate
+          AutoDeclaration     #Yes
+          Enabled             #No
+          ElementPosition     #858993458
+          HierarchyParent     #CzTaxDocument
+          DataSource          #VendTrans
+          MenuItemType        #Action
+          MenuItemName        #CzTaxDocumentCreate_Vend
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #CzTaxDocumentTable_CustVendOrig
+          AutoDeclaration     #Yes
+          ElementPosition     #1503238551
+          HierarchyParent     #CzTaxDocument
+          DataSource          #VendTrans
+          MenuItemType        #Output
+          MenuItemName        #CzTaxDocumentTable_VendOrig
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #CzVendAdvanceInvoiceLinkUpdate
+          ElementPosition     #1968526675
+          HierarchyParent     #PaymentsButtons
+          DataSource          #VendAdvanceInvoiceLink
+          MenuItemType        #Action
+          MenuItemName        #CzVendAdvanceInvoiceLinkUpdate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #DirPartyPostalAddressNew
+          ElementPosition     #1073741822
+          HierarchyParent     #AddressButtonGroup
+          Text                #@SYS111834
+          ButtonDisplay       #Text & Image left
+          ImageLocation       #EmbeddedResource
+          MenuItemName        #CustDirPartyPostalAddressNew
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #DocuShow
+          ElementPosition     #1789569705
+          HierarchyParent     #GeneralAttachment
+          Big                 #Yes
+          MenuItemName        #DocuShow
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #LogisticsLocationSelect
+          ElementPosition     #1610612734
+          HierarchyParent     #AddressButtonGroup
+          ButtonDisplay       #Text & Image left
+          DataSource          #VendAdvanceInvoiceTable
+          MenuItemName        #LogisticsLocationSelect
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #PrepaymentHandlingButton
+          AutoDeclaration     #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #PaymentsButtons
+          MenuItemName        #CustVendPrepaymentHandling_W
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #PrintOutInvoice
+          ElementPosition     #1342177277
+          HierarchyParent     #Actions
+          ButtonDisplay       #Text & Image above
+          NormalImage         #10700
+          ImageLocation       #EmbeddedResource
+          MultiSelect         #Yes
+          DataSource          #VendAdvanceInvoiceTable
+          MenuItemType        #Output
+          MenuItemName        #VendAdvanceInvoice
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #PurchTableButton
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #View
+          ShowShortCut        #No
+          DataSource          #VendAdvanceInvoiceTable
+          MenuItemName        #PurchTable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #SharepointDeleteAttachment
+          ElementPosition     #1700091219
+          HierarchyParent     #GeneralAttachment
+          ButtonDisplay       #Text & Image above
+          NormalImage         #12183
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          NeedsRecord         #Yes
+          DataSource          #VendAdvanceInvoiceTable
+          MenuItemType        #Action
+          MenuItemName        #SharepointDeleteAttachment
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #TaxDocumentPrint_CZ
+          AutoDeclaration     #Yes
+          ElementPosition     #1717986916
+          HierarchyParent     #CzTaxDocument
+          DataSource          #VendTrans
+          MenuItemType        #Output
+          MenuItemName        #CzTaxDocumentTable_Vend
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #TaxDocumentTable_CZ
+          AutoDeclaration     #Yes
+          ElementPosition     #1288490187
+          HierarchyParent     #CzTaxDocument
+          DataSource          #VendTrans
+          MenuItemName        #CzTaxDocumentTable_Vend
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VoucherButton
+          ElementPosition     #715827882
+          HierarchyParent     #PaymentsButtons
+          MenuItemName        #LedgerTransVoucher1
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_InvoiceAmount
+          ElementPosition     #1073741816
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceAmount
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Address_Name
+          ElementPosition     #858993458
+          HierarchyParent     #Address
+          MultiLine           #Yes
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #Name
+          FastTabSummary      #Yes
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #AdvanceInvoiceId
+          AutoDeclaration     #Yes
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #HeaderInfo
+          Style               #TitleField
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #BankAccount_BankAccount
+          ElementPosition     #858993458
+          HierarchyParent     #BankAccount
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #BankAccount
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #BankAccount_BankConstantSymbol
+          ElementPosition     #1288490187
+          HierarchyParent     #BankAccount
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #BankConstantSymbol
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #ContactPersonId
+          AutoDeclaration     #Yes
+          ElementPosition     #1610612733
+          HierarchyParent     #GroupReference
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #ContactPersonId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #contactPersonName
+          ElementPosition     #1073741822
+          HierarchyParent     #GroupReference
+          LookupButton        #Always
+          DataSource          #VendAdvanceInvoiceTable
+          DataMethod          #editContactPersonName
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #lookup
+            #void lookup()
+            #{
+            #    ;
+            #    ContactPerson::lookupVendContactPerson(contactPersonId,
+            #                                           vendAdvanceInvoiceTable.OrderAccount,
+            #                                           this,
+            #                                           vendAdvanceInvoiceTable.ContactPersonId);
+            #}
+            #
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #CzVendAdvanceInvoiceTable_SpecificSymbol
+          ElementPosition     #1717986916
+          HierarchyParent     #BankAccount
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #BankSpecificSymbol
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #GroupPayment_CurrencyCode
+          ElementPosition     #536870910
+          HierarchyParent     #GroupPayment
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #CurrencyCode
+          FastTabSummary      #Yes
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #GroupPayment_Payment
+          ElementPosition     #805306365
+          HierarchyParent     #GroupPayment
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #Payment
+          FastTabSummary      #Yes
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #GroupPosting_InvoiceId
+          ElementPosition     #1840700268
+          HierarchyParent     #GroupPosting
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceId
+          FastTabSummary      #Yes
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Header_BankAccount
+          ElementPosition     #1329394638
+          HierarchyParent     #HeaderInvoiceGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #BankAccount
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Header_CurrencyCode
+          AutoDeclaration     #Yes
+          ElementPosition     #1840700268
+          HierarchyParent     #HeaderInvoiceGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #CurrencyCode
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Header_InvoiceAccount
+          Visible             #No
+          ElementPosition     #1431655764
+          HierarchyParent     #HeaderAccountNamesGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceAccount
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Header_InvoiceAccountName
+          Visible             #No
+          ElementPosition     #1789569705
+          HierarchyParent     #HeaderAccountNamesGroup
+          Label               #@SYS92116
+          DataSource          #VendAdvanceInvoiceTable
+          DataMethod          #displayInvoiceAccountName
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Header_InvoiceDescription
+          ElementPosition     #1994091957
+          HierarchyParent     #HeaderInvoiceGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceDescription
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Header_InvoiceId
+          ElementPosition     #1687308579
+          HierarchyParent     #HeaderInvoiceGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Header_OrderAccount
+          AutoDeclaration     #Yes
+          ElementPosition     #715827882
+          HierarchyParent     #HeaderAccountNamesGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #OrderAccount
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Header_OrderAccountName
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          ElementPosition     #1073741823
+          HierarchyParent     #HeaderAccountNamesGroup
+          Label               #@SYS92116
+          DataSource          #VendAdvanceInvoiceTable
+          DataMethod          #displayOrderAccountName
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Header_VendInvoiceId
+          ElementPosition     #1533916890
+          HierarchyParent     #HeaderInvoiceGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #VendInvoiceId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_CurrencyCode
+          ElementPosition     #1342177270
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #CurrencyCode
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_InvoiceAccount
+          ElementPosition     #402653181
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceAccount
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_InvoiceDescription
+          ElementPosition     #805306362
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceDescription
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_InvoiceId
+          ElementPosition     #894784846
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #InvoiceId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_M_contactPersonName
+          Visible             #No
+          AllowEdit           #No
+          ElementPosition     #1476394997
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataMethod          #contactPersonName
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_OrderAccount
+          Visible             #No
+          ElementPosition     #268435454
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #OrderAccount
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_PurchId
+          ElementPosition     #984263331
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #PurchId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #InvoiceGrid_VendInvoiceId
+          ElementPosition     #850045604
+          HierarchyParent     #InvoiceGrid
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #VendInvoiceId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #LogisticsPostalAddress_Address
+          ElementPosition     #1717986916
+          HierarchyParent     #Address
+          DataSource          #LogisticsPostalAddress
+          DataField           #Address
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VendAdvanceInvoiceTable_MessageforPayee
+          ElementPosition     #2070787801
+          HierarchyParent     #HeaderInvoiceGroup
+          DataSource          #VendAdvanceInvoiceTable
+          DataField           #MessageforPayee
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+    ENDCONTAINER
+    
+  ENDDESIGN
+  
+  PERMISSIONS #Permissions
+    PROPERTIES
+    ENDPROPERTIES
+    
+    PERMISSIONSET #Read
+      PROPERTIES
+      ENDPROPERTIES
+      
+      FORM #Controls
+      ENDFORM
+      
+    TABLES #Tables
+    ENDTABLES
+    
+  SERVERMETHODS #Server Methods
+  ENDSERVERMETHODS
+  
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Update
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Create
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Delete
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+ENDPERMISSIONS
+
+ENDFORM
+
+
+***Element: END

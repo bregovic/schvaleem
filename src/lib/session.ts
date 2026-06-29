@@ -13,6 +13,7 @@ export type SessionUser = {
   name: string | null;
   role: Role;
   erpUserId: string | null;
+  locale: string;
 };
 
 export async function createSession(userId: string): Promise<void> {
@@ -53,6 +54,6 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     return null;
   }
 
-  const { id, email, name, role, erpUserId } = session.user;
-  return { id, email, name, role, erpUserId };
+  const { id, email, name, role, erpUserId, locale } = session.user;
+  return { id, email, name, role, erpUserId, locale };
 }

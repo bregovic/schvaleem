@@ -1,0 +1,285 @@
+// =====================================================================================
+//  Schvaleem – HROMADNÝ generátor JSON ze všech aktivních workflow workitemů
+//  Zdroj = WorkflowWorkItemTable napříč VŠEMI společnostmi (cross-company).
+//  Pro každý workitem dohledá workflow instanci a podle ContextTableId sestaví
+//  `values` pro daný typ dokladu. Výstup = jedno JSON pole (formát POST /api/workitems).
+//
+//  Podporované typy dokladů:
+//    - VendInvoiceInfoTable      (1425  – přijatá faktura)
+//    - CzVendAdvanceInvoiceTable (16448 – zálohová faktura)
+//    - TrvRequisitionTable       (4007  – cestovní žádanka)
+//    - ostatní: jen workflow metadata + prázdné values
+//
+//  Pole/metody ověřené proti reálným XPO exportům (CZ lokalizace).
+//  Pozn.: v X++ musí být všechny deklarace na začátku metody / embedded funkce.
+// =====================================================================================
+static void Schvaleem_GenAllWorkitemsJson(Args _args)
+{
+    Dialog      dialog;
+    DialogField dfDir;
+    DialogField dfFrom;
+    DialogField dfPending;
+
+    DataArea    dataArea;
+    str         dir;
+    str         fileName;
+    str         stamp;
+    str         itemsJson;
+    str         jsonOut;
+    date        fromDate;
+    utcDateTime fromDateTime;
+    boolean     onlyPending;
+    int         itemCount;
+
+    #define.NL('\n')
+    #define.I2('  ')
+    #define.I4('    ')
+    #define.I6('      ')
+
+    // ---- JSON helpery ----------------------------------------------------------
+    str jsonEsc(str _s)
+    {
+        str s = _s;
+        s = strReplace(s, @'\', @'\\');
+        s = strReplace(s, '"', '\"');
+        s = strReplace(s, '\n', ' ');
+        s = strReplace(s, '\r', '');
+        s = strReplace(s, '\t', ' ');
+        return s;
+    }
+    str q(str _s) { return '"' + jsonEsc(_s) + '"'; }
+    str fl(str _ind, str _k, str _v) { return _ind + q(_k) + ': ' + _v; }
+
+    str dtv(utcDateTime _u)
+    {
+        if (_u == utcDateTimeNull())
+            return 'null';
+        return q(DateTimeUtil::toStr(_u));
+    }
+    str datev(date _d)
+    {
+        if (!_d)
+            return 'null';
+        return q(date2str(_d, 321,
+                          DateDay::Digits2, DateSeparator::Dot,
+                          DateMonth::Digits2, DateSeparator::Dot,
+                          DateYear::Digits4));
+    }
+    str numv(real _a)
+    {
+        return strReplace(num2str(_a, 0, 2, 1, 0), ',', '.');
+    }
+    // číslo účtu v CZ formátu: číslo/směrovýkód (RegistrationNum)
+    str bankAcc(VendBankAccount _vba)
+    {
+        if (_vba.RegistrationNum)
+            return _vba.AccountNum + '/' + _vba.RegistrationNum;
+        return _vba.AccountNum;
+    }
+
+    // ---- Zpracování jedné společnosti -----------------------------------------
+    void doInCompany()
+    {
+        WorkflowWorkItemTable        wfWorkItem;
+        WorkflowTrackingStatusTable  wfStatus;
+        VendInvoiceInfoTable         vii;
+        CzVendAdvanceInvoiceTable    adv;
+        TrvRequisitionTable          trv;
+        VendTable                    vt;
+        VendBankAccount              vba;
+        str   valuesJson;
+        str   obj;
+        str   docLabel;
+        str   docTypeName;
+        Name  empName;
+        int   tid;
+
+        while select wfWorkItem
+            where wfWorkItem.createdDateTime >= fromDateTime
+        {
+            if (onlyPending && wfWorkItem.Status != WorkflowWorkItemStatus::Pending)
+                continue;
+
+            // workflow instance (přes shodné CorrelationId)
+            select firstOnly wfStatus
+                where wfStatus.CorrelationId == wfWorkItem.CorrelationId;
+            if (!wfStatus.RecId)
+                continue;
+
+            tid         = wfStatus.ContextTableId;
+            valuesJson  = '{' + #NL + #I4 + '}';   // výchozí prázdné values
+            docTypeName = tableId2name(tid);
+            docLabel    = wfStatus.Document ? wfStatus.Document : docTypeName;
+
+            try
+            {
+                // -------- Přijatá faktura --------
+                if (tid == tableNum(VendInvoiceInfoTable))
+                {
+                    select firstOnly vii where vii.RecId == wfStatus.ContextRecId;
+                    vt = VendTable::find(vii.InvoiceAccount);
+                    select firstOnly vba
+                        where vba.VendAccount == vt.AccountNum
+                           && vba.AccountID  == vt.BankAccount;
+
+                    docTypeName = 'Přijatá faktura';
+                    docLabel    = strFmt("Faktura %1 – %2", vii.Num, vt.name());
+                    valuesJson =
+                        '{' + #NL
+                      + fl(#I6, 'Číslo faktury',    q(vii.Num)) + ',' + #NL
+                      + fl(#I6, 'Dodavatel',        q(vt.name())) + ',' + #NL
+                      + fl(#I6, 'IČO',              q(vt.RegNum_W)) + ',' + #NL
+                      + fl(#I6, 'Popis faktury',    q(vii.Description)) + ',' + #NL
+                      + fl(#I6, 'Bankovní účet',    q(bankAcc(vba))) + ',' + #NL
+                      + fl(#I6, 'IBAN',             q(vba.BankIBAN)) + ',' + #NL
+                      + fl(#I6, 'Měna',             q(vii.CurrencyCode)) + ',' + #NL
+                      + fl(#I6, 'Datum dokladu',    datev(vii.DocumentDate)) + ',' + #NL
+                      + fl(#I6, 'Datum splatnosti', datev(vii.FixedDueDate)) + ',' + #NL
+                      + fl(#I6, 'Celkem k úhradě',  numv(vii.dispTotalAmountToPay())) + #NL
+                      + #I4 + '}';
+                }
+                // -------- Zálohová faktura --------
+                else if (tid == tableNum(CzVendAdvanceInvoiceTable))
+                {
+                    select firstOnly adv where adv.RecId == wfStatus.ContextRecId;
+                    vt = VendTable::find(adv.InvoiceAccount);
+                    select firstOnly vba
+                        where vba.VendAccount == vt.AccountNum
+                           && vba.AccountID  == adv.BankAccount;
+
+                    docTypeName = 'Zálohová faktura';
+                    docLabel    = strFmt("Zálohová faktura %1 – %2", adv.InvoiceId, vt.name());
+                    valuesJson =
+                        '{' + #NL
+                      + fl(#I6, 'Číslo zálohové faktury', q(adv.InvoiceId)) + ',' + #NL
+                      + fl(#I6, 'Číslo faktury dodavatele', q(adv.VendInvoiceId)) + ',' + #NL
+                      + fl(#I6, 'Dodavatel',        q(vt.name())) + ',' + #NL
+                      + fl(#I6, 'IČO',              q(vt.RegNum_W)) + ',' + #NL
+                      + fl(#I6, 'Popis',            q(adv.InvoiceDescription)) + ',' + #NL
+                      + fl(#I6, 'Bankovní účet',    q(bankAcc(vba))) + ',' + #NL
+                      + fl(#I6, 'IBAN',             q(vba.BankIBAN)) + ',' + #NL
+                      + fl(#I6, 'Měna',             q(adv.CurrencyCode)) + ',' + #NL
+                      + fl(#I6, 'Datum faktury',    datev(adv.InvoiceDate)) + ',' + #NL
+                      + fl(#I6, 'Datum splatnosti', datev(adv.DueDate)) + ',' + #NL
+                      + fl(#I6, 'Celkem k úhradě',  numv(adv.AmountToPay)) + #NL
+                      + #I4 + '}';
+                }
+                // -------- Cestovní žádanka --------
+                else if (tid == tableNum(TrvRequisitionTable))
+                {
+                    select firstOnly trv where trv.RecId == wfStatus.ContextRecId;
+                    empName = HcmWorker::worker2Name(trv.CreatingWorker);
+
+                    docTypeName = 'Cestovní žádanka';
+                    docLabel    = strFmt("Cestovní žádanka %1 – %2", trv.RequisitionNumber, empName);
+                    valuesJson =
+                        '{' + #NL
+                      + fl(#I6, 'Číslo žádanky',  q(trv.RequisitionNumber)) + ',' + #NL
+                      + fl(#I6, 'Žadatel',        q(empName)) + ',' + #NL
+                      + fl(#I6, 'Účel cesty',     q(trv.TravelPurpose)) + ',' + #NL
+                      + fl(#I6, 'Popis',          q(trv.Description)) + ',' + #NL
+                      + fl(#I6, 'Destinace',      q(trv.DestinationCity)) + ',' + #NL
+                      + fl(#I6, 'Cesta od',       datev(trv.StartDate)) + ',' + #NL
+                      + fl(#I6, 'Cesta do',       datev(trv.EndDate)) + ',' + #NL
+                      + fl(#I6, 'Odhad nákladů',  numv(trv.totalEstimate())) + #NL
+                      + #I4 + '}';
+                }
+            }
+            catch
+            {
+                // jeden vadný doklad nezhodí celý běh – necháme prázdné values
+                valuesJson = '{' + #NL + #I4 + '}';
+            }
+
+            obj =
+                #I2 + '{' + #NL
+              + fl(#I4, 'workflowId',       q(guid2str(wfStatus.RootCorrelationId))) + ',' + #NL
+              + fl(#I4, 'workitemId',       q(int642str(wfWorkItem.RecId))) + ',' + #NL
+              + fl(#I4, 'dataArea',         q(wfStatus.ContextCompanyId)) + ',' + #NL
+              + fl(#I4, 'documentType',     q(int2str(tid))) + ',' + #NL
+              + fl(#I4, 'recordId',         q(int642str(wfStatus.ContextRecId))) + ',' + #NL
+              + fl(#I4, 'assigneeUserId',   q(wfWorkItem.UserId)) + ',' + #NL
+              + fl(#I4, 'documentTypeName', q(docTypeName)) + ',' + #NL
+              + fl(#I4, 'documentLabel',    q(docLabel)) + ',' + #NL
+              + fl(#I4, 'originator',       q(wfStatus.Originator)) + ',' + #NL
+              + fl(#I4, 'trackingStatus',   q(enum2str(wfStatus.TrackingStatus))) + ',' + #NL
+              + fl(#I4, 'createdDateTime',  dtv(wfStatus.createdDateTime)) + ',' + #NL
+              + fl(#I4, 'subject',          q(wfWorkItem.Subject)) + ',' + #NL
+              + fl(#I4, 'description',      q(wfWorkItem.Description)) + ',' + #NL
+              + fl(#I4, 'dueDateTime',      dtv(wfWorkItem.DueDateTime)) + ',' + #NL
+              + fl(#I4, 'workitemStatus',   q(enum2str(wfWorkItem.Status))) + ',' + #NL
+              + fl(#I4, 'documents',        '[]') + ',' + #NL
+              + fl(#I4, 'values',           valuesJson) + #NL
+              + #I2 + '}';
+
+            if (itemsJson)
+                itemsJson += ',' + #NL;
+            itemsJson += obj;
+            itemCount++;
+        }
+    }
+
+    // ---- Vstupní dialog --------------------------------------------------------
+    dialog    = new Dialog("Schvaleem – hromadný JSON (cross-company)");
+    dfDir     = dialog.addField(extendedTypeStr(FilePath), "Cílový adresář (prázdné = jen vypsat)");
+    dfFrom    = dialog.addField(extendedTypeStr(TransDate), "Workitemy vytvořené od");
+    dfPending = dialog.addField(extendedTypeStr(NoYesId), "Jen čekající (Pending)");
+    dfFrom.value(mkDate(1, 1, 2026));
+    dfPending.value(NoYes::Yes);
+    if (!dialog.run())
+        return;
+
+    dir          = dfDir.value();
+    fromDate     = dfFrom.value();
+    onlyPending  = dfPending.value();
+    fromDateTime = DateTimeUtil::newDateTime(fromDate, 0);
+
+    // ---- Smyčka přes všechny (nevirtuální) společnosti -------------------------
+    while select dataArea
+        where dataArea.isVirtual == NoYes::No
+    {
+        changeCompany(dataArea.Id)
+        {
+            try
+            {
+                doInCompany();
+            }
+            catch
+            {
+                error(strFmt("Chyba ve společnosti %1", dataArea.Id));
+            }
+        }
+    }
+
+    // ---- Výstup ----------------------------------------------------------------
+    if (!itemCount)
+    {
+        warning("Nebyl vygenerován žádný workitem.");
+        return;
+    }
+
+    jsonOut = '[' + #NL + itemsJson + #NL + ']';
+
+    if (dir)
+    {
+        if (subStr(dir, strLen(dir), 1) == @'\')
+            dir = subStr(dir, 1, strLen(dir) - 1);
+        stamp = date2str(today(), 321,
+                         DateDay::Digits2,  DateSeparator::None,
+                         DateMonth::Digits2, DateSeparator::None,
+                         DateYear::Digits4)
+              + '_' + strReplace(time2str(timeNow(), TimeSeparator::Colon, TimeFormat::Hour24), ':', '');
+        fileName = dir + @'\schvaleem_all_workitems_' + stamp + '.json';
+
+        new InteropPermission(InteropKind::ClrInterop).assert();
+        System.IO.File::WriteAllText(fileName, jsonOut, new System.Text.UTF8Encoding(false));
+        CodeAccessPermission::revertAssert();
+
+        info(strFmt("Vygenerováno workitemů: %1. JSON uložen: %2", itemCount, fileName));
+    }
+    else
+    {
+        info(strFmt("Vygenerováno workitemů: %1", itemCount));
+        info(jsonOut);
+    }
+}
