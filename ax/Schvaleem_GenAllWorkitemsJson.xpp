@@ -126,6 +126,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         str   docTypeName;
         Name  empName;
         str   trvCur;
+        str   amtStr;
         int   tid;
 
         // Driver = workitemy. wfStatus se dohledá JEDEN (firstOnly) – pozor,
@@ -171,6 +172,18 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                         where vba.VendAccount == vt.AccountNum
                            && vba.AccountID  == vt.BankAccount;
 
+                    // Částku počítáme zvlášť a chráněně – aby případný pád
+                    // calcTotals (přesná částka vč. DPH) nesmazal ostatní údaje
+                    // faktury (dodavatel, IČO, účet…).
+                    try
+                    {
+                        amtStr = numv(viiAmount(vii, exactAmount));
+                    }
+                    catch
+                    {
+                        amtStr = numv(viiAmount(vii, false));
+                    }
+
                     docTypeName = 'Přijatá faktura';
                     docLabel    = strFmt("Faktura %1 – %2", vii.Num, vt.name());
                     valuesJson =
@@ -185,7 +198,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                       + fl(#I6, 'Měna',             q(vii.CurrencyCode)) + ',' + #NL
                       + fl(#I6, 'Datum dokladu',    datev(vii.DocumentDate)) + ',' + #NL
                       + fl(#I6, 'Datum splatnosti', datev(vii.FixedDueDate)) + ',' + #NL
-                      + fl(#I6, 'Celkem k úhradě',  numv(viiAmount(vii, exactAmount))) + #NL
+                      + fl(#I6, 'Celkem k úhradě',  amtStr) + #NL
                       + #I4 + '}';
                 }
                 // -------- Zálohová faktura --------
