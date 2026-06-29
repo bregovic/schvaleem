@@ -77,6 +77,19 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         return _vba.AccountNum;
     }
 
+    // Částka faktury = součet řádků v MĚNĚ DOKLADU.
+    // (Nepoužíváme dispTotalAmountToPay()/calcTotals – ty jdou přes totals
+    //  formulář a v dávce padají na převodu do MST: „K načtení směnného kurzu
+    //  je nutné určit měnu…", navíc zaplaví Infolog. Součet LineAmount nepřevádí.)
+    real viiAmount(VendInvoiceInfoTable _t)
+    {
+        VendInvoiceInfoLine line;
+        select sum(LineAmount) from line
+            where line.ParmId     == _t.ParmId
+               && line.TableRefId == _t.TableRefId;
+        return line.LineAmount;
+    }
+
     // ---- Zpracování jedné společnosti -----------------------------------------
     void doInCompany()
     {
@@ -135,7 +148,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                       + fl(#I6, 'Měna',             q(vii.CurrencyCode)) + ',' + #NL
                       + fl(#I6, 'Datum dokladu',    datev(vii.DocumentDate)) + ',' + #NL
                       + fl(#I6, 'Datum splatnosti', datev(vii.FixedDueDate)) + ',' + #NL
-                      + fl(#I6, 'Celkem k úhradě',  numv(vii.dispTotalAmountToPay())) + #NL
+                      + fl(#I6, 'Celkem k úhradě',  numv(viiAmount(vii))) + #NL
                       + #I4 + '}';
                 }
                 // -------- Zálohová faktura --------
