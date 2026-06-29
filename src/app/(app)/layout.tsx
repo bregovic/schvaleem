@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
@@ -14,8 +15,15 @@ export default async function AppLayout({
       <header className="sticky top-0 z-20 border-b border-line bg-surface/80 backdrop-blur">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 md:px-6">
           <nav className="flex items-center gap-5 text-sm font-medium text-muted">
-            <Link href="/zaznamy" className="text-base font-semibold tracking-tight text-fg">
-              schvaleem
+            <Link href="/zaznamy" className="flex items-center">
+              <Image
+                src="/logo.png"
+                alt="schvaleem"
+                width={150}
+                height={44}
+                priority
+                className="h-7 w-auto"
+              />
             </Link>
             <Link href="/zaznamy" className="hover:text-fg">
               Záznamy

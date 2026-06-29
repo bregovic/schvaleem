@@ -23,6 +23,7 @@ function agg(items: ApprovalItem[], keyFn: (i: ApprovalItem) => [string, string]
 export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
   const router = useRouter();
   const [mode, setMode] = useState<"swipe" | "list">("list");
+  const [isMobile, setIsMobile] = useState(false);
   const [fType, setFType] = useState<string | null>(null);
   const [fCompany, setFCompany] = useState<string | null>(null);
   const [queue, setQueue] = useState<ApprovalItem[]>(items);
@@ -31,9 +32,10 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
-  // Výchozí režim podle zařízení: dotykový mobil → swipe, jinak seznam.
+  // Swipe nabízíme jen na mobilu/dotyku; na PC je vždy seznam.
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px), (pointer: coarse)");
+    setIsMobile(mq.matches);
     setMode(mq.matches ? "swipe" : "list");
   }, []);
 
@@ -121,20 +123,22 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
         <h1 className="text-xl font-semibold tracking-tight text-fg">
           Ke schválení <span className="text-muted">· {filtered.length}</span>
         </h1>
-        <div className="flex items-center gap-1 rounded-full bg-surface-2 p-1 ring-1 ring-line">
-          <button
-            onClick={() => setMode("list")}
-            className={`rounded-full px-3 py-1 text-sm font-medium transition ${mode === "list" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
-          >
-            Seznam
-          </button>
-          <button
-            onClick={() => setMode("swipe")}
-            className={`rounded-full px-3 py-1 text-sm font-medium transition ${mode === "swipe" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
-          >
-            Swipe
-          </button>
-        </div>
+        {isMobile && (
+          <div className="flex items-center gap-1 rounded-full bg-surface-2 p-1 ring-1 ring-line">
+            <button
+              onClick={() => setMode("list")}
+              className={`rounded-full px-3 py-1 text-sm font-medium transition ${mode === "list" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
+            >
+              Seznam
+            </button>
+            <button
+              onClick={() => setMode("swipe")}
+              className={`rounded-full px-3 py-1 text-sm font-medium transition ${mode === "swipe" ? "bg-accent text-white" : "text-muted hover:text-fg"}`}
+            >
+              Swipe
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Přehled / agregace */}
@@ -298,21 +302,31 @@ function Chips({
   if (entries.length === 0) return null;
   return (
     <div>
-      <p className="mb-1 text-xs font-semibold uppercase text-muted">{title}</p>
-      <div className="flex flex-wrap gap-1.5">
-        {entries.map(([key, info]) => (
-          <button
-            key={key}
-            onClick={() => onPick(key)}
-            className={`rounded-full px-2.5 py-1 text-sm font-medium ring-1 transition ${
-              active === key
-                ? "bg-accent text-white ring-accent"
-                : "bg-surface text-muted ring-line hover:text-fg"
-            }`}
-          >
-            {info.label} <span className="opacity-70">({info.count})</span>
-          </button>
-        ))}
+      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted">{title}</p>
+      <div className="flex flex-wrap gap-2">
+        {entries.map(([key, info]) => {
+          const on = active === key;
+          return (
+            <button
+              key={key}
+              onClick={() => onPick(key)}
+              className={`group flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium ring-1 transition ${
+                on
+                  ? "bg-accent text-white ring-accent shadow-sm shadow-accent/30"
+                  : "bg-surface text-fg ring-line hover:bg-surface-2 hover:ring-accent/50"
+              }`}
+            >
+              <span className="truncate">{info.label}</span>
+              <span
+                className={`min-w-5 rounded-md px-1.5 py-0.5 text-center text-xs font-semibold tabular-nums ${
+                  on ? "bg-white/20 text-white" : "bg-surface-2 text-muted group-hover:text-fg"
+                }`}
+              >
+                {info.count}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

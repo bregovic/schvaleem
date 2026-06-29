@@ -50,15 +50,16 @@ export default async function WorkitemDetail({
 
   const display = await resolveWorkflowDisplay(workitem.workflow);
   const visibleFields = display.fields.filter((f) => f.role !== "HIDDEN");
+  const hasDocs = workitem.workflow.documents.length > 0;
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-6xl">
       <Link href="/zaznamy" className="text-sm text-muted hover:underline">
         ← Zpět ke schvalování
       </Link>
 
       <div className="mt-3 mb-1 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-brand">{display.title}</h1>
+        <h1 className="text-2xl font-semibold text-fg">{display.title}</h1>
         <StatusBadge status={workitem.status} />
       </div>
       <p className="mb-6 text-sm text-muted">
@@ -67,7 +68,7 @@ export default async function WorkitemDetail({
         {display.amount && (
           <>
             {" · "}
-            <span className="font-medium text-brand">
+            <span className="font-semibold text-fg">
               {display.amount}
               {display.currency ? ` ${display.currency}` : ""}
             </span>
@@ -75,6 +76,8 @@ export default async function WorkitemDetail({
         )}
       </p>
 
+      <div className={hasDocs ? "grid gap-6 lg:grid-cols-2 lg:items-start" : "max-w-3xl"}>
+      <div className="space-y-6">
       {(workitem.subject ||
         workitem.description ||
         workitem.dueAt ||
@@ -142,39 +145,6 @@ export default async function WorkitemDetail({
         )}
       </section>
 
-      <section className="mb-6 overflow-hidden rounded-lg bg-surface ring-1 ring-line">
-        <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
-          Dokumenty ({workitem.workflow.documents.length})
-        </h2>
-        {workitem.workflow.documents.length === 0 ? (
-          <p className="px-4 py-3 text-sm text-muted">Žádné PDF dokumenty.</p>
-        ) : (
-          <ul className="divide-y divide-line">
-            {workitem.workflow.documents.map((d) => (
-              <li key={d.id} className="px-4 py-3">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium text-brand">{d.filename}</span>
-                  <a
-                    href={`/dokument/${d.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium text-brand-accent hover:underline"
-                  >
-                    Otevřít na celou stránku ↗
-                  </a>
-                </div>
-                {/* Vložený náhled PDF */}
-                <iframe
-                  src={`/dokument/${d.id}#view=FitH`}
-                  title={d.filename}
-                  className="h-[70vh] w-full rounded-md border border-line bg-surface-2"
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
       {workitem.status === "PENDING" && isOwner ? (
         <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
           <h2 className="mb-3 text-sm font-semibold text-muted">Rozhodnutí</h2>
@@ -185,7 +155,7 @@ export default async function WorkitemDetail({
           <h2 className="mb-2 text-sm font-semibold text-muted">Rozhodnutí</h2>
           <p className="text-muted">
             {workitem.action ?? workitem.status} ·{" "}
-            <span className="text-brand">
+            <span className="text-fg">
               {workitem.decidedBy?.name ?? workitem.decidedBy?.email ?? "–"}
             </span>{" "}
             · {fmt(workitem.decidedAt)}
@@ -195,6 +165,40 @@ export default async function WorkitemDetail({
           )}
         </section>
       )}
+      </div>
+
+      {hasDocs && (
+        <div className="lg:sticky lg:top-20">
+          <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
+            <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
+              Dokumenty ({workitem.workflow.documents.length})
+            </h2>
+            <ul className="divide-y divide-line">
+              {workitem.workflow.documents.map((d) => (
+                <li key={d.id} className="px-4 py-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-sm font-medium text-fg">{d.filename}</span>
+                    <a
+                      href={`/dokument/${d.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-accent hover:underline"
+                    >
+                      Otevřít ↗
+                    </a>
+                  </div>
+                  <iframe
+                    src={`/dokument/${d.id}#view=FitH`}
+                    title={d.filename}
+                    className="h-[80vh] w-full rounded-md border border-line bg-surface-2"
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+      )}
+      </div>
     </div>
   );
 }
