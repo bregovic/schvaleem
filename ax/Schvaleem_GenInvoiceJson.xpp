@@ -87,7 +87,7 @@ static void Schvaleem_GenInvoiceJson(Args _args)
         // Faktura v evidenci přijatých faktur (deník schvalování)
         select firstOnly vendInvoiceInfoTable
             where vendInvoiceInfoTable.Num == invoiceNo;        // POTVRDIT: pole čísla faktury
-        if (!vendInvoiceInfoTable)
+        if (!vendInvoiceInfoTable.RecId)
         {
             warning(strFmt("Faktura %1 nenalezena ve VendInvoiceInfoTable.", invoiceNo));
             continue;
@@ -116,7 +116,7 @@ static void Schvaleem_GenInvoiceJson(Args _args)
             order by wfStatus.createdDateTime descending
             where wfStatus.ContextTableId == tableNum(VendInvoiceInfoTable)
                && wfStatus.ContextRecId   == vendInvoiceInfoTable.RecId;     // POTVRDIT: vazba kontextu
-        if (!wfStatus)
+        if (!wfStatus.RecId)
         {
             warning(strFmt("K faktuře %1 nebyl nalezen workflow.", invoiceNo));
             continue;
