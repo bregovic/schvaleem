@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { getDict } from "@/lib/i18n";
 import { createApiKey, revokeApiKey, createUser, updateUser } from "../actions";
 
 function fmt(d: Date | null) {
@@ -20,6 +21,7 @@ export default async function SpravaPage({
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (user.role !== "ADMIN") redirect("/zaznamy");
+  const t = getDict(user.locale);
 
   const { newKey } = await searchParams;
 
@@ -32,25 +34,25 @@ export default async function SpravaPage({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold text-brand">Správa</h1>
+        <h1 className="text-2xl font-semibold text-brand">{t.admin.title}</h1>
         <nav className="flex gap-2 text-sm">
           <Link
             href="/sprava/organizace"
             className="rounded-md bg-surface px-3 py-1.5 font-medium text-brand ring-1 ring-line hover:bg-surface-2"
           >
-            Organizace a dataAreas
+            {t.admin.navOrganizations}
           </Link>
           <Link
             href="/sprava/konfigurace"
             className="rounded-md bg-surface px-3 py-1.5 font-medium text-brand ring-1 ring-line hover:bg-surface-2"
           >
-            Konfigurace dokumentů
+            {t.admin.navConfig}
           </Link>
           <Link
             href="/sprava/import"
             className="rounded-md bg-surface px-3 py-1.5 font-medium text-brand ring-1 ring-line hover:bg-surface-2"
           >
-            Import JSON
+            {t.admin.navImport}
           </Link>
         </nav>
       </div>
@@ -58,7 +60,7 @@ export default async function SpravaPage({
       {newKey && (
         <div className="rounded-lg border border-green-300 bg-green-50 p-4">
           <p className="mb-1 text-sm font-semibold text-green-800">
-            Nový API klíč – zkopíruj teď, znovu se nezobrazí:
+            {t.admin.newKeyNotice}
           </p>
           <code className="block break-all rounded bg-surface px-3 py-2 font-mono text-sm text-brand ring-1 ring-green-300">
             {newKey}
@@ -69,15 +71,15 @@ export default async function SpravaPage({
       {/* API klíče */}
       <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
         <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
-          API klíče (pro AX 2012)
+          {t.admin.apiKeysTitle}
         </h2>
         <table className="w-full text-sm">
           <thead className="text-left text-xs uppercase text-muted">
             <tr>
-              <th className="px-4 py-2 font-medium">Název</th>
-              <th className="px-4 py-2 font-medium">Klíč</th>
-              <th className="px-4 py-2 font-medium">Stav</th>
-              <th className="px-4 py-2 font-medium">Naposledy</th>
+              <th className="px-4 py-2 font-medium">{t.admin.colName}</th>
+              <th className="px-4 py-2 font-medium">{t.admin.colKey}</th>
+              <th className="px-4 py-2 font-medium">{t.admin.colStatus}</th>
+              <th className="px-4 py-2 font-medium">{t.admin.colLastUsed}</th>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
@@ -88,9 +90,9 @@ export default async function SpravaPage({
                 <td className="px-4 py-2.5 font-mono text-muted">{k.prefix}…</td>
                 <td className="px-4 py-2.5">
                   {k.active ? (
-                    <span className="text-green-700">aktivní</span>
+                    <span className="text-green-700">{t.admin.active}</span>
                   ) : (
-                    <span className="text-muted">zrušen</span>
+                    <span className="text-muted">{t.admin.revoked}</span>
                   )}
                 </td>
                 <td className="px-4 py-2.5 text-muted">{fmt(k.lastUsedAt)}</td>
@@ -98,7 +100,7 @@ export default async function SpravaPage({
                   {k.active && (
                     <form action={revokeApiKey}>
                       <input type="hidden" name="id" value={k.id} />
-                      <button className="text-red-600 hover:underline">Zrušit</button>
+                      <button className="text-red-600 hover:underline">{t.admin.revoke}</button>
                     </form>
                   )}
                 </td>
@@ -107,7 +109,7 @@ export default async function SpravaPage({
             {keys.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-3 text-muted">
-                  Zatím žádné klíče.
+                  {t.admin.noKeys}
                 </td>
               </tr>
             )}
@@ -116,11 +118,11 @@ export default async function SpravaPage({
         <form action={createApiKey} className="flex gap-2 border-t border-line bg-surface-2 px-4 py-3">
           <input
             name="name"
-            placeholder="Název klíče (např. AX produkce)"
+            placeholder={t.admin.keyNamePlaceholder}
             className="flex-1 rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent"
           />
           <button className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent/90">
-            Vytvořit klíč
+            {t.admin.createKey}
           </button>
         </form>
       </section>
@@ -128,7 +130,7 @@ export default async function SpravaPage({
       {/* Uživatelé */}
       <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
         <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
-          Uživatelé
+          {t.admin.usersTitle}
         </h2>
         <ul className="divide-y divide-line">
           {users.map((u) => (
@@ -141,13 +143,13 @@ export default async function SpravaPage({
                 <input
                   name="name"
                   defaultValue={u.name ?? ""}
-                  placeholder="Jméno"
+                  placeholder={t.admin.namePlaceholder}
                   className="w-32 rounded-md border border-line px-2 py-1.5 text-sm outline-none focus:border-brand-accent"
                 />
                 <input
                   name="erpUserId"
                   defaultValue={u.erpUserId ?? ""}
-                  placeholder="ERP userId"
+                  placeholder={t.admin.erpUserId}
                   className="w-32 rounded-md border border-line px-2 py-1.5 text-sm outline-none focus:border-brand-accent"
                 />
                 <select
@@ -155,36 +157,36 @@ export default async function SpravaPage({
                   defaultValue={u.role}
                   className="rounded-md border border-line px-2 py-1.5 text-sm outline-none focus:border-brand-accent"
                 >
-                  <option value="APPROVER">Schvalovatel</option>
-                  <option value="ADMIN">Administrátor</option>
+                  <option value="APPROVER">{t.admin.roleApprover}</option>
+                  <option value="ADMIN">{t.admin.roleAdmin}</option>
                 </select>
                 <label className="flex items-center gap-1 text-xs text-muted">
-                  <input type="checkbox" name="active" defaultChecked={u.active} /> aktivní
+                  <input type="checkbox" name="active" defaultChecked={u.active} /> {t.admin.active}
                 </label>
                 <input
                   name="newPassword"
                   type="text"
-                  placeholder="Nové heslo (volitelné)"
+                  placeholder={t.admin.newPasswordOptional}
                   className="w-40 rounded-md border border-line px-2 py-1.5 text-sm outline-none focus:border-brand-accent"
                 />
                 <button className="rounded-md bg-surface-2 px-3 py-1.5 text-sm font-medium text-muted hover:bg-line">
-                  Uložit
+                  {t.admin.save}
                 </button>
               </form>
             </li>
           ))}
         </ul>
         <form action={createUser} className="flex flex-wrap gap-2 border-t border-line bg-surface-2 px-4 py-3">
-          <input name="name" placeholder="Jméno" className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
-          <input name="email" type="email" required placeholder="Email" className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
-          <input name="erpUserId" placeholder="ERP userId" className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
-          <input name="password" type="text" required placeholder="Heslo (min. 6)" className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
+          <input name="name" placeholder={t.admin.namePlaceholder} className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
+          <input name="email" type="email" required placeholder={t.admin.email} className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
+          <input name="erpUserId" placeholder={t.admin.erpUserId} className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
+          <input name="password" type="text" required placeholder={t.admin.passwordMin} className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
           <select name="role" className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent">
-            <option value="APPROVER">Schvalovatel</option>
-            <option value="ADMIN">Administrátor</option>
+            <option value="APPROVER">{t.admin.roleApprover}</option>
+            <option value="ADMIN">{t.admin.roleAdmin}</option>
           </select>
           <button className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent/90">
-            Přidat uživatele
+            {t.admin.addUser}
           </button>
         </form>
       </section>
@@ -192,16 +194,16 @@ export default async function SpravaPage({
       {/* Log volání API */}
       <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
         <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
-          Poslední volání API
+          {t.admin.apiLogTitle}
         </h2>
         <table className="w-full text-sm">
           <thead className="text-left text-xs uppercase text-muted">
             <tr>
-              <th className="px-4 py-2 font-medium">Čas</th>
-              <th className="px-4 py-2 font-medium">Metoda</th>
-              <th className="px-4 py-2 font-medium">Endpoint</th>
-              <th className="px-4 py-2 font-medium">Kód</th>
-              <th className="px-4 py-2 font-medium">IP</th>
+              <th className="px-4 py-2 font-medium">{t.admin.colTime}</th>
+              <th className="px-4 py-2 font-medium">{t.admin.colMethod}</th>
+              <th className="px-4 py-2 font-medium">{t.admin.colEndpoint}</th>
+              <th className="px-4 py-2 font-medium">{t.admin.colCode}</th>
+              <th className="px-4 py-2 font-medium">{t.admin.colIp}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
@@ -219,7 +221,7 @@ export default async function SpravaPage({
             {logs.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-3 text-muted">
-                  Zatím žádná volání.
+                  {t.admin.noLogs}
                 </td>
               </tr>
             )}

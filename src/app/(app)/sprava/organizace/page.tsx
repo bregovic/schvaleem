@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { getDict } from "@/lib/i18n";
 import {
   createOrganization,
   assignDataAreas,
@@ -13,6 +14,7 @@ export default async function OrganizacePage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (user.role !== "ADMIN") redirect("/zaznamy");
+  const t = getDict(user.locale);
 
   const [orgs, dataAreas] = await Promise.all([
     prisma.organization.findMany({
@@ -28,16 +30,16 @@ export default async function OrganizacePage() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-brand">Organizace a dataAreas</h1>
+        <h1 className="text-2xl font-semibold text-brand">{t.admin.navOrganizations}</h1>
         <Link href="/sprava" className="text-sm text-muted hover:underline">
-          ← Správa
+          {t.admin.backToAdmin}
         </Link>
       </div>
 
       {/* Organizace */}
       <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
         <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
-          Organizace
+          {t.admin.orgsTitle}
         </h2>
         <ul className="divide-y divide-line">
           {orgs.map((o) => (
@@ -45,13 +47,13 @@ export default async function OrganizacePage() {
               <div className="font-medium text-brand">
                 {o.name}{" "}
                 <span className="text-xs font-normal text-muted">
-                  ({o.dataAreas.length} dataAreas)
+                  ({o.dataAreas.length} {t.admin.dataAreasSuffix})
                 </span>
               </div>
               {o.dataAreas.length > 0 && (
                 <details className="mt-1">
                   <summary className="cursor-pointer text-xs text-muted">
-                    zobrazit dataAreas
+                    {t.admin.showDataAreas}
                   </summary>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {o.dataAreas.map((a) => (
@@ -63,7 +65,7 @@ export default async function OrganizacePage() {
                         {a.code}
                         <form action={unassignDataArea} className="inline">
                           <input type="hidden" name="id" value={a.id} />
-                          <button className="text-muted hover:text-red-600" title="Odebrat">
+                          <button className="text-muted hover:text-red-600" title={t.admin.remove}>
                             ×
                           </button>
                         </form>
@@ -75,18 +77,18 @@ export default async function OrganizacePage() {
             </li>
           ))}
           {orgs.length === 0 && (
-            <li className="px-4 py-3 text-sm text-muted">Zatím žádné organizace.</li>
+            <li className="px-4 py-3 text-sm text-muted">{t.admin.noOrgs}</li>
           )}
         </ul>
         <form action={createOrganization} className="flex gap-2 border-t border-line bg-surface-2 px-4 py-3">
           <input
             name="name"
             required
-            placeholder="Název nové organizace"
+            placeholder={t.admin.newOrgPlaceholder}
             className="flex-1 rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent"
           />
           <button className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent/90">
-            Přidat organizaci
+            {t.admin.addOrg}
           </button>
         </form>
       </section>
@@ -94,11 +96,11 @@ export default async function OrganizacePage() {
       {/* Wizard přiřazení dataAreas */}
       <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
         <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
-          Přiřadit dataAreas pod organizaci
+          {t.admin.assignDataAreasTitle}
         </h2>
         {dataAreas.length === 0 ? (
           <p className="px-4 py-3 text-sm text-muted">
-            Zatím žádné dataAreas – objeví se sem automaticky, jakmile ERP pošle první workitem.
+            {t.admin.noDataAreas}
           </p>
         ) : (
           <form action={assignDataAreas} className="p-4">
@@ -123,7 +125,7 @@ export default async function OrganizacePage() {
                 required
                 className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent"
               >
-                <option value="">Vyber organizaci…</option>
+                <option value="">{t.admin.selectOrg}</option>
                 {orgs.map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.name}
@@ -131,17 +133,17 @@ export default async function OrganizacePage() {
                 ))}
               </select>
               <button className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent/90">
-                Přiřadit vybrané
+                {t.admin.assignSelected}
               </button>
             </div>
           </form>
         )}
         {/* Ruční přidání dataArea */}
         <form action={createDataArea} className="flex flex-wrap gap-2 border-t border-line bg-surface-2 px-4 py-3">
-          <input name="code" required placeholder="Kód (ContextCompanyId)" className="w-44 rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
-          <input name="name" placeholder="Název firmy" className="flex-1 rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
+          <input name="code" required placeholder={t.admin.dataAreaCodePlaceholder} className="w-44 rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
+          <input name="name" placeholder={t.admin.companyNamePlaceholder} className="flex-1 rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent" />
           <select name="organizationId" className="rounded-md border border-line px-3 py-2 text-sm outline-none focus:border-brand-accent">
-            <option value="">— bez organizace —</option>
+            <option value="">{t.admin.noOrgOption}</option>
             {orgs.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.name}
@@ -149,7 +151,7 @@ export default async function OrganizacePage() {
             ))}
           </select>
           <button className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent/90">
-            Přidat dataArea
+            {t.admin.addDataArea}
           </button>
         </form>
       </section>

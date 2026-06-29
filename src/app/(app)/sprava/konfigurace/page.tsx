@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { getDict } from "@/lib/i18n";
 import {
   upsertDocTypeConfig,
   deleteDocTypeConfig,
@@ -25,6 +26,7 @@ export default async function KonfiguracePage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (user.role !== "ADMIN") redirect("/zaznamy");
+  const t = getDict(user.locale);
 
   const orgs = await prisma.organization.findMany({
     orderBy: { name: "asc" },
@@ -43,44 +45,44 @@ export default async function KonfiguracePage() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-brand">Konfigurace typů dokumentů</h1>
+        <h1 className="text-2xl font-semibold text-brand">{t.admin.configTitle}</h1>
         <Link href="/sprava" className="text-sm text-muted hover:underline">
-          ← Správa
+          {t.admin.backToAdmin}
         </Link>
       </div>
 
       {orgs.length === 0 && (
         <p className="rounded-lg bg-surface p-6 text-muted ring-1 ring-line">
-          Nejdřív založ organizaci v{" "}
+          {t.admin.createOrgFirstPre}
           <Link href="/sprava/organizace" className="text-brand-accent hover:underline">
-            Organizace a dataAreas
+            {t.admin.navOrganizations}
           </Link>
-          .
+          {t.admin.createOrgFirstPost}
         </p>
       )}
 
       {/* Vytvoření konfigurace */}
       {orgs.length > 0 && (
         <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
-          <h2 className="mb-3 text-sm font-semibold text-muted">Nová konfigurace</h2>
+          <h2 className="mb-3 text-sm font-semibold text-muted">{t.admin.newConfig}</h2>
           <form action={upsertDocTypeConfig} className="flex flex-wrap items-center gap-2">
             <select name="organizationId" required className={inp}>
-              <option value="">Organizace…</option>
+              <option value="">{t.admin.orgPlaceholder}</option>
               {orgs.map((o) => (
                 <option key={o.id} value={o.id}>
                   {o.name}
                 </option>
               ))}
             </select>
-            <input name="documentType" required placeholder="ContextTableId (např. 1425)" className={inp} />
-            <input name="name" placeholder="Název (Cestovní žádanka)" className={inp} />
+            <input name="documentType" required placeholder={t.admin.documentTypePlaceholder} className={inp} />
+            <input name="name" placeholder={t.admin.configNamePlaceholder} className={inp} />
             <label className="flex items-center gap-1 text-xs text-muted">
-              <input type="checkbox" name="requireCommentOnReject" defaultChecked /> komentář u reject
+              <input type="checkbox" name="requireCommentOnReject" defaultChecked /> {t.admin.commentOnReject}
             </label>
             <label className="flex items-center gap-1 text-xs text-muted">
-              <input type="checkbox" name="requireCommentOnApprove" /> komentář u approve
+              <input type="checkbox" name="requireCommentOnApprove" /> {t.admin.commentOnApprove}
             </label>
-            <input name="amountThreshold" placeholder="Limit částky" className={`${inp} w-28`} />
+            <input name="amountThreshold" placeholder={t.admin.amountThresholdPlaceholder} className={`${inp} w-28`} />
             <select name="thresholdAction" className={inp} defaultValue="NONE">
               {THRESHOLD_ACTIONS.map((t) => (
                 <option key={t} value={t}>
@@ -89,7 +91,7 @@ export default async function KonfiguracePage() {
               ))}
             </select>
             <button className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90">
-              Uložit konfiguraci
+              {t.admin.saveConfig}
             </button>
           </form>
         </section>
@@ -110,24 +112,24 @@ export default async function KonfiguracePage() {
               </h2>
               <form action={deleteDocTypeConfig}>
                 <input type="hidden" name="id" value={c.id} />
-                <button className="text-xs text-red-600 hover:underline">Smazat konfiguraci</button>
+                <button className="text-xs text-red-600 hover:underline">{t.admin.deleteConfig}</button>
               </form>
             </div>
 
             {/* Pravidla */}
             <div className="border-b border-slate-100 px-4 py-3">
-              <p className="mb-2 text-xs font-semibold uppercase text-muted">Pravidla</p>
+              <p className="mb-2 text-xs font-semibold uppercase text-muted">{t.admin.rules}</p>
               <form action={upsertDocTypeConfig} className="flex flex-wrap items-center gap-3 text-xs text-muted">
                 <input type="hidden" name="organizationId" value={o.id} />
                 <input type="hidden" name="documentType" value={c.documentType} />
-                <input name="name" defaultValue={c.name ?? ""} placeholder="Název" className={inp} />
+                <input name="name" defaultValue={c.name ?? ""} placeholder={t.admin.colName} className={inp} />
                 <label className="flex items-center gap-1">
-                  <input type="checkbox" name="requireCommentOnReject" defaultChecked={c.requireCommentOnReject} /> komentář u reject
+                  <input type="checkbox" name="requireCommentOnReject" defaultChecked={c.requireCommentOnReject} /> {t.admin.commentOnReject}
                 </label>
                 <label className="flex items-center gap-1">
-                  <input type="checkbox" name="requireCommentOnApprove" defaultChecked={c.requireCommentOnApprove} /> komentář u approve
+                  <input type="checkbox" name="requireCommentOnApprove" defaultChecked={c.requireCommentOnApprove} /> {t.admin.commentOnApprove}
                 </label>
-                <span>limit:</span>
+                <span>{t.admin.limitLabel}</span>
                 <input name="amountThreshold" defaultValue={c.amountThreshold ? String(c.amountThreshold) : ""} placeholder="—" className={`${inp} w-24`} />
                 <select name="thresholdAction" defaultValue={c.thresholdAction} className={inp}>
                   {THRESHOLD_ACTIONS.map((t) => (
@@ -137,7 +139,7 @@ export default async function KonfiguracePage() {
                   ))}
                 </select>
                 <button className="rounded-md bg-surface-2 px-3 py-1 font-medium text-muted hover:bg-line">
-                  Uložit pravidla
+                  {t.admin.saveRules}
                 </button>
               </form>
             </div>
@@ -145,7 +147,7 @@ export default async function KonfiguracePage() {
             {/* Pole (atributy) */}
             <div className="border-b border-slate-100 px-4 py-3">
               <p className="mb-2 text-xs font-semibold uppercase text-muted">
-                Pole z JSON (co sledujeme a jak zobrazit)
+                {t.admin.fieldsTitle}
               </p>
               <table className="w-full text-sm">
                 <tbody className="divide-y divide-line">
@@ -157,7 +159,7 @@ export default async function KonfiguracePage() {
                         {f.role}
                         {f.preview && (
                           <span className="ml-1 rounded bg-brand-accent/10 px-1 text-xs text-brand-accent">
-                            náhled
+                            {t.admin.preview}
                           </span>
                         )}
                       </td>
@@ -173,7 +175,7 @@ export default async function KonfiguracePage() {
                   {c.fields.length === 0 && (
                     <tr>
                       <td colSpan={5} className="py-2 text-muted">
-                        Bez polí = zobrazí se všechna pole z JSON jako detail.
+                        {t.admin.noFields}
                       </td>
                     </tr>
                   )}
@@ -181,8 +183,8 @@ export default async function KonfiguracePage() {
               </table>
               <form action={addField} className="mt-2 flex flex-wrap items-center gap-2">
                 <input type="hidden" name="configId" value={c.id} />
-                <input name="jsonKey" required placeholder="JSON klíč" className={inp} />
-                <input name="label" placeholder="Popisek" className={inp} />
+                <input name="jsonKey" required placeholder={t.admin.jsonKeyPlaceholder} className={inp} />
+                <input name="label" placeholder={t.admin.labelPlaceholder} className={inp} />
                 <select name="role" defaultValue="DETAIL" className={inp}>
                   {FIELD_ROLES.map((r) => (
                     <option key={r} value={r}>
@@ -191,11 +193,11 @@ export default async function KonfiguracePage() {
                   ))}
                 </select>
                 <label className="flex items-center gap-1 text-xs text-muted">
-                  <input type="checkbox" name="preview" /> náhled
+                  <input type="checkbox" name="preview" /> {t.admin.preview}
                 </label>
                 <input name="order" type="number" defaultValue={0} className={`${inp} w-16`} />
                 <button className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90">
-                  + pole
+                  {t.admin.addFieldBtn}
                 </button>
               </form>
             </div>
@@ -203,7 +205,7 @@ export default async function KonfiguracePage() {
             {/* Metody (akce) */}
             <div className="px-4 py-3">
               <p className="mb-2 text-xs font-semibold uppercase text-muted">
-                Metody / akce (posílané do ERP)
+                {t.admin.actionsTitle}
               </p>
               <div className="mb-2 flex flex-wrap gap-1.5">
                 {c.actions.map((a) => (
@@ -216,13 +218,13 @@ export default async function KonfiguracePage() {
                   </span>
                 ))}
                 {c.actions.length === 0 && (
-                  <span className="text-xs text-muted">Bez metod = výchozí Schválit / Zamítnout.</span>
+                  <span className="text-xs text-muted">{t.admin.noActions}</span>
                 )}
               </div>
               <form action={addAction} className="flex flex-wrap items-center gap-2">
                 <input type="hidden" name="configId" value={c.id} />
-                <input name="code" required placeholder="Kód (APPROVE)" className={inp} />
-                <input name="label" placeholder="Popisek" className={inp} />
+                <input name="code" required placeholder={t.admin.actionCodePlaceholder} className={inp} />
+                <input name="label" placeholder={t.admin.labelPlaceholder} className={inp} />
                 <select name="kind" defaultValue="OTHER" className={inp}>
                   {ACTION_KINDS.map((k) => (
                     <option key={k} value={k}>
@@ -231,7 +233,7 @@ export default async function KonfiguracePage() {
                   ))}
                 </select>
                 <button className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90">
-                  + metoda
+                  {t.admin.addActionBtn}
                 </button>
               </form>
             </div>
@@ -239,7 +241,7 @@ export default async function KonfiguracePage() {
             {/* Automatické kontroly */}
             <div className="border-t border-slate-100 px-4 py-3">
               <p className="mb-2 text-xs font-semibold uppercase text-muted">
-                Automatické kontroly (modulo účtu, IČO, IBAN, DIČ)
+                {t.admin.checksTitle}
               </p>
               <div className="mb-2 flex flex-wrap gap-1.5">
                 {c.checks.map((ch) => (
@@ -252,7 +254,7 @@ export default async function KonfiguracePage() {
                   </span>
                 ))}
                 {c.checks.length === 0 && (
-                  <span className="text-xs text-muted">Žádné automatické kontroly.</span>
+                  <span className="text-xs text-muted">{t.admin.noChecks}</span>
                 )}
               </div>
               <form action={addCheck} className="flex flex-wrap items-center gap-2">
@@ -264,10 +266,10 @@ export default async function KonfiguracePage() {
                     </option>
                   ))}
                 </select>
-                <input name="jsonKey" required placeholder="JSON klíč (pole s hodnotou)" className={inp} />
-                <input name="label" placeholder="Popisek" className={inp} />
+                <input name="jsonKey" required placeholder={t.admin.checkJsonKeyPlaceholder} className={inp} />
+                <input name="label" placeholder={t.admin.labelPlaceholder} className={inp} />
                 <button className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90">
-                  + kontrola
+                  {t.admin.addCheckBtn}
                 </button>
               </form>
             </div>
