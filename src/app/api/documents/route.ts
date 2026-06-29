@@ -3,9 +3,10 @@ import { prisma } from "@/lib/prisma";
 import { withApiKey, errorResponse } from "@/lib/api";
 import { documentId } from "@/lib/ids";
 import { createDocumentSchema } from "@/lib/validation";
+import { decodePdf } from "@/lib/pdf";
+import { normalizeDataArea } from "@/lib/erp";
 
 const PATH = "/api/documents";
-const MAX_BYTES = 10 * 1024 * 1024; // 10 MB (zadání kap. 6)
 
 // POST /api/documents – PDF zakódované v Base64 uvnitř JSON (žádný multipart).
 export async function POST(req: Request) {
@@ -28,38 +29,19 @@ export async function POST(req: Request) {
 
     const { filename, workflowId, dataArea, contentBase64 } = parsed.data;
 
-    let buffer: Buffer;
-    try {
-      buffer = Buffer.from(contentBase64, "base64");
-    } catch {
-      return errorResponse(400, "bad_base64", "contentBase64 není platný Base64.");
+    const pdf = decodePdf(contentBase64);
+    if (!pdf.ok) {
+      return errorResponse(pdf.code === "payload_too_large" ? 413 : 400, pdf.code, pdf.message);
     }
 
-    if (buffer.length === 0) {
-      return errorResponse(400, "empty_file", "Dekódovaný soubor je prázdný.");
-    }
-    if (buffer.length > MAX_BYTES) {
-      return errorResponse(
-        413,
-        "payload_too_large",
-        `Soubor je příliš velký (max ${MAX_BYTES / 1024 / 1024} MB).`,
-      );
-    }
-
-    // Doporučená validace, že jde skutečně o PDF (hlavička %PDF).
-    const isPdf = buffer.subarray(0, 4).toString("latin1") === "%PDF";
-    if (!isPdf) {
-      return errorResponse(400, "not_pdf", "Obsah není platné PDF (chybí hlavička %PDF).");
-    }
-
-    // Volitelná vazba na workflow (podle erpWorkflowId + dataArea).
+    // Volitelná vazba na workflow (podle erpWorkflowId + dataArea, case-insensitive).
     let linkedWorkflowId: string | null = null;
     if (workflowId && dataArea) {
       const wf = await prisma.workflow.findUnique({
         where: {
           erpWorkflowId_dataAreaCode: {
             erpWorkflowId: workflowId,
-            dataAreaCode: dataArea,
+            dataAreaCode: normalizeDataArea(dataArea),
           },
         },
       });
@@ -70,8 +52,8 @@ export async function POST(req: Request) {
       data: {
         id: documentId(),
         filename,
-        size: buffer.length,
-        content: new Uint8Array(buffer),
+        size: pdf.size,
+        content: pdf.bytes,
         workflowId: linkedWorkflowId,
       },
     });

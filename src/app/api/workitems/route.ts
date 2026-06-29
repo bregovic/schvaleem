@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withApiKey, errorResponse } from "@/lib/api";
 import { ingestWorkitemSchema } from "@/lib/validation";
-import { parseErpDate, normalizeDataArea } from "@/lib/erp";
+import { ingestWorkitem } from "@/lib/ingest";
 
 const PATH = "/api/workitems";
 
@@ -26,73 +26,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const v = parsed.data;
-    const dataAreaCode = normalizeDataArea(v.dataArea);
-
-    // DataArea evidujeme (pro wizard) – vytvoříme, pokud ji ještě neznáme.
-    const dataArea = await prisma.dataArea.upsert({
-      where: { code: dataAreaCode },
-      update: {},
-      create: { code: dataAreaCode },
-    });
-
-    const wfMeta = {
-      documentType: v.documentType,
-      recordId: v.recordId ?? null,
-      values: v.values as object,
-      organizationId: dataArea.organizationId,
-      documentTypeName: v.documentTypeName ?? null,
-      label: v.documentLabel ?? null,
-      originator: v.originator ?? null,
-      trackingStatus: v.trackingStatus ?? null,
-      erpCreatedAt: parseErpDate(v.createdDateTime),
-    };
-
-    // Workflow (obsah dokumentu) – upsert podle erpWorkflowId + dataArea.
-    const workflow = await prisma.workflow.upsert({
-      where: {
-        erpWorkflowId_dataAreaCode: {
-          erpWorkflowId: v.workflowId,
-          dataAreaCode,
-        },
-      },
-      update: wfMeta,
-      create: { erpWorkflowId: v.workflowId, dataAreaCode, ...wfMeta },
-    });
-
-    // Workitem – upsert podle erpWorkitemId (rozhodnutí nepřepisujeme).
-    const wiMeta = {
-      workflowId: workflow.id,
-      dataAreaCode,
-      assigneeErpUserId: v.assigneeUserId,
-      subject: v.subject ?? null,
-      description: v.description ?? null,
-      dueAt: parseErpDate(v.dueDateTime),
-      erpStatus: v.workitemStatus ?? null,
-    };
-
-    const existing = await prisma.workitem.findUnique({
-      where: { erpWorkitemId: v.workitemId },
-    });
-
-    if (existing) {
-      await prisma.workitem.update({
-        where: { erpWorkitemId: v.workitemId },
-        data: wiMeta,
-      });
-      return NextResponse.json(
-        { workflowId: workflow.id, workitemId: existing.id, status: "stored", duplicate: true },
-        { status: 200 },
-      );
-    }
-
-    const workitem = await prisma.workitem.create({
-      data: { erpWorkitemId: v.workitemId, ...wiMeta },
-    });
-
+    const res = await ingestWorkitem(parsed.data);
     return NextResponse.json(
-      { workflowId: workflow.id, workitemId: workitem.id, status: "stored" },
-      { status: 201 },
+      {
+        workflowId: res.workflowId,
+        workitemId: res.workitemId,
+        status: "stored",
+        ...(res.duplicate ? { duplicate: true } : {}),
+      },
+      { status: res.duplicate ? 200 : 201 },
     );
   });
 }

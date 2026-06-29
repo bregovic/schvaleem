@@ -22,7 +22,11 @@ export default async function ZaznamyPage() {
   const [workitems, dataAreas, configs] = await Promise.all([
     prisma.workitem.findMany({
       where: { assigneeErpUserId: user.erpUserId, status: "PENDING" },
-      include: { workflow: { include: { organization: true } } },
+      include: {
+        workflow: {
+          include: { organization: true, _count: { select: { documents: true } } },
+        },
+      },
       orderBy: { createdAt: "asc" },
     }),
     prisma.dataArea.findMany(),
@@ -76,6 +80,7 @@ export default async function ZaznamyPage() {
         dueAt: w.dueAt ? w.dueAt.toISOString() : null,
         overdue,
         deferred: !!w.deferredAt,
+        docCount: w.workflow._count.documents,
         previewFields: d.previewFields.map((f) => ({ label: f.label, value: f.value })),
         checks: d.checks,
         suggestedAction: d.suggestedAction,

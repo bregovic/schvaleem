@@ -151,16 +151,24 @@ export default async function WorkitemDetail({
         ) : (
           <ul className="divide-y divide-slate-100">
             {workitem.workflow.documents.map((d) => (
-              <li key={d.id} className="flex items-center justify-between px-4 py-2.5">
-                <span className="text-sm text-brand">{d.filename}</span>
-                <a
-                  href={`/dokument/${d.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-brand-accent hover:underline"
-                >
-                  Otevřít
-                </a>
+              <li key={d.id} className="px-4 py-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-medium text-brand">{d.filename}</span>
+                  <a
+                    href={`/dokument/${d.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-brand-accent hover:underline"
+                  >
+                    Otevřít na celou stránku ↗
+                  </a>
+                </div>
+                {/* Vložený náhled PDF */}
+                <iframe
+                  src={`/dokument/${d.id}#view=FitH`}
+                  title={d.filename}
+                  className="h-[70vh] w-full rounded-md border border-slate-200 bg-slate-50"
+                />
               </li>
             ))}
           </ul>

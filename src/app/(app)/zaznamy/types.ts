@@ -17,6 +17,7 @@ export type ApprovalItem = {
   dueAt: string | null; // ISO
   overdue: boolean;
   deferred: boolean;
+  docCount: number;
   previewFields: PreviewFieldC[];
   checks: CheckOutcomeC[];
   suggestedAction: "APPROVE" | "REJECT" | null;

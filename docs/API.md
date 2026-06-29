@@ -100,6 +100,18 @@ Volitelná metadata (zobrazí se schvalovateli, neovlivňují kontrakt): `docume
 `subject` (= nadpis úkolu), `description`, `dueDateTime` (termín → priorita), `workitemStatus`
 (workitem). Datum přijímáme jako ISO i český formát `dd.MM.yyyy HH:mm:ss`.
 
+PDF lze přiložit **rovnou v tomto JSONu** (název + obsah v Base64) – zobrazí se pak jako
+náhled u workitemu:
+
+```json
+"documents": [
+  { "filename": "faktura_2026006.pdf", "contentBase64": "JVBERi0xLjQK..." }
+]
+```
+
+Neplatné PDF se přeskočí (workitem se uloží i tak). Dokumenty jdou poslat i samostatně přes
+`POST /api/documents`. Limit 10 MB, vyžadována hlavička `%PDF`.
+
 **Odpověď 201:** `{ "workflowId": "...", "workitemId": "...", "status": "stored" }`
 **Idempotentní 200:** stejné, navíc `"duplicate": true`.
 

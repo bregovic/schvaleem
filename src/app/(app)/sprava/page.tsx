@@ -46,6 +46,12 @@ export default async function SpravaPage({
           >
             Konfigurace dokumentů
           </Link>
+          <Link
+            href="/sprava/import"
+            className="rounded-md bg-white px-3 py-1.5 font-medium text-brand ring-1 ring-slate-200 hover:bg-slate-50"
+          >
+            Import JSON
+          </Link>
         </nav>
       </div>
 

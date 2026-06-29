@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { ingestWorkitemSchema } from "@/lib/validation";
+import { ingestWorkitem } from "@/lib/ingest";
 import type { FieldRole, ActionKind, ThresholdAction, CheckType } from "@/generated/prisma/client";
 
 async function requireAdmin() {
@@ -167,4 +169,57 @@ export async function deleteCheck(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   await prisma.checkConfig.delete({ where: { id } });
   revalidatePath("/sprava/konfigurace");
+}
+
+// --- Ruční import workitemů z JSON (bez API) ---
+
+export type ImportState = {
+  error?: string;
+  ok?: boolean;
+  created?: number;
+  updated?: number;
+  failed?: number;
+  messages?: string[];
+};
+
+export async function importWorkitems(
+  _prev: ImportState,
+  formData: FormData,
+): Promise<ImportState> {
+  await requireAdmin();
+  const raw = String(formData.get("json") ?? "").trim();
+  if (!raw) return { error: "Vlož JSON (objekt nebo pole workitemů)." };
+
+  let data: unknown;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return { error: "Neplatný JSON." };
+  }
+
+  const arr = Array.isArray(data) ? data : [data];
+  let created = 0;
+  let updated = 0;
+  let failed = 0;
+  const messages: string[] = [];
+
+  for (let i = 0; i < arr.length; i++) {
+    const p = ingestWorkitemSchema.safeParse(arr[i]);
+    if (!p.success) {
+      failed++;
+      messages.push(`#${i + 1}: ${p.error.issues.map((x) => x.message).join(", ")}`);
+      continue;
+    }
+    try {
+      const r = await ingestWorkitem(p.data);
+      if (r.duplicate) updated++;
+      else created++;
+    } catch (e) {
+      failed++;
+      messages.push(`#${i + 1}: ${e instanceof Error ? e.message : "chyba"}`);
+    }
+  }
+
+  revalidatePath("/zaznamy");
+  return { ok: true, created, updated, failed, messages: messages.slice(0, 12) };
 }

@@ -197,6 +197,11 @@ export function ApprovalHub({ items }: { items: ApprovalItem[] }) {
                                   odloženo
                                 </span>
                               )}
+                              {it.docCount > 0 && (
+                                <span className="ml-1 rounded-full bg-brand-accent/10 px-1.5 py-0.5 text-xs text-brand-accent">
+                                  📎 {it.docCount}
+                                </span>
+                              )}
                             </p>
                             <p className="truncate text-xs text-slate-400">
                               {it.documentTypeName}

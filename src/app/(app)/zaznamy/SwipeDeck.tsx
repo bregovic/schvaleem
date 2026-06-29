@@ -135,6 +135,11 @@ export function SwipeDeck({
           <div className="flex items-start justify-between gap-2">
             <span className="text-xs text-slate-400">{item.org}</span>
             <div className="flex items-center gap-1">
+              {item.docCount > 0 && (
+                <span className="rounded-full bg-brand-accent/10 px-2 py-0.5 text-xs font-medium text-brand-accent">
+                  📎 {item.docCount}
+                </span>
+              )}
               {item.priority === "high" && (
                 <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700">
                   priorita

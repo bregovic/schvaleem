@@ -20,6 +20,15 @@ export const ingestWorkitemSchema = z.object({
   description: z.string().optional(),
   dueDateTime: z.string().optional(),
   workitemStatus: z.string().optional(),
+  // PDF dokumenty rovnou v JSONu (volitelné) – název + obsah v Base64
+  documents: z
+    .array(
+      z.object({
+        filename: z.string().min(1),
+        contentBase64: z.string().min(1),
+      }),
+    )
+    .optional(),
 });
 
 // PATCH /api/workitems/{id} – ERP potvrdí převzetí (smazat) nebo dokončení bez uživatele.
