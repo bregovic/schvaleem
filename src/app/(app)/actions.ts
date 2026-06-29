@@ -184,3 +184,38 @@ export async function createUser(formData: FormData): Promise<void> {
   });
   revalidatePath("/sprava");
 }
+
+// Editace existujícího uživatele (vč. dodatečného přiřazení ERP userId).
+export async function updateUser(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) throw new Error("Chybí id uživatele.");
+
+  const name = String(formData.get("name") ?? "").trim() || null;
+  const erpUserId = String(formData.get("erpUserId") ?? "").trim() || null;
+  const role = formData.get("role") === "ADMIN" ? "ADMIN" : "APPROVER";
+  const active = formData.get("active") === "on";
+  const newPassword = String(formData.get("newPassword") ?? "");
+
+  // erpUserId je unikátní – ohlídej kolizi s jiným účtem.
+  if (erpUserId) {
+    const clash = await prisma.user.findUnique({ where: { erpUserId } });
+    if (clash && clash.id !== id) {
+      throw new Error(`ERP userId "${erpUserId}" už používá jiný účet (${clash.email}).`);
+    }
+  }
+
+  await prisma.user.update({
+    where: { id },
+    data: {
+      name,
+      erpUserId,
+      role,
+      active,
+      ...(newPassword.length >= 6
+        ? { passwordHash: await hashPassword(newPassword) }
+        : {}),
+    },
+  });
+  revalidatePath("/sprava");
+}

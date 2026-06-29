@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { createApiKey, revokeApiKey, createUser } from "../actions";
+import { createApiKey, revokeApiKey, createUser, updateUser } from "../actions";
 
 function fmt(d: Date | null) {
   if (!d) return "–";
@@ -124,21 +124,50 @@ export default async function SpravaPage({
         <h2 className="border-b border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-600">
           Uživatelé
         </h2>
-        <table className="w-full text-sm">
-          <tbody className="divide-y divide-slate-100">
-            {users.map((u) => (
-              <tr key={u.id}>
-                <td className="px-4 py-2.5 font-medium text-brand">{u.name ?? "–"}</td>
-                <td className="px-4 py-2.5 text-slate-600">{u.email}</td>
-                <td className="px-4 py-2.5 font-mono text-slate-500">{u.erpUserId ?? "–"}</td>
-                <td className="px-4 py-2.5 text-slate-500">{u.role}</td>
-                <td className="px-4 py-2.5 text-slate-400">
-                  {u.active ? "" : "neaktivní"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ul className="divide-y divide-slate-100">
+          {users.map((u) => (
+            <li key={u.id} className="px-4 py-3">
+              <form action={updateUser} className="flex flex-wrap items-center gap-2">
+                <input type="hidden" name="id" value={u.id} />
+                <span className="w-48 truncate text-slate-600" title={u.email}>
+                  {u.email}
+                </span>
+                <input
+                  name="name"
+                  defaultValue={u.name ?? ""}
+                  placeholder="Jméno"
+                  className="w-32 rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-brand-accent"
+                />
+                <input
+                  name="erpUserId"
+                  defaultValue={u.erpUserId ?? ""}
+                  placeholder="ERP userId"
+                  className="w-32 rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-brand-accent"
+                />
+                <select
+                  name="role"
+                  defaultValue={u.role}
+                  className="rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-brand-accent"
+                >
+                  <option value="APPROVER">Schvalovatel</option>
+                  <option value="ADMIN">Administrátor</option>
+                </select>
+                <label className="flex items-center gap-1 text-xs text-slate-600">
+                  <input type="checkbox" name="active" defaultChecked={u.active} /> aktivní
+                </label>
+                <input
+                  name="newPassword"
+                  type="text"
+                  placeholder="Nové heslo (volitelné)"
+                  className="w-40 rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-brand-accent"
+                />
+                <button className="rounded-md bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-300">
+                  Uložit
+                </button>
+              </form>
+            </li>
+          ))}
+        </ul>
         <form action={createUser} className="flex flex-wrap gap-2 border-t border-slate-200 bg-slate-50 px-4 py-3">
           <input name="name" placeholder="Jméno" className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-accent" />
           <input name="email" type="email" required placeholder="Email" className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-accent" />
