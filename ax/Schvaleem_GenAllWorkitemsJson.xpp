@@ -123,14 +123,20 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         Name  empName;
         int   tid;
 
-        // Jeden JOIN: workflow instance + její workitemy (žádné N+1 dohledávání
-        // wfStatus pro každý workitem zvlášť).
-        while select wfStatus
-            join wfWorkItem
-                where wfWorkItem.CorrelationId == wfStatus.CorrelationId
-                   && wfWorkItem.createdDateTime >= fromDateTime
+        // Driver = workitemy. wfStatus se dohledá JEDEN (firstOnly) – pozor,
+        // WorkflowTrackingStatusTable je HISTORIE (mnoho řádků na instanci),
+        // takže JOIN by workitemy znásobil počtem tracking řádků.
+        while select wfWorkItem
+            where wfWorkItem.createdDateTime >= fromDateTime
         {
             if (onlyPending && wfWorkItem.Status != WorkflowWorkItemStatus::Pending)
+                continue;
+
+            select firstOnly wfStatus
+                order by wfStatus.createdDateTime desc
+                where wfStatus.CorrelationId == wfWorkItem.CorrelationId
+                   && wfStatus.ContextRecId  != 0;       // řádek s kontextem dokladu
+            if (!wfStatus.RecId)
                 continue;
 
             tid         = wfStatus.ContextTableId;
