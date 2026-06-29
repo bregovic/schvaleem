@@ -37,7 +37,9 @@ export default async function AppLayout({
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-slate-500">{user.name ?? user.email}</span>
+            <Link href="/ucet" className="text-slate-500 hover:text-brand">
+              {user.name ?? user.email}
+            </Link>
             <form action={logoutAction}>
               <button
                 type="submit"

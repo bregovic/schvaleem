@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, destroySession } from "@/lib/session";
-import { hashPassword } from "@/lib/password";
+import { hashPassword, verifyPassword } from "@/lib/password";
 import { generateApiKey } from "@/lib/ids";
 import { sha256 } from "@/lib/api";
 import { resolveWorkflowDisplay, parseAmount } from "@/lib/config";
@@ -24,6 +24,40 @@ async function requireAdmin() {
 export async function logoutAction() {
   await destroySession();
   redirect("/login");
+}
+
+// ---------------------------------------------------------------------------
+// Změna vlastního hesla (každý přihlášený uživatel)
+// ---------------------------------------------------------------------------
+
+export type PasswordState = { error?: string; ok?: boolean };
+
+export async function changeOwnPassword(
+  _prev: PasswordState,
+  formData: FormData,
+): Promise<PasswordState> {
+  const sessionUser = await requireUser();
+  const current = String(formData.get("current") ?? "");
+  const next = String(formData.get("next") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+
+  if (next.length < 6) {
+    return { error: "Nové heslo musí mít aspoň 6 znaků." };
+  }
+  if (next !== confirm) {
+    return { error: "Nové heslo a potvrzení se neshodují." };
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
+  if (!user || !(await verifyPassword(current, user.passwordHash))) {
+    return { error: "Současné heslo není správné." };
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash: await hashPassword(next) },
+  });
+  return { ok: true };
 }
 
 // ---------------------------------------------------------------------------
