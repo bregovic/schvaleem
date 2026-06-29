@@ -172,6 +172,7 @@ static void Schvaleem_GenInvoiceJson(Args _args)
           + fl(#I6, 'Číslo faktury',     q(vendInvoiceInfoTable.Num)) + ',' + #NL
           + fl(#I6, 'Dodavatel',         q(vendTable.name())) + ',' + #NL
           + fl(#I6, 'IČO',               q(vendTable.RegNum_W)) + ',' + #NL
+          + fl(#I6, 'DIČ',               q(vendTable.VATNum)) + ',' + #NL
           + fl(#I6, 'Popis faktury',     q(vendInvoiceInfoTable.Description)) + ',' + #NL
           + fl(#I6, 'Bankovní účet',     q(bankAccountStr(vendBankAccount))) + ',' + #NL
           + fl(#I6, 'IBAN',              q(vendBankAccount.BankIBAN)) + ',' + #NL
