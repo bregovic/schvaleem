@@ -59,6 +59,7 @@ export default async function WorkitemDetail({
   const docCur = (display.currency ?? "").toUpperCase();
   const acctCur = String(regValues["Účetní měna"] ?? "").toUpperCase();
   const acctAmt = parseAmount(String(regValues["Celkem v účetní měně"] ?? ""));
+  const dph = parseAmount(String(regValues["z toho DPH"] ?? ""));
   const amountNum = parseAmount(display.amount);
 
   let conv: { amount: string; currency: string; note: string } | null = null;
@@ -123,6 +124,15 @@ export default async function WorkitemDetail({
               {formatAmount(display.amount)}
               {display.currency ? ` ${display.currency}` : ""}
             </span>
+            {dph !== null && dph > 0 && (
+              <span className="text-muted">
+                {` · ${t.detail.vat} `}
+                <span className="text-fg">
+                  {formatAmount(dph.toFixed(2))}
+                  {display.currency ? ` ${display.currency}` : ""}
+                </span>
+              </span>
+            )}
             {conv && (
               <span className="text-muted">
                 {" ≈ "}

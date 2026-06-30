@@ -19,7 +19,6 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     DialogField dfDir;
     DialogField dfFrom;
     DialogField dfPending;
-    DialogField dfExact;
 
     str         dir;
     str         fileName;
@@ -29,7 +28,6 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     date        fromDate;
     utcDateTime fromDateTime;
     boolean     onlyPending;
-    boolean     exactAmount;
     int         itemCount;
 
     #define.NL('\n')
@@ -88,28 +86,36 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     // měnu a ParmId – jinak by převod na účetní měnu (MST) uvnitř spadl na
     // „nutné určit měnu, ze které se převádí" a zaplavil Infolog. Pro takové
     // (rozpracované) záznamy a jako pojistka při výjimce použijeme součet řádků.
-    real viiAmount(VendInvoiceInfoTable _t, boolean _exact)
+    // [Celkem k úhradě (vč. DPH), z toho DPH] v MĚNĚ DOKLADU. Počítáno přes
+    // PurchTotals (stejně jako totals formulář faktury): posTotalAmountToPay()
+    // = dispTotalAmountToPay(), posTaxTotal() = částka DPH. Když to spadne
+    // (chybějící kurz apod.), vyčistíme Infolog a vrátíme součet řádků (bez DPH).
+    container viiTotals(VendInvoiceInfoTable _t)
     {
+        PurchTotals         pt;
         VendInvoiceInfoLine line;
-        // Přesné „k úhradě" vč. DPH (calcTotals přes totals formulář) jen na
-        // vyžádání – je pomalé. Výchozí = rychlý součet řádků v měně dokladu.
-        if (_exact && _t.CurrencyCode && _t.ParmId)
+        container           df;
+        if (_t.ParmId)
         {
             try
             {
-                return conPeek(_t.calcTotals(), 10);
+                pt = PurchTotals::newParmTable(_t, PurchUpdate::All, AccountOrder::None,
+                                               _t.ParmId, '', _t.Ordering);
+                pt.calc();
+                df = pt.displayFields([PurchTotals::posTaxTotal(),
+                                       PurchTotals::posTotalAmountToPay()]);
+                return [conPeek(df, PurchTotals::posTotalAmountToPay()),
+                        conPeek(df, PurchTotals::posTaxTotal())];
             }
             catch
             {
-                // calcTotals spadl (např. chybějící kurz). Vyčistíme Infolog,
-                // ať nepřeteče, a spadneme na součet řádků níže.
                 infolog.clear();
             }
         }
         select sum(LineAmount) from line
             where line.ParmId     == _t.ParmId
                && line.TableRefId == _t.TableRefId;
-        return line.LineAmount;
+        return [line.LineAmount, 0.0];
     }
 
     // Sestaví [valuesJson, docTypeName, docLabel] pro JEDEN doklad. Buffery jsou
@@ -121,7 +127,6 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         RefRecId   _recId,
         RefRecId   _ctxRecId,
         DataAreaId _company,
-        boolean    _exact,
         str        _defaultLabel)
     {
         VendInvoiceInfoTable      vii;
@@ -132,6 +137,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         Name         empName;
         str          amtStr;
         real         docAmt;
+        real         taxAmt;
         real         accAmt;
         CurrencyCode accCur;
         str   valuesJson  = '{' + #NL + #I4 + '}';
@@ -163,14 +169,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                     // Částku počítáme zvlášť a chráněně – aby případný pád
                     // calcTotals (přesná částka vč. DPH) nesmazal ostatní údaje
                     // faktury (dodavatel, IČO, účet…).
-                    try
-                    {
-                        docAmt = viiAmount(vii, _exact);
-                    }
-                    catch
-                    {
-                        docAmt = viiAmount(vii, false);
-                    }
+                    [docAmt, taxAmt] = viiTotals(vii);
                     amtStr = numv(docAmt);
                     // Částka v účetní měně: primárně kurzem dokladu (vii.ExchRate),
                     // jinak nejbližším kurzem z kurzovního lístku k datu dokladu.
@@ -194,6 +193,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                       + fl(#I6, 'Datum dokladu',    datev(vii.DocumentDate)) + ',' + #NL
                       + fl(#I6, 'Datum splatnosti', datev(vii.FixedDueDate)) + ',' + #NL
                       + fl(#I6, 'Celkem k úhradě',      amtStr) + ',' + #NL
+                      + fl(#I6, 'z toho DPH',           numv(taxAmt)) + ',' + #NL
                       + fl(#I6, 'Účetní měna',          q(accCur)) + ',' + #NL
                       + fl(#I6, 'Celkem v účetní měně', numv(accAmt)) + #NL
                       + #I4 + '}';
@@ -308,7 +308,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
             // Vše ve funkci s ČERSTVÝMI buffery, jinak changeCompany přepne firmu
             // jen u prvního dokladu daného typu (viz buildDocValues).
             [valuesJson, docTypeName, docLabel] =
-                buildDocValues(tid, recId, wfStatus.ContextRecId, company, exactAmount, wfStatus.Document);
+                buildDocValues(tid, recId, wfStatus.ContextRecId, company, wfStatus.Document);
 
             obj =
                 #I2 + '{' + #NL
@@ -343,17 +343,14 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     dfDir     = dialog.addField(extendedTypeStr(FilePath), "Cílový adresář (prázdné = jen vypsat)");
     dfFrom    = dialog.addField(extendedTypeStr(TransDate), "Workitemy vytvořené od");
     dfPending = dialog.addField(extendedTypeStr(NoYesId), "Jen čekající (Pending)");
-    dfExact   = dialog.addField(extendedTypeStr(NoYesId), "Částka k úhradě vč. DPH (přesné, pomalejší)");
     dfFrom.value(mkDate(1, 1, 2026));
     dfPending.value(NoYes::Yes);
-    dfExact.value(NoYes::Yes);
     if (!dialog.run())
         return;
 
     dir          = dfDir.value();
     fromDate     = dfFrom.value();
     onlyPending  = dfPending.value();
-    exactAmount  = dfExact.value();
     fromDateTime = DateTimeUtil::newDateTime(fromDate, 0);
 
     // ---- WorkflowWorkItemTable je GLOBÁLNÍ → projdou se jednou (bez changeCompany).

@@ -1,0 +1,1436 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: FRM
+
+; Microsoft Dynamics AX Forms unloaded
+; --------------------------------------------------------------------------------
+FRMVERSION 12
+
+FORM #VendEditInvoiceTotals
+  PROPERTIES
+    Name                #VendEditInvoiceTotals
+    Origin              #{CFE0AFEA-2D32-43A0-8E0B-520D3F11339A}
+  ENDPROPERTIES
+  
+  METHODS
+    SOURCE #classDeclaration
+      #class       FormRun
+      #extends     ObjectRun
+      #{
+      #    PurchTotals purchTotals;
+      #    boolean     disableEdit; // AQS
+      #    Amount      amountRound; // INC40242
+      #}
+    ENDSOURCE
+    SOURCE #calcTotals
+      #void  calcTotals(boolean _updateTable = false, boolean _keepEndDisc = false)
+      #{
+      #    Object  purchEditLines;
+      #    boolean     canBeEdit; // INC40242
+      #    AmountCur   amountMaxDiff; // INC40242
+      #
+      #    purchEditLines = element.args().caller();
+      #
+      #
+      #    miscChargesBtn.visible(false);
+      #    resetButton.visible(false);
+      #
+      #    // <GBR>
+      #    if (BrazilParameters::isEnabled() && vendInvoiceInfoTable.isForeignerVendor_BR())
+      #    {
+      #        additionButton_BR.visible(true);
+      #    }
+      #    else
+      #    {
+      #        additionButton_BR.visible(false);
+      #    }
+      #    // </GBR>
+      #
+      #    if (vendInvoiceInfoTable.ParmId
+      #        || true) // AQS
+      #    {
+      #        // If user is modifying amounts, remove taxes so they get recalculated
+      #        if (_updateTable)
+      #        {
+      #            TaxUncommitted::deleteForDocumentHeader(vendInvoiceInfoTable.TableId, vendInvoiceInfoTable.RecId);
+      #        }
+      #
+      #        purchTotals = PurchTotals::newParmTable(vendInvoiceInfoTable, purchEditLines.specQty(), AccountOrder::None, vendInvoiceInfoTable.ParmId,
+      #                                             '', vendInvoiceInfoTable.Ordering);
+      #
+      #        if (_keepEndDisc || VendInvoiceInfoTable.InvoiceType == PurchInvoiceType::VendorAdvance)
+      #        {
+      #            purchTotals.parmKeepEndDisc(true);
+      #        }
+      #        purchTotals.calc();
+      #
+      #        // INC39504 ++
+      #        canBeEdit = purchTotals.allowEdit();
+      #        amountMaxDiff = Currency::find(VendInvoiceInfoTable.CurrencyCode).PurchInvoiceAmountMaxDiff; // Načtení maximálního rozdílu
+      #
+      #        if (!canBeEdit && amountRound != maxInt()
+      #            && abs(amountRound - vendInvoiceInfoTable.InvoiceRoundOff) > amountMaxDiff)
+      #        {
+      #            if (Box::okCancel(strFmt("@SYS322632", vendInvoiceInfoTable.Num), DialogButton::Cancel) == DialogButton::Ok)
+      #            {
+      #                VendInvoiceInfoTable::resetRequestStatus(vendInvoiceInfoTable.RecId);
+      #                vendInvoiceInfoTable_ds.reread();
+      #                vendInvoiceInfoTable_ds.refresh();
+      #            }
+      #            else
+      #            {
+      #                vendInvoiceInfoTable_ds.editInvoiceRoundOff(true, vendInvoiceInfoTable, amountRound);
+      #            }
+      #        }
+      #        // INC39504 --
+      #
+      #        if (canBeEdit || amountMaxDiff != 0)         // INC39504 change purchTotals.allowEdit() -> canBeEdit
+      #        //&& !disableEdit) // AQS // INC39504 DEL - fce přenesena do purchTotals.allowEdit()
+      #        {
+      #            vendInvoiceInfoTable_ds.allowEdit(true);
+      #            miscChargesBtn.visible(canBeEdit);  // INC39504 change true -> canBeEdit
+      #            resetButton.visible(canBeEdit);     // INC39504 change true -> canBeEdit
+      #
+      #            this.disableVendInvoiceCtrl(canBeEdit); // INC39504 +
+      #
+      #            if (vendInvoiceInfoTable.Ordering == DocumentStatus::ApproveJournal)
+      #            {
+      #                purchParmTable_CashDisc.allowEdit(false);
+      #                cashDiscDate.allowEdit(false);
+      #            }
+      #
+      #            vendInvoiceInfoTable.checkMarkupTrans(false);
+      #        }
+      #        else
+      #        {
+      #            vendInvoiceInfoTable_ds.allowEdit(false);
+      #        }
+      #
+      #        element.setDisplayFields(_updateTable);
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #close
+      #//<CDR252021,ldan,2025_04_03,KopirovaniFakturyDodavatele_upravy/>
+      #public void close()
+      #{
+      #    super();
+      #
+      #    if (element.args().caller() && formHasMethod(element.args().caller(), identifierStr(restore)))
+      #    {
+      #        element.args().caller().restore();
+      #    }
+      #}
+    ENDSOURCE
+    SOURCE #disableFieldsWhenAdvance
+      #/// <summary>
+      #/// Disables the discount and miscellaneous charges fields when <c>VendInvoiceInfoTable</c> table has <c>InvoiceType</c> field with
+      #/// <c>PurchInvoiceType::VendorAdvance</c> enum value.
+      #/// </summary>
+      #public void disableFieldsWhenAdvance()
+      #{
+      #    cashDiscDate.allowEdit(false);
+      #    purchParmTable_CashDisc.allowEdit(false);
+      #    endDisc.allowEdit(false);
+      #    markup.allowEdit(false);
+      #    miscChargesBtn.enabled(false);
+      #}
+    ENDSOURCE
+    SOURCE #disableVendInvoiceCtrl
+      #//INC40242
+      #private void disableVendInvoiceCtrl(boolean _canBeEdit)
+      #{
+      #    EndDisc.allowEdit(
+      #    PurchParmTable_CashDisc.allowEdit(
+      #    CashDiscDate.allowEdit(
+      #    MiscChargesBtn.visible(_canBeEdit))));
+      #}
+      #
+    ENDSOURCE
+    SOURCE #init
+      #public void init()
+      #{
+      #    super();
+      #    FormSecurity::setFormDataSourceMaxAccessRight(this);
+      #
+      #    // INC40242 DEL - oprava zvláštní a odvážné  řešení :)
+      #    /*
+      #    // AQS+
+      #    switch (this.args().menuItemName())
+      #    {
+      #        case menuitemDisplayStr(VendEditInvoiceTotalsView) :
+      #            disableEdit = true;
+      #            break;
+      #
+      #        default :
+      #    }
+      #    // AQS-
+      #    */
+      #
+      #    amountRound = maxInt(); //INC40242
+      #}
+    ENDSOURCE
+    SOURCE #setDisplayFields
+      #void  setDisplayFields(boolean _updateTable = false)
+      #{
+      #    ExchangeRateHelper exchangeRateHelper;
+      #    container  displayFields = purchTotals.displayFields([PurchTotals::posCurrency(),
+      #                                                          PurchTotals::posExchRate(),
+      #                                                          PurchTotals::posLineDisc(),
+      #                                                          PurchTotals::posBalance(),
+      #                                                          PurchTotals::posMarkup(),
+      #                                                          PurchTotals::posTaxTotal(),
+      #                                                          PurchTotals::posTotalAmount(),
+      #                                                          PurchTotals::posPreAppliedAmount(),
+      #                                                          PurchTotals::posTotalAmountPrepayment(), // AQS
+      #                                                          PurchTotals::posTotalAmountToPay()]); // AQS
+      #
+      #    // <GBR>
+      #    if (BrazilParameters::isEnabled())
+      #    {
+      #        displayFields = purchTotals.displayFields([PurchTotals::posCurrency(),
+      #                                                   PurchTotals::posExchRate(),
+      #                                                   PurchTotals::posLineDisc(),
+      #                                                   PurchTotals::posBalance(),
+      #                                                   PurchTotals::posMarkup(),
+      #                                                   PurchTotals::posTaxTotal(),
+      #                                                   PurchTotals::posTotalAmount(),
+      #                                                   PurchTotals::posICMSTotal_BR(),
+      #                                                   PurchTotals::posIPITotal_BR(),
+      #                                                   PurchTotals::posPISTotal_BR(),
+      #                                                   PurchTotals::posCOFINSTotal_BR(),
+      #                                                   PurchTotals::posImportTaxTotal_BR(),
+      #                                                   PurchTotals::posISSTotal_BR(),
+      #                                                   PurchTotals::posINSSTotal_BR(),
+      #                                                   PurchTotals::posIRRFTotal_BR(),
+      #                                                   PurchTotals::posCSLLTotal_BR(),
+      #                                                   PurchTotals::posRetainedINSSTotal_BR(),
+      #                                                   PurchTotals::posMarkupFreight_BR(),
+      #                                                   PurchTotals::posMarkupInsurance_BR(),
+      #                                                   PurchTotals::posMarkupOther_BR(),
+      #                                                   PurchTotals::posMarkupSiscomex_BR()]);
+      #    }
+      #    // </GBR>
+      #
+      #    if (_updateTable)
+      #    {
+      #        element.setTableFields();
+      #        vendInvoiceInfoTable_ds.write();
+      #    }
+      #
+      #    currencyCode.text               (conpeek(displayFields, PurchTotals::posCurrency()));
+      #
+      #    exchangeRateHelper = ExchangeRateHelper::newCurrency(Ledger::primaryLedger(CompanyInfo::findDataArea(curext()).RecId), currencyCode.text());
+      #
+      #    exchRate.realValue              (exchangeRateHelper.displayStoredExchangeRate(conpeek(displayFields, PurchTotals::posExchRate())));
+      #    lineDisc.realValue              (conpeek(displayFields, PurchTotals::posLineDisc()));
+      #    purchBalance.realValue          (conpeek(displayFields, PurchTotals::posBalance()));
+      #    markup.realValue                (conpeek(displayFields, PurchTotals::posMarkup()));
+      #    tax.realValue                   (conpeek(displayFields, PurchTotals::posTaxTotal()));
+      #    invoiceAmount.realValue         (conpeek(displayFields, PurchTotals::posTotalAmount()));
+      #    preAppliedAmount.realValue      (conpeek(displayFields, PurchTotals::posPreAppliedAmount()));
+      #
+      #    // AQS+
+      #    totalAmountPrepayment.realValue (conpeek(displayFields, PurchTotals::posTotalAmountPrepayment()));
+      #    totalAmountToPay.realValue      (conpeek(displayFields, PurchTotals::posTotalAmountToPay()));
+      #    // AQS-
+      #
+      #    // <GBR>
+      #    if (BrazilParameters::isEnabled())
+      #    {
+      #        icmsAmount.realValue        (conpeek(displayFields, PurchTotals::posICMSTotal_BR()));
+      #        ipiAmount.realValue         (conpeek(displayFields, PurchTotals::posIPITotal_BR()));
+      #        pisAmount.realValue         (conpeek(displayFields, PurchTotals::posPISTotal_BR()));
+      #        cofinsAmount.realValue      (conpeek(displayFields, PurchTotals::posCOFINSTotal_BR()));
+      #        importTaxAmount.realValue   (conpeek(displayFields, PurchTotals::posImportTaxTotal_BR()));
+      #        issAmount.realValue         (conpeek(displayFields, PurchTotals::posISSTotal_BR()));
+      #        inssAmount.realValue        (conpeek(displayFields, PurchTotals::posINSSTotal_BR()));
+      #        irrfAmount.realValue        (conpeek(displayFields, PurchTotals::posIRRFTotal_BR()));
+      #        csllAmount.realValue        (conpeek(displayFields, PurchTotals::posCSLLTotal_BR()));
+      #        inssRetainedAmount.realValue(conpeek(displayFields, PurchTotals::posRetainedINSSTotal_BR()));
+      #        freightAmount.realValue     (conpeek(displayFields, PurchTotals::posMarkupFreight_BR()));
+      #        insuranceAmount.realValue   (conpeek(displayFields, PurchTotals::posMarkupInsurance_BR()));
+      #        otherChargesAmount.realValue(conpeek(displayFields, PurchTotals::posMarkupOther_BR()));
+      #        siscomexAmount.realValue    (conpeek(displayFields, PurchTotals::posMarkupSiscomex_BR()));
+      #    }
+      #    // </GBR>
+      #}
+    ENDSOURCE
+    SOURCE #setTableFields
+      #void  setTableFields()
+      #{
+      #    container  displayFields = purchTotals.displayFields([PurchTotals::posCashDisc(),
+      #                                                          PurchTotals::posCashDiscDate(),
+      #                                                          PurchTotals::posEndDisc(),
+      #                                                          PurchTotals::posTaxRoundOff(),
+      #                                                          PurchTotals::posRoundOff()]);
+      #
+      #
+      #    vendInvoiceInfoTable.CashDisc         = conPeek(displayFields, PurchTotals::posCashDisc());
+      #    vendInvoiceInfoTable.CashDiscDate     = conPeek(displayFields, PurchTotals::posCashDiscDate());
+      #    vendInvoiceInfoTable.EndDisc          = conPeek(displayFields, PurchTotals::posEndDisc());
+      #    vendInvoiceInfoTable.TaxRoundOff      = conPeek(displayFields, PurchTotals::posTaxRoundOff());
+      #    vendInvoiceInfoTable.InvoiceRoundOff  = conPeek(displayFields, PurchTotals::posRoundOff());
+      #
+      #    vendInvoiceInfoTable.ReCalculate      = NoYes::No;
+      #}
+    ENDSOURCE
+  ENDMETHODS
+  OBJECTBANK
+    PROPERTIES
+    ENDPROPERTIES
+    
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #VendInvoiceInfoTable
+          Table               #VendInvoiceInfoTable
+          AllowCreate         #No
+          AllowDelete         #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #editInvoiceRoundOff
+          #//BP Deviation documented
+          #public edit RoundOff editInvoiceRoundOff(boolean set, VendInvoiceInfoTable _vendInvoiceInfoTable, RoundOff _invoiceRoundOff)
+          #{
+          #    if (set)
+          #    {
+          #        element.setTableFields();
+          #        _vendInvoiceInfoTable.InvoiceRoundOff = _invoiceRoundOff;
+          #        _vendInvoiceInfoTable.modifiedField(fieldnum(VendInvoiceInfoTable, InvoiceRoundOff));
+          #
+          #        element.calcTotals(true);  // Calc totals and udpdate the table with changes made by the user
+          #    }
+          #
+          #    if (purchTotals)
+          #    {
+          #        return purchTotals.purchRoundOff();
+          #    }
+          #
+          #    return 0.0;
+          #}
+        ENDSOURCE
+        SOURCE #editCashDiscDate
+          #//BP Deviation documented
+          #public edit VendCashDiscDate editCashDiscDate(boolean set, VendInvoiceInfoTable _vendInvoiceInfoTable, VendCashDiscDate _cashDiscDate)
+          #{
+          #    if (set)
+          #    {
+          #        element.setTableFields();
+          #        _vendInvoiceInfoTable.CashDiscDate = _cashDiscDate;
+          #        _vendInvoiceInfoTable.modifiedField(fieldnum(VendInvoiceInfoTable, CashDiscDate));
+          #
+          #        element.calcTotals(true);  // Calc totals and udpdate the table with changes made by the user
+          #    }
+          #
+          #    if (purchTotals)
+          #    {
+          #        return purchTotals.purchCashDiscDate();
+          #    }
+          #
+          #    return dateNull();
+          #}
+        ENDSOURCE
+        SOURCE #editCashDisc
+          #//BP Deviation documented
+          #public edit VendCashDiscAmount editCashDisc(boolean set, VendInvoiceInfoTable _vendInvoiceInfoTable, VendCashDiscAmount _cashDisc)
+          #{
+          #    if (set)
+          #    {
+          #        element.setTableFields();
+          #        _vendInvoiceInfoTable.CashDisc = _cashDisc;
+          #        _vendInvoiceInfoTable.modifiedField(fieldnum(VendInvoiceInfoTable, CashDisc));
+          #
+          #        element.calcTotals(true);  // Calc totals and udpdate the table with changes made by the user
+          #    }
+          #
+          #    if (purchTotals)
+          #    {
+          #        return purchTotals.purchCashDisc();
+          #    }
+          #
+          #    return 0.0;
+          #}
+        ENDSOURCE
+        SOURCE #editEndDisc
+          #//BP Deviation documented
+          #public edit PurchEndDiscAmount editEndDisc(boolean set, VendInvoiceInfoTable _vendInvoiceInfoTable, PurchEndDiscAmount _endDisc)
+          #{
+          #    if (set)
+          #    {
+          #        // User has changed the total discount
+          #        _vendInvoiceInfoTable.EndDisc = _endDisc;
+          #
+          #        // Set recalculate flag to Yes, since we want the other editable values to default from PO when endDisc changes
+          #        // The recalculate flag will be set to No after totals are calculated (setDisplayFields)
+          #        _vendInvoiceInfoTable.ReCalculate = NoYes::Yes;
+          #        _vendInvoiceInfoTable.modifiedField(fieldnum(VendInvoiceInfoTable, EndDisc));
+          #
+          #        element.calcTotals(true, true);  // Calc totals, udpdate the table with changes made by the user, and keep this field's value
+          #    }
+          #
+          #    if (purchTotals)
+          #    {
+          #        return purchTotals.purchEndDisc();
+          #    }
+          #
+          #    return 0.0;
+          #}
+        ENDSOURCE
+        SOURCE #write
+          #void write()
+          #{
+          #    FormDataSource  purchParmTable_dataSource;
+          #
+          #    super();
+          #
+          #    // call on calcTotals as the super() may have deleted the TaxUncommitteds.
+          #    element.calcTotals();
+          #
+          #    // Refresh data on parent form
+          #    if (element.args() &&
+          #        element.args().record() &&
+          #        element.args().record().dataSource())
+          #    {
+          #        purchParmTable_dataSource = element.args().record().dataSource();
+          #        purchParmTable_dataSource.reread();
+          #        purchParmTable_dataSource.refresh();
+          #    }
+          #}
+        ENDSOURCE
+        SOURCE #linkActive
+          #void linkActive()
+          #{
+          #    super();
+          #    element.calcTotals(false);  // Calc totals to display, but do not udpdate the table until changes are made by the user
+          #
+          #    // Hide title when there are no records
+          #    mainInstructionStaticText.visible( vendInvoiceInfoTable_ds.numberOfRowsLoaded() > 0 );
+          #
+          #    // Set static texts
+          #    // <Invoice Number> : <Invoice Account Name>
+          #    mainInstructionStaticText.text (strFmt("%1 : %2", vendInvoiceInfoTable.Num, vendInvoiceInfoTable.PurchName));
+          #
+          #    if (vendInvoiceInfoTable.isAdvance())
+          #    {
+          #        element.disableFieldsWhenAdvance();
+          #    }
+          #}
+        ENDSOURCE
+        SOURCE #modifiedField
+          #/// <summary>
+          #/// Checks for data specific situations when a field value in the <c>VendInvoiceInfoTable</c> Form Data Source changes.
+          #/// </summary>
+          #/// <param name="_fieldId">
+          #/// The field identifier of the field being modified.
+          #/// </param>
+          #/// <param name="_unapprove">
+          #/// true if the approveVariance should be called; otherwise false.
+          #/// </param>
+          #void modifiedField(fieldId  _fieldId, boolean _unapprove)
+          #{
+          #
+          #    // Changes to total fields should only unapprove if using total matching
+          #    if (_unapprove && VendParameters::find().UseTotalPriceMatching == NoYes::Yes)
+          #    {
+          #        vendInvoiceInfoTable.approveVariance(false);
+          #    }
+          #}
+        ENDSOURCE
+      ENDMETHODS
+    ENDDATASOURCE
+  ENDOBJECTBANK
+  
+  REFERENCEDATASOURCES
+  ENDREFERENCEDATASOURCES
+  
+  JOINS
+  ENDJOINS
+  
+  PARTREFERENCES
+  ENDPARTREFERENCES
+  
+  DESIGN
+    PROPERTIES
+      Caption             #@SYS8311
+      TitleDatasource     #VendInvoiceInfoTable
+      HideIfEmpty         #No
+      StatusBarStyle      #Simple
+    ENDPROPERTIES
+    
+    CONTAINER
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #ActionPane
+          ElementPosition     #536870911
+          Style               #Strip
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #ActionPaneTab
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPane
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #ButtonGroup
+          Left                #Auto (right)
+          Top                 #Bottom edge
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPaneTab
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Advance
+          ElementPosition     #2144687443
+          HierarchyParent     #Form
+          FrameType           #None
+          Caption             #@SYS7604
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Balance
+          ElementPosition     #1610612734
+          HierarchyParent     #Form
+          FrameType           #None
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #CashDisc
+          ElementPosition     #2130706430
+          HierarchyParent     #Form
+          FrameType           #None
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Currency
+          ElementPosition     #1073741823
+          HierarchyParent     #Form
+          FrameType           #None
+          Columns             #2
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #DiscMarkup
+          ElementPosition     #1879048190
+          HierarchyParent     #Form
+          FrameType           #None
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Form
+          ElementPosition     #1577058302
+          FrameType           #None
+          Columns             #2
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupAdvanceInvoice
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          ElementPosition     #2122317822
+          HierarchyParent     #Form
+          FrameType           #Raised 3D
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GroupTax
+          ElementPosition     #2080374782
+          HierarchyParent     #Form
+          FrameType           #None
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Invoice
+          ElementPosition     #2113929214
+          HierarchyParent     #Form
+          FrameType           #None
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #MiscCharges
+          ElementPosition     #2013265918
+          HierarchyParent     #Form
+          FrameType           #None
+          Columns             #2
+          Columnspace         #0
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #MiscChargesGroup_BR
+          CountryRegionCodes  #BR
+          ElementPosition     #2141891240
+          HierarchyParent     #Form
+          Caption             #@SYS8371
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #PageTitleGroup
+          ElementPosition     #1006632958
+          Style               #MarginlessContainer
+          Columns             #Auto
+          ViewEditMode        #View
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #SalesTaxGroup_BR
+          CountryRegionCodes  #BR
+          ElementPosition     #2136298835
+          HierarchyParent     #Form
+          Caption             #@SYS114610
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #AdditionButton_BR
+          AutoDeclaration     #Yes
+          HelpText            #@SYS4081687
+          ElementPosition     #1610612734
+          HierarchyParent     #ButtonGroup
+          Text                #@SYS4081650
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    MenuFunction    menuFunction;
+            #    Args            args = new Args();
+            #
+            #
+            #    super();
+            #
+            #    args.caller(element);
+            #    args.record(element.args().record());
+            #    args.parmObject(purchTotals);
+            #
+            #    menuFunction = new MenuFunction(menuitemDisplayStr(VendEditInvoiceTotalsAddition_BR), MenuItemType::Display);
+            #    menuFunction.run(args);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #MiscChargesBtn
+          AutoDeclaration     #Yes
+          HelpText            #@SYS117449
+          ConfigurationKey    #Markup
+          ElementPosition     #1610612734
+          HierarchyParent     #MiscCharges
+          Text                #...
+          ButtonDisplay       #Image only
+          NormalImage         #2633
+          ImageLocation       #EmbeddedResource
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    MenuFunction    menuFunction;
+            #    Args            args = new Args();
+            #
+            #
+            #    super();
+            #
+            #    args.caller(element);
+            #    args.record(element.args().record());
+            #
+            #    menuFunction = new MenuFunction(menuitemDisplayStr(MarkupTransInquiry), MenuItemType::Display);
+            #    menuFunction.run(args);
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #ResetButton
+          AutoDeclaration     #Yes
+          HelpText            #@SYS137325
+          ElementPosition     #1073741823
+          HierarchyParent     #ButtonGroup
+          Text                #@SYS137324
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    NoYes       originalRecalcValue = vendInvoiceInfoTable.ReCalculate;
+            #
+            #
+            #    super();
+            #
+            #    vendInvoiceInfoTable.initTotals();
+            #
+            #    vendInvoiceInfoTable_ds.write();
+            #
+            #    element.calcTotals(false);  // Calc totals to display, but do not udpdate the table until changes are made by the user
+            #
+            #    // If the user had made changes, unapprove the invoice
+            #    if (originalRecalcValue == NoYes::No)
+            #    {
+            #        vendInvoiceInfoTable_ds.modifiedField(0, true);
+            #    }
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #CashDiscDate
+          AutoDeclaration     #Yes
+          ElementPosition     #1610612734
+          HierarchyParent     #CashDisc
+          Label               #@SYS179633
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #editCashDiscDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #COFINSAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #894784850
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS940
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #CSLLAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1789569700
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS60347
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #EndDisc
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741823
+          HierarchyParent     #DiscMarkup
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #editEndDisc
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #ExchRate
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Skip                #Yes
+          ElementPosition     #1073741823
+          HierarchyParent     #Currency
+          Label               #@SYS7572
+          ExtendedDataType    
+            ARRAY 
+              #VendExchRate
+              #
+            ENDARRAY
+          MinNoOfDecimals     #4
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #FreightAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #715827882
+          HierarchyParent     #MiscChargesGroup_BR
+          Label               #@SYS1655
+          ExtendedDataType    
+            ARRAY 
+              #MarkupAmount
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #ICMSAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #357913940
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS893
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #ImportTaxAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1073741820
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS57
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #INSSAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1431655760
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS942
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #INSSRetainedAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1968526670
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS71
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #InsuranceAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1073741823
+          HierarchyParent     #MiscChargesGroup_BR
+          Label               #@SYS67403
+          ExtendedDataType    
+            ARRAY 
+              #MarkupAmount
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #InvoiceAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Skip                #Yes
+          ElementPosition     #1610612734
+          HierarchyParent     #Invoice
+          Label               #@SYS9458
+          ExtendedDataType    
+            ARRAY 
+              #AmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #InvoiceRoundOff
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741823
+          HierarchyParent     #Invoice
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #editInvoiceRoundoff
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #IPIAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #536870910
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS894
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #IRRFAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1252698790
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS722
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #ISSAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1610612730
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS941
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #LineDisc
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Skip                #Yes
+          ElementPosition     #1073741823
+          HierarchyParent     #Balance
+          ExtendedDataType    
+            ARRAY 
+              #PurchSumLineDiscAmount
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #Markup
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Skip                #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #MiscCharges
+          Label               #@AQS387
+          ExtendedDataType    
+            ARRAY 
+              #MarkupSumPurch
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #OtherChargesAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #MiscChargesGroup_BR
+          Label               #@GLS242
+          ExtendedDataType    
+            ARRAY 
+              #MarkupAmount
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #PISAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #715827880
+          HierarchyParent     #SalesTaxGroup_BR
+          Label               #@GLS939
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #preAppliedAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Skip                #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #Advance
+          Label               #@SYP4986045
+          ExtendedDataType    
+            ARRAY 
+              #AmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #PurchBalance
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Skip                #Yes
+          ElementPosition     #1610612734
+          HierarchyParent     #Balance
+          Label               #@SYS343995
+          ExtendedDataType    
+            ARRAY 
+              #AmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #PurchParmTable_CashDisc
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741823
+          HierarchyParent     #CashDisc
+          DataSource          #VendInvoiceInfoTable
+          DataMethod          #editCashDisc
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #SiscomexAmount
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1789569705
+          HierarchyParent     #MiscChargesGroup_BR
+          Label               #@GLS63647
+          ExtendedDataType    
+            ARRAY 
+              #MarkupAmount
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #Tax
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Skip                #Yes
+          HelpText            #@SYS134788
+          ElementPosition     #1073741823
+          HierarchyParent     #GroupTax
+          Label               #@SYS5878
+          ExtendedDataType    
+            ARRAY 
+              #TaxAmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #TotalAmountPrepayment
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #GroupAdvanceInvoice
+          Label               #@WBW630
+          ExtendedDataType    
+            ARRAY 
+              #AmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #TotalAmountToPay
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1610612733
+          HierarchyParent     #GroupAdvanceInvoice
+          Label               #@WBW467
+          ExtendedDataType    
+            ARRAY 
+              #AmountCur
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #CurrencyCode
+          AutoDeclaration     #Yes
+          AllowEdit           #No
+          Skip                #Yes
+          ElementPosition     #1610612734
+          HierarchyParent     #Currency
+          ShowLabel           #No
+          ExtendedDataType    
+            ARRAY 
+              #VendCurrencyCode
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #MainInstructionStaticText
+          AutoDeclaration     #Yes
+          Width               #Column width
+          Skip                #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #PageTitleGroup
+          Style               #TitleField
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+    ENDCONTAINER
+    
+  ENDDESIGN
+  
+  PERMISSIONS #Permissions
+    PROPERTIES
+    ENDPROPERTIES
+    
+    PERMISSIONSET #Read
+      PROPERTIES
+      ENDPROPERTIES
+      
+      FORM #Controls
+      ENDFORM
+      
+    TABLES #Tables
+    ENDTABLES
+    
+  SERVERMETHODS #Server Methods
+  ENDSERVERMETHODS
+  
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Update
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Create
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Delete
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+ENDPERMISSIONS
+
+ENDFORM
+
+
+***Element: END
