@@ -343,10 +343,10 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     dfDir     = dialog.addField(extendedTypeStr(FilePath), "Cílový adresář (prázdné = jen vypsat)");
     dfFrom    = dialog.addField(extendedTypeStr(TransDate), "Workitemy vytvořené od");
     dfPending = dialog.addField(extendedTypeStr(NoYesId), "Jen čekající (Pending)");
-    dfExact   = dialog.addField(extendedTypeStr(NoYesId), "Přesná částka faktury vč. DPH (pomalejší)");
+    dfExact   = dialog.addField(extendedTypeStr(NoYesId), "Částka k úhradě vč. DPH (přesné, pomalejší)");
     dfFrom.value(mkDate(1, 1, 2026));
     dfPending.value(NoYes::Yes);
-    dfExact.value(NoYes::No);
+    dfExact.value(NoYes::Yes);
     if (!dialog.run())
         return;
 

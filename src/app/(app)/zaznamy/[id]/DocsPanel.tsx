@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { uploadDocument, type UploadState } from "./doc-actions";
+import { PdfView } from "./PdfView";
 import type { Dict } from "@/lib/i18n";
 
 type Doc = { id: string; filename: string };
@@ -22,9 +23,15 @@ export function DocsPanel({
   t: Dict;
 }) {
   const [full, setFull] = useState<Doc | null>(null);
+  const [scale, setScale] = useState(1);
   const [state, formAction, pending] = useActionState(uploadDocument, initial);
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
+
+  function openFull(d: Doc) {
+    setScale(1);
+    setFull(d);
+  }
 
   // Po úspěšném nahrání vyčisti formulář a načti detail (objeví se nová příloha).
   useEffect(() => {
@@ -74,10 +81,10 @@ export function DocsPanel({
         <ul className="divide-y divide-line">
           {docs.map((d) => (
             <li key={d.id} className="p-3">
-              {/* Malý náhled – klik otevře fullscreen (iframe nechytá kliknutí). */}
+              {/* Malý náhled (1. strana) – klik otevře fullscreen. */}
               <button
                 type="button"
-                onClick={() => setFull(d)}
+                onClick={() => openFull(d)}
                 title={t.detail.fullscreen}
                 className="block w-full cursor-zoom-in text-left"
               >
@@ -85,11 +92,9 @@ export function DocsPanel({
                   <span aria-hidden>⛶</span>
                   <span className="truncate text-fg">{d.filename}</span>
                 </span>
-                <iframe
-                  src={`/dokument/${d.id}#view=FitH&toolbar=0`}
-                  title={d.filename}
-                  className="pointer-events-none h-40 w-full rounded-md border border-line bg-surface-2 sm:h-56"
-                />
+                <div className="pointer-events-none max-h-56 overflow-hidden rounded-md border border-line bg-surface-2 p-1">
+                  <PdfView url={`/dokument/${d.id}`} firstPageOnly />
+                </div>
               </button>
             </li>
           ))}
@@ -124,16 +129,26 @@ export function DocsPanel({
       )}
 
       {full && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col bg-black/85 p-3 sm:p-6"
-          onClick={closeFull}
-        >
-          <div
-            className="mb-2 flex items-center justify-between gap-3 text-white"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <span className="truncate text-sm font-medium">{full.filename}</span>
-            <div className="flex shrink-0 gap-4">
+        <div className="fixed inset-0 z-50 flex flex-col bg-black/90">
+          <div className="flex items-center justify-between gap-3 px-3 py-2 text-white">
+            <span className="min-w-0 truncate text-sm font-medium">{full.filename}</span>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setScale((s) => Math.max(0.5, +(s / 1.25).toFixed(3)))}
+                aria-label="−"
+                className="rounded bg-white/15 px-2.5 py-1 text-base leading-none hover:bg-white/25"
+              >
+                −
+              </button>
+              <button
+                type="button"
+                onClick={() => setScale((s) => Math.min(6, +(s * 1.25).toFixed(3)))}
+                aria-label="+"
+                className="rounded bg-white/15 px-2.5 py-1 text-base leading-none hover:bg-white/25"
+              >
+                +
+              </button>
               <a
                 href={`/dokument/${full.id}`}
                 target="_blank"
@@ -151,12 +166,14 @@ export function DocsPanel({
               </button>
             </div>
           </div>
-          <iframe
-            src={`/dokument/${full.id}#view=FitH`}
-            title={full.filename}
-            className="w-full flex-1 rounded-md border border-line bg-white"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {/* Scroll = posun; tlačítka +/− = zoom; dvojklik/dvojťuk = zavřít. */}
+          <div
+            className="flex-1 overflow-auto overscroll-contain bg-neutral-800 p-2"
+            style={{ touchAction: "pan-x pan-y" }}
+            onDoubleClick={closeFull}
+          >
+            <PdfView url={`/dokument/${full.id}`} scale={scale} className="mx-auto w-full max-w-3xl" />
+          </div>
         </div>
       )}
     </section>
