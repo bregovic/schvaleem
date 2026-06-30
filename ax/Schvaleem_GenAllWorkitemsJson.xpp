@@ -86,31 +86,60 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     // měnu a ParmId – jinak by převod na účetní měnu (MST) uvnitř spadl na
     // „nutné určit měnu, ze které se převádí" a zaplavil Infolog. Pro takové
     // (rozpracované) záznamy a jako pojistka při výjimce použijeme součet řádků.
-    // [Celkem k úhradě (vč. DPH), DPH] v MĚNĚ DOKLADU. Počítá metoda na tabulce
-    // VendInvoiceInfoTable.schvaleemTotals() (uvnitř PurchTotals.calc() – tu app.
-    // třídu nelze volat přímo z jobu/embedded funkce). calcTotals() volaná z jobu
-    // daň nepočítá, proto NE. Fallback při chybě: součet řádků (bez DPH).
-    container viiTotals(VendInvoiceInfoTable _t)
+    // Vytáhne částku z textu workitemu za „Fakturovaná částka:" / „Celková částka:".
+    // (AX tam dává hrubou částku vč. DPH; číslo končí kódem měny, „1 234,56" → 1234.56)
+    real parseDescAmount(str _text)
     {
-        VendInvoiceInfoLine line;
-        container           c;
-        if (_t.ParmId)
+        str  marker = 'Fakturovaná částka:';
+        int  p, startPos, i, endPos;
+        str  rest, numStr, ch;
+
+        p = strScan(_text, marker, 1, strLen(_text));
+        if (!p)
         {
-            try
+            marker = 'Celková částka:';
+            p = strScan(_text, marker, 1, strLen(_text));
+        }
+        if (!p)
+            return 0;
+
+        startPos = p + strLen(marker);
+        if (startPos > strLen(_text))
+            return 0;
+        rest = strLTrim(subStr(_text, startPos, strLen(_text) - startPos + 1));
+
+        // číslo končí prvním písmenem (kód měny, ASCII A–Z)
+        endPos = 0;
+        for (i = 1; i <= strLen(rest); i++)
+        {
+            ch = subStr(rest, i, 1);
+            if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))
             {
-                c = _t.schvaleemTotals();
-                if (conPeek(c, 1) > 0)
-                    return c;
-            }
-            catch
-            {
-                infolog.clear();
+                endPos = i;
+                break;
             }
         }
+        numStr = (endPos == 0) ? rest : subStr(rest, 1, endPos - 1);
+        numStr = strReplace(numStr, num2char(160), ''); // pevná mezera
+        numStr = strReplace(numStr, ' ', '');
+        numStr = strReplace(numStr, ',', '.');
+        return str2num(numStr);
+    }
+
+    // [Celkem k úhradě (vč. DPH), DPH] v MĚNĚ DOKLADU. Hrubá částka z textu workitemu
+    // (_gross), základ = součet řádků (bez DPH), DPH = hrubá − základ. calcTotals
+    // z jobu daň nedopočítá a PurchTotals z jobu volat nelze, proto takhle.
+    container viiTotals(VendInvoiceInfoTable _t, real _gross)
+    {
+        VendInvoiceInfoLine line;
+        real net, gross, tax;
         select sum(LineAmount) from line
             where line.ParmId     == _t.ParmId
                && line.TableRefId == _t.TableRefId;
-        return [line.LineAmount, 0.0];
+        net   = line.LineAmount;
+        gross = _gross > 0 ? _gross : net;
+        tax   = (gross - net) > 0.005 ? gross - net : 0;
+        return [gross, tax];
     }
 
     // Sestaví [valuesJson, docTypeName, docLabel] pro JEDEN doklad. Buffery jsou
@@ -122,6 +151,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         RefRecId   _recId,
         RefRecId   _ctxRecId,
         DataAreaId _company,
+        real       _descGross,
         str        _defaultLabel)
     {
         VendInvoiceInfoTable      vii;
@@ -164,7 +194,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                     // Částku počítáme zvlášť a chráněně – aby případný pád
                     // calcTotals (přesná částka vč. DPH) nesmazal ostatní údaje
                     // faktury (dodavatel, IČO, účet…).
-                    [docAmt, taxAmt] = viiTotals(vii);
+                    [docAmt, taxAmt] = viiTotals(vii, _descGross);
                     amtStr = numv(docAmt);
                     // Částka v účetní měně: primárně kurzem dokladu (vii.ExchRate),
                     // jinak nejbližším kurzem z kurzovního lístku k datu dokladu.
@@ -268,6 +298,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         int       tid;
         RefRecId  recId;
         DataAreaId company;
+        real      descGross;
 
         // Driver = workitemy. wfStatus se dohledá JEDEN (firstOnly) – pozor,
         // WorkflowTrackingStatusTable je HISTORIE (mnoho řádků na instanci),
@@ -302,8 +333,13 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
             // Doklad leží v per-company tabulce → načteme ho v jeho společnosti.
             // Vše ve funkci s ČERSTVÝMI buffery, jinak changeCompany přepne firmu
             // jen u prvního dokladu daného typu (viz buildDocValues).
+            // Hrubá částka (vč. DPH) z textu workitemu – AX ji tam dává sám.
+            descGross = parseDescAmount(wfWorkItem.Description);
+            if (!descGross)
+                descGross = parseDescAmount(wfWorkItem.Subject);
+
             [valuesJson, docTypeName, docLabel] =
-                buildDocValues(tid, recId, wfStatus.ContextRecId, company, wfStatus.Document);
+                buildDocValues(tid, recId, wfStatus.ContextRecId, company, descGross, wfStatus.Document);
 
             obj =
                 #I2 + '{' + #NL
