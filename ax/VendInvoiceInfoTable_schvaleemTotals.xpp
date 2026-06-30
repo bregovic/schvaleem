@@ -1,0 +1,31 @@
+// =====================================================================================
+//  Metoda na tabulku VendInvoiceInfoTable (přidej v AOT: Data Dictionary > Tables >
+//  VendInvoiceInfoTable > Methods > New Method, vlož tělo níže a ulož).
+//
+//  Proč na tabulku: PurchTotals je aplikační třída a v JOBU / embedded funkci ji
+//  nelze deklarovat ani volat ("Proměnná PurchTotals nebyla deklarována"). V metodě
+//  TABULKY ale funguje. Job pak volá vii.schvaleemTotals() (volání metody tabulky
+//  z embedded funkce je v pořádku – stejně jako vii.dispTotalAmountToPay()).
+//
+//  Vrací container [Celkem k úhradě vč. DPH, DPH] v MĚNĚ DOKLADU
+//  (= posTotalAmountToPay = dispTotalAmountToPay, posTaxTotal). Pozor: calcTotals()
+//  volaná mimo formulář daň nedopočítá – proto PurchTotals.calc().
+// =====================================================================================
+public container schvaleemTotals()
+{
+    PurchTotals pt;
+    container   df;
+
+    if (!this.ParmId)
+        return [0, 0];
+
+    pt = PurchTotals::newParmTable(this, PurchUpdate::All, AccountOrder::None,
+                                   this.ParmId, '', this.Ordering);
+    pt.calc();
+
+    df = pt.displayFields([PurchTotals::posTaxTotal(),
+                           PurchTotals::posTotalAmountToPay()]);
+
+    return [conPeek(df, PurchTotals::posTotalAmountToPay()),
+            conPeek(df, PurchTotals::posTaxTotal())];
+}

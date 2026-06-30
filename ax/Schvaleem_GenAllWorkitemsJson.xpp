@@ -86,23 +86,21 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     // měnu a ParmId – jinak by převod na účetní měnu (MST) uvnitř spadl na
     // „nutné určit měnu, ze které se převádí" a zaplavil Infolog. Pro takové
     // (rozpracované) záznamy a jako pojistka při výjimce použijeme součet řádků.
-    // [Celkem k úhradě (vč. DPH), z toho DPH] v MĚNĚ DOKLADU. Z calcTotals():
-    // index 10 = dispTotalAmountToPay (vč. DPH), index 5 = dispInvoiceAmount
-    // (bez DPH) → DPH = rozdíl. Když calcTotals spadne (chybějící kurz apod.),
-    // vyčistíme Infolog a vrátíme součet řádků (bez DPH).
+    // [Celkem k úhradě (vč. DPH), DPH] v MĚNĚ DOKLADU. Počítá metoda na tabulce
+    // VendInvoiceInfoTable.schvaleemTotals() (uvnitř PurchTotals.calc() – tu app.
+    // třídu nelze volat přímo z jobu/embedded funkce). calcTotals() volaná z jobu
+    // daň nepočítá, proto NE. Fallback při chybě: součet řádků (bez DPH).
     container viiTotals(VendInvoiceInfoTable _t)
     {
         VendInvoiceInfoLine line;
-        container           ct;
-        real                toPay, net;
-        if (_t.CurrencyCode && _t.ParmId)
+        container           c;
+        if (_t.ParmId)
         {
             try
             {
-                ct    = _t.calcTotals();
-                toPay = conPeek(ct, 10);
-                net   = conPeek(ct, 5);
-                return [toPay, (toPay - net) > 0 ? (toPay - net) : 0];
+                c = _t.schvaleemTotals();
+                if (conPeek(c, 1) > 0)
+                    return c;
             }
             catch
             {
@@ -190,7 +188,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                       + fl(#I6, 'Datum dokladu',    datev(vii.DocumentDate)) + ',' + #NL
                       + fl(#I6, 'Datum splatnosti', datev(vii.FixedDueDate)) + ',' + #NL
                       + fl(#I6, 'Celkem k úhradě',      amtStr) + ',' + #NL
-                      + fl(#I6, 'z toho DPH',           numv(taxAmt)) + ',' + #NL
+                      + fl(#I6, 'DPH',                  numv(taxAmt)) + ',' + #NL
                       + fl(#I6, 'Účetní měna',          q(accCur)) + ',' + #NL
                       + fl(#I6, 'Celkem v účetní měně', numv(accAmt)) + #NL
                       + #I4 + '}';

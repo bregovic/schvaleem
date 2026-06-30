@@ -59,7 +59,7 @@ export default async function WorkitemDetail({
   const docCur = (display.currency ?? "").toUpperCase();
   const acctCur = String(regValues["Účetní měna"] ?? "").toUpperCase();
   const acctAmt = parseAmount(String(regValues["Celkem v účetní měně"] ?? ""));
-  const dph = parseAmount(String(regValues["z toho DPH"] ?? ""));
+  const dph = parseAmount(String(regValues["DPH"] ?? ""));
   const amountNum = parseAmount(display.amount);
 
   let conv: { amount: string; currency: string; note: string } | null = null;
