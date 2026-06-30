@@ -54,7 +54,7 @@ const cs = {
   swipe: {
     approve: "SCHVÁLIT",
     reject: "ZAMÍTNOUT",
-    deferDown: "↓ ODLOŽIT",
+    deferDown: "↕ ODLOŽIT",
     due: "termín",
     overdue: " (po termínu)",
     from: "od",
@@ -283,7 +283,7 @@ const en: typeof cs = {
   swipe: {
     approve: "APPROVE",
     reject: "REJECT",
-    deferDown: "↓ DEFER",
+    deferDown: "↕ DEFER",
     due: "due",
     overdue: " (overdue)",
     from: "from",

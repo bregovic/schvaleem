@@ -47,6 +47,14 @@ export default async function ZaznamyPage() {
       const d = await resolveWorkflowDisplay(w.workflow);
       const wfValues = (w.workflow.values as Record<string, unknown>) ?? {};
       const popis = String(wfValues["Popis faktury"] ?? wfValues["Popis"] ?? "").trim() || null;
+      const invoiceNo =
+        String(
+          wfValues["Číslo faktury"] ??
+            wfValues["Číslo žádanky"] ??
+            wfValues["Číslo zálohové faktury"] ??
+            wfValues["Číslo faktury dodavatele"] ??
+            "",
+        ).trim() || null;
       const amount = parseAmount(d.amount);
       const approveBlocked =
         d.rules.thresholdAction === "BLOCK" &&
@@ -96,6 +104,7 @@ export default async function ZaznamyPage() {
         createdAt: w.createdAt.toISOString(),
         subject: w.subject,
         popis,
+        invoiceNo,
         search,
         originator: w.workflow.originator,
         dueAt: w.dueAt ? w.dueAt.toISOString() : null,

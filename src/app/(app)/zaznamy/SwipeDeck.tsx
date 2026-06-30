@@ -39,7 +39,7 @@ export function SwipeDeck({
   const rotate = useTransform(x, [-220, 220], [-14, 14]);
   const okOpacity = useTransform(x, [30, 150], [0, 1]);
   const noOpacity = useTransform(x, [-150, -30], [1, 0]);
-  const deferOpacity = useTransform(y, [40, 150], [0, 1]);
+  const deferOpacity = useTransform(y, [-150, -40, 40, 150], [1, 0, 0, 1]);
 
   const item = queue[0];
   const next = queue[1];
@@ -58,7 +58,7 @@ export function SwipeDeck({
     }
     if (action === "APPROVE") await animate(x, 500, { duration: 0.25 });
     else if (action === "REJECT") await animate(x, -500, { duration: 0.25 });
-    else await animate(y, 500, { duration: 0.25 });
+    else await animate(y, y.get() < 0 ? -500 : 500, { duration: 0.25 });
     onDecision(item.id, action, comment.trim());
     setComment("");
     setNeedComment(false);
@@ -72,7 +72,8 @@ export function SwipeDeck({
     const { offset, velocity } = info;
     if (offset.x > 120 || velocity.x > 700) fly("APPROVE");
     else if (offset.x < -120 || velocity.x < -700) fly("REJECT");
-    else if (offset.y > 130) fly("DEFER");
+    else if (offset.y > 130 || offset.y < -130 || velocity.y > 700 || velocity.y < -700)
+      fly("DEFER");
     else {
       animate(x, 0, { type: "spring", stiffness: 300, damping: 25 });
       animate(y, 0, { type: "spring", stiffness: 300, damping: 25 });
@@ -117,7 +118,7 @@ export function SwipeDeck({
           <motion.div style={{ opacity: noOpacity }} className="pointer-events-none absolute right-4 top-4 rotate-[12deg] rounded-md border-2 border-red-500 px-3 py-1 text-lg font-bold text-red-600">
             {t.swipe.reject}
           </motion.div>
-          <motion.div style={{ opacity: deferOpacity }} className="pointer-events-none absolute inset-x-0 bottom-4 text-center text-base font-bold text-amber-600">
+          <motion.div style={{ opacity: deferOpacity }} className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-bold text-amber-500">
             {t.swipe.deferDown}
           </motion.div>
 

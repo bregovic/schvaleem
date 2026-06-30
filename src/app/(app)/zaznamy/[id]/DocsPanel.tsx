@@ -44,6 +44,23 @@ export function DocsPanel({
     return () => window.removeEventListener("keydown", onKey);
   }, [full]);
 
+  // Tlačítko Zpět (Android/prohlížeč) zavře nejdřív fullscreen, ne celou stránku.
+  // Při otevření přidáme stav do historie; Zpět ho sebere → zavřeme náhled.
+  useEffect(() => {
+    if (!full) return;
+    let popped = false;
+    window.history.pushState({ schvaleemPdf: true }, "");
+    const onPop = () => {
+      popped = true;
+      setFull(null);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      if (!popped) window.history.back(); // zavřeno přes ✕ → ubereme přidaný stav
+    };
+  }, [full]);
+
   return (
     <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
       <h2 className="flex items-center justify-between border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
@@ -62,38 +79,22 @@ export function DocsPanel({
       ) : (
         <ul className="divide-y divide-line">
           {docs.map((d) => (
-            <li key={d.id} className="px-4 py-3">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <span className="truncate text-sm font-medium text-fg">{d.filename}</span>
-                <div className="flex shrink-0 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setFull(d)}
-                    className="text-sm font-medium text-accent hover:underline"
-                  >
-                    ⛶ {t.detail.fullscreen}
-                  </button>
-                  <a
-                    href={`/dokument/${d.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium text-accent hover:underline"
-                  >
-                    {t.detail.open}
-                  </a>
-                </div>
-              </div>
-              {/* Náhled je klikací (otevře fullscreen); iframe nechytá kliknutí. */}
+            <li key={d.id} className="p-3">
+              {/* Malý náhled – klik otevře fullscreen (iframe nechytá kliknutí). */}
               <button
                 type="button"
                 onClick={() => setFull(d)}
                 title={t.detail.fullscreen}
-                className="block w-full cursor-zoom-in"
+                className="block w-full cursor-zoom-in text-left"
               >
+                <span className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-accent">
+                  <span aria-hidden>⛶</span>
+                  <span className="truncate text-fg">{d.filename}</span>
+                </span>
                 <iframe
-                  src={`/dokument/${d.id}#view=FitH`}
+                  src={`/dokument/${d.id}#view=FitH&toolbar=0`}
                   title={d.filename}
-                  className="pointer-events-none h-[50vh] w-full rounded-md border border-line bg-surface-2 sm:h-[70vh]"
+                  className="pointer-events-none h-40 w-full rounded-md border border-line bg-surface-2 sm:h-56"
                 />
               </button>
             </li>

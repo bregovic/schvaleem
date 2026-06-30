@@ -14,6 +14,7 @@ export type ApprovalItem = {
   createdAt: string;
   subject: string | null;
   popis: string | null;
+  invoiceNo: string | null;
   search: string; // předpočítaný haystack (lowercase) pro fulltext filtr
   originator: string | null;
   dueAt: string | null; // ISO

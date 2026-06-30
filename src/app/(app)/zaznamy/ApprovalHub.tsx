@@ -346,16 +346,22 @@ function Row({
   const amt = amountLabel(it);
   const cs = checkState(it);
   return (
-    <li className={`flex items-center gap-3 px-4 py-3 transition ${selected ? "bg-accent/10" : "hover:bg-surface-2"}`}>
-      <input type="checkbox" checked={selected} onChange={onToggle} />
+    <li className={`flex items-start gap-3 px-4 py-3 transition ${selected ? "bg-accent/10" : "hover:bg-surface-2"}`}>
+      <input
+        type="checkbox"
+        checked={selected}
+        onChange={onToggle}
+        className="mt-1 shrink-0"
+      />
       <span
         title={cs === "ok" ? "OK" : cs === "bad" ? t.records.check : ""}
-        className={`h-2.5 w-2.5 shrink-0 rounded-full ${
+        className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${
           cs === "ok" ? "bg-green-500" : cs === "bad" ? "bg-red-500" : "bg-slate-500/40"
         }`}
       />
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-medium text-fg">
+      <Link href={`/zaznamy/${it.id}`} className="block min-w-0 flex-1">
+        {/* řádek 1: dodavatel přes celou šířku */}
+        <p className="font-medium text-fg">
           {it.title}
           {it.priority === "high" && (
             <span className="ml-2 rounded-full bg-orange-500/20 px-1.5 py-0.5 text-xs text-orange-300">
@@ -373,24 +379,24 @@ function Row({
             </span>
           )}
         </p>
-        <p className="truncate text-xs text-muted">
-          {it.previewFields.length > 0 &&
-            it.previewFields.map((f) => `${f.label}: ${f.value}`).join(" · ")}
-        </p>
-        <p className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-muted">
+        {/* řádek 2: číslo faktury vlevo, částka vpravo */}
+        {(it.invoiceNo || amt) && (
+          <div className="mt-0.5 flex items-baseline justify-between gap-2">
+            <span className="truncate text-sm text-muted">{it.invoiceNo ?? ""}</span>
+            {amt && <span className="shrink-0 whitespace-nowrap font-semibold text-fg">{amt}</span>}
+          </div>
+        )}
+        {it.popis && <p className="line-clamp-1 text-xs text-muted">{it.popis}</p>}
+        <p className="mt-0.5 flex gap-x-3 truncate text-xs text-muted">
           {it.dueAt && (
-            <span className={it.overdue ? "text-red-400" : ""}>
+            <span className={`whitespace-nowrap ${it.overdue ? "text-red-400" : ""}`}>
               {t.records.dueShort}: {fmtShort(it.dueAt)}
             </span>
           )}
-          <span>
+          <span className="whitespace-nowrap">
             {t.records.created}: {fmtShort(it.createdAt)}
           </span>
         </p>
-      </div>
-      {amt && <span className="whitespace-nowrap font-semibold text-fg">{amt}</span>}
-      <Link href={`/zaznamy/${it.id}`} className="text-sm font-medium text-accent hover:underline">
-        {t.records.detail}
       </Link>
     </li>
   );
