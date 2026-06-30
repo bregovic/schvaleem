@@ -40,7 +40,6 @@ export default async function ZaznamyPage() {
   );
 
   const now = Date.now();
-  const SOON = 2 * 24 * 60 * 60 * 1000; // 2 dny
 
   const items: ApprovalItem[] = await Promise.all(
     workitems.map(async (w) => {
@@ -87,9 +86,8 @@ export default async function ZaznamyPage() {
 
       const dueMs = w.dueAt ? w.dueAt.getTime() : null;
       const overdue = dueMs !== null && dueMs < now;
-      const dueSoon = dueMs !== null && dueMs < now + SOON;
-      const priority: "high" | "normal" =
-        d.priority === "high" || overdue || dueSoon ? "high" : "normal";
+      // „Priorita" = jen po splatnosti (ne limit/kontroly/blízký termín).
+      const priority: "high" | "normal" = overdue ? "high" : "normal";
 
       return {
         id: w.id,
