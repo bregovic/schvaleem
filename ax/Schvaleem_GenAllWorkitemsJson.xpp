@@ -20,6 +20,11 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     DialogField dfFrom;
     DialogField dfPending;
 
+    // Deklarace na úrovni jobu – embedded funkce nesmí deklarovat lokální
+    // proměnnou typu třída, proto PurchTotals držíme zde a v viiTotals ho jen
+    // používáme (statická volání tříd v embedded funkcích fungují).
+    PurchTotals pt;
+
     str         dir;
     str         fileName;
     str         stamp;
@@ -92,7 +97,6 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     // (chybějící kurz apod.), vyčistíme Infolog a vrátíme součet řádků (bez DPH).
     container viiTotals(VendInvoiceInfoTable _t)
     {
-        PurchTotals         pt;
         VendInvoiceInfoLine line;
         container           df;
         if (_t.ParmId)
