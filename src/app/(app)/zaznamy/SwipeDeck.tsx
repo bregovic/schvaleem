@@ -121,8 +121,7 @@ export function SwipeDeck({
             {t.swipe.deferDown}
           </motion.div>
 
-          <div className="flex items-start justify-between gap-2">
-            <span className="text-xs text-muted">{item.org}</span>
+          <div className="flex items-start justify-end gap-2">
             <div className="flex items-center gap-1">
               {item.docCount > 0 && (
                 <span className="rounded-full bg-brand-accent/10 px-2 py-0.5 text-xs font-medium text-brand-accent">
@@ -158,6 +157,9 @@ export function SwipeDeck({
             </p>
           )}
           {amt && <p className="mt-3 text-3xl font-bold text-fg">{amt}</p>}
+          {item.popis && (
+            <p className="mt-1 line-clamp-2 text-sm text-muted">{item.popis}</p>
+          )}
 
           {/* zvolená preview pole */}
           {item.previewFields.length > 0 && (

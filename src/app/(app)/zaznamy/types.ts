@@ -13,6 +13,8 @@ export type ApprovalItem = {
   dataAreaName: string | null;
   createdAt: string;
   subject: string | null;
+  popis: string | null;
+  search: string; // předpočítaný haystack (lowercase) pro fulltext filtr
   originator: string | null;
   dueAt: string | null; // ISO
   overdue: boolean;

@@ -45,6 +45,8 @@ export default async function ZaznamyPage() {
   const items: ApprovalItem[] = await Promise.all(
     workitems.map(async (w) => {
       const d = await resolveWorkflowDisplay(w.workflow);
+      const wfValues = (w.workflow.values as Record<string, unknown>) ?? {};
+      const popis = String(wfValues["Popis faktury"] ?? wfValues["Popis"] ?? "").trim() || null;
       const amount = parseAmount(d.amount);
       const approveBlocked =
         d.rules.thresholdAction === "BLOCK" &&
@@ -59,6 +61,21 @@ export default async function ZaznamyPage() {
       // Titulek: konfigurované TITLE pole > popis dokladu (label) > výchozí.
       // Subject (instrukce "Proveďte schválení…") se jako titulek nepoužívá.
       const title = d.hasTitle ? d.title : w.workflow.label || d.title;
+
+      // Haystack pro hledání: titulek, popis, originator, typ + všechny hodnoty
+      // (pokryje dodavatele, IČO, DIČ, č. faktury, variabilní symbol, popis…).
+      const search = [
+        title,
+        popis,
+        w.workflow.originator,
+        tn,
+        ...Object.values(wfValues).map((v) =>
+          v == null ? "" : typeof v === "object" ? JSON.stringify(v) : String(v),
+        ),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
       const dueMs = w.dueAt ? w.dueAt.getTime() : null;
       const overdue = dueMs !== null && dueMs < now;
@@ -78,6 +95,8 @@ export default async function ZaznamyPage() {
         dataAreaName: areaName.get(w.dataAreaCode) ?? null,
         createdAt: w.createdAt.toISOString(),
         subject: w.subject,
+        popis,
+        search,
         originator: w.workflow.originator,
         dueAt: w.dueAt ? w.dueAt.toISOString() : null,
         overdue,

@@ -3,27 +3,17 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { getDict } from "@/lib/i18n";
-import { resolveWorkflowDisplay } from "@/lib/config";
-import { runRegistryCheck } from "@/lib/registries";
+import { resolveWorkflowDisplay, parseAmount } from "@/lib/config";
+import { runRegistryCheck, convertToCzk } from "@/lib/registries";
 import { formatAmount } from "../types";
 import { StatusBadge } from "../../StatusBadge";
 import { DecideForm } from "./DecideForm";
+import { DocsPanel } from "./DocsPanel";
 import { EscClose } from "./EscClose";
-import { Instructions } from "./Instructions";
 
 function fmt(d: Date | null) {
   if (!d) return "–";
   return new Intl.DateTimeFormat("cs-CZ", { dateStyle: "medium", timeStyle: "short" }).format(d);
-}
-
-// ERP časy (dueAt apod.) ukládáme jako UTC wall-clock → zobrazit v UTC beze změny.
-function fmtErp(d: Date | null) {
-  if (!d) return "–";
-  return new Intl.DateTimeFormat("cs-CZ", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "UTC",
-  }).format(d);
 }
 
 export default async function WorkitemDetail({
@@ -63,6 +53,33 @@ export default async function WorkitemDetail({
     })),
   );
 
+  // Přepočet do účetní měny (u českých firem CZK). Primárně z dokladu – job
+  // exportuje „Celkem v účetní měně" spočtené kurzem faktury (nebo nejbližším
+  // kurzem z lístku). Když pole chybí (starší import), orientačně kurzem ČNB.
+  const docCur = (display.currency ?? "").toUpperCase();
+  const acctCur = String(regValues["Účetní měna"] ?? "").toUpperCase();
+  const acctAmt = parseAmount(String(regValues["Celkem v účetní měně"] ?? ""));
+  const amountNum = parseAmount(display.amount);
+
+  let conv: { amount: string; currency: string; note: string } | null = null;
+  if (acctAmt !== null && acctCur && docCur && acctCur !== docCur) {
+    conv = { amount: acctAmt.toFixed(2), currency: acctCur, note: t.detail.fxDoc };
+  } else if (amountNum !== null && docCur && docCur !== "CZK" && acctCur !== docCur) {
+    const fx = await convertToCzk(
+      amountNum,
+      display.currency ?? "",
+      String(regValues["Datum dokladu"] ?? regValues["Datum faktury"] ?? ""),
+    );
+    if (fx) conv = { amount: fx.czk.toFixed(2), currency: "CZK", note: `${t.detail.fxNote} ${fx.date}` };
+  }
+
+  // Název společnosti z číselníku (jako v přehledu) + popis dokladu do hlavičky.
+  const dataArea = await prisma.dataArea.findUnique({
+    where: { code: workitem.dataAreaCode },
+  });
+  const companyName = dataArea?.name ?? null;
+  const popis = String(regValues["Popis faktury"] ?? regValues["Popis"] ?? "").trim();
+
   // Dokumenty k náhledu. V testovacím režimu (env SCHVALEEM_DEMO_PDF=1) se při
   // chybějícím skenu zobrazí náhodné PDF ze systému – v ostré verzi NIKDY.
   let viewDocs = workitem.workflow.documents.map((d) => ({ id: d.id, filename: d.filename }));
@@ -81,7 +98,10 @@ export default async function WorkitemDetail({
       }
     }
   }
-  const hasDocs = viewDocs.length > 0;
+  // Panel příloh (a nahrávání) vidí řešitel workitemu nebo admin – tedy každý,
+  // kdo smí detail otevřít. Zobrazíme ho i bez příloh, ať je kam nahrávat.
+  const canUpload = isOwner || user?.role === "ADMIN";
+  const showDocs = viewDocs.length > 0 || canUpload;
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -95,8 +115,7 @@ export default async function WorkitemDetail({
         <StatusBadge status={workitem.status} t={t} />
       </div>
       <p className="mb-6 text-sm text-muted">
-        {workitem.workflow.organization?.name ?? t.detail.unassigned} ·{" "}
-        {workitem.workflow.documentType} · {workitem.dataAreaCode}
+        {companyName ? `${companyName} (${workitem.dataAreaCode})` : workitem.dataAreaCode}
         {display.amount && (
           <>
             {" · "}
@@ -104,34 +123,25 @@ export default async function WorkitemDetail({
               {formatAmount(display.amount)}
               {display.currency ? ` ${display.currency}` : ""}
             </span>
+            {conv && (
+              <span className="text-muted">
+                {" ≈ "}
+                <span className="font-semibold text-fg">
+                  {formatAmount(conv.amount)} {conv.currency}
+                </span>
+                {` (${conv.note})`}
+              </span>
+            )}
           </>
         )}
       </p>
 
-      <div className={hasDocs ? "grid gap-6 lg:grid-cols-2 lg:items-start" : "max-w-3xl"}>
+      <div className={showDocs ? "grid gap-6 lg:grid-cols-2 lg:items-start" : "max-w-3xl"}>
         <div className="space-y-6">
-          {(workitem.subject ||
-            workitem.description ||
-            workitem.dueAt ||
-            workitem.workflow.originator ||
-            workitem.workflow.label) && (
+          {popis && (
             <section className="rounded-lg bg-surface p-4 text-sm ring-1 ring-line">
-              <h2 className="mb-2 text-sm font-semibold text-muted">{t.detail.assignment}</h2>
-              {workitem.workflow.label && (
-                <p className="text-fg">{t.detail.docLabel}: {workitem.workflow.label}</p>
-              )}
-              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-muted">
-                {workitem.dueAt && <span>{t.detail.due}: {fmtErp(workitem.dueAt)}</span>}
-                {workitem.workflow.originator && (
-                  <span>{t.detail.originator}: {workitem.workflow.originator}</span>
-                )}
-                {workitem.workflow.documentTypeName && (
-                  <span>{t.detail.type}: {workitem.workflow.documentTypeName}</span>
-                )}
-              </div>
-              <div className="mt-3">
-                <Instructions t={t} subject={workitem.subject} description={workitem.description} />
-              </div>
+              <h2 className="mb-2 text-sm font-semibold text-muted">{t.detail.docDescription}</h2>
+              <p className="whitespace-pre-wrap text-fg">{popis}</p>
             </section>
           )}
 
@@ -189,7 +199,16 @@ export default async function WorkitemDetail({
                   {visibleFields.map((f) => (
                     <tr key={f.key}>
                       <td className="w-1/3 px-4 py-2.5 font-medium text-muted">{f.label}</td>
-                      <td className="px-4 py-2.5 text-fg">{f.value || "–"}</td>
+                      <td className="px-4 py-2.5 text-fg">
+                        {f.role === "AMOUNT" ? (
+                          <span className="font-semibold">
+                            {formatAmount(f.value) ?? "–"}
+                            {display.currency ? ` ${display.currency}` : ""}
+                          </span>
+                        ) : (
+                          f.value || "–"
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -219,40 +238,15 @@ export default async function WorkitemDetail({
           )}
         </div>
 
-        {hasDocs && (
+        {showDocs && (
           <div className="lg:sticky lg:top-20">
-            <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
-              <h2 className="flex items-center justify-between border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
-                <span>{t.detail.documents} ({viewDocs.length})</span>
-                {demoDocs && (
-                  <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-normal text-amber-300">
-                    {t.detail.demoNote}
-                  </span>
-                )}
-              </h2>
-              <ul className="divide-y divide-line">
-                {viewDocs.map((d) => (
-                  <li key={d.id} className="px-4 py-3">
-                    <div className="mb-2 flex items-center justify-between">
-                      <span className="text-sm font-medium text-fg">{d.filename}</span>
-                      <a
-                        href={`/dokument/${d.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-medium text-accent hover:underline"
-                      >
-                        {t.detail.open}
-                      </a>
-                    </div>
-                    <iframe
-                      src={`/dokument/${d.id}#view=FitH`}
-                      title={d.filename}
-                      className="h-[60vh] w-full rounded-md border border-line bg-surface-2 sm:h-[78vh]"
-                    />
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <DocsPanel
+              workitemId={workitem.id}
+              docs={viewDocs}
+              demoNote={demoDocs}
+              canUpload={canUpload}
+              t={t}
+            />
           </div>
         )}
       </div>

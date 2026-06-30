@@ -60,6 +60,7 @@ export function ApprovalHub({ items, t }: { items: ApprovalItem[]; t: Dict }) {
   const [fType, setFType] = useState<string | null>(null);
   const [fCompany, setFCompany] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>("default");
+  const [query, setQuery] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [queue, setQueue] = useState<ApprovalItem[]>(items);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -88,13 +89,15 @@ export function ApprovalHub({ items, t }: { items: ApprovalItem[]; t: Dict }) {
     } catch {}
   }
 
-  const filtered = useMemo(
-    () =>
-      items.filter(
-        (i) => (!fType || i.documentType === fType) && (!fCompany || i.dataArea === fCompany),
-      ),
-    [items, fType, fCompany],
-  );
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return items.filter(
+      (i) =>
+        (!fType || i.documentType === fType) &&
+        (!fCompany || i.dataArea === fCompany) &&
+        (!q || i.search.includes(q)),
+    );
+  }, [items, fType, fCompany, query]);
   const ordered = useMemo(() => sortItems(filtered, sortBy), [filtered, sortBy]);
 
   // resync fronty po změně dat / filtru / řazení
@@ -199,6 +202,27 @@ export function ApprovalHub({ items, t }: { items: ApprovalItem[]; t: Dict }) {
         </div>
       </div>
 
+      <div className="relative mb-3">
+        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">
+          <IconSearch />
+        </span>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t.records.search}
+          className="w-full rounded-full border border-line bg-surface-2 py-2 pl-9 pr-9 text-sm text-fg outline-none focus:border-accent"
+        />
+        {query && (
+          <button
+            onClick={() => setQuery("")}
+            aria-label={t.records.clearFilter}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-fg"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
       {msg && <p className="mb-3 rounded-md bg-red-500/15 px-3 py-2 text-sm text-red-300">{msg}</p>}
 
       {mode === "swipe" ? (
@@ -225,6 +249,11 @@ export function ApprovalHub({ items, t }: { items: ApprovalItem[]; t: Dict }) {
           </div>
 
           <div className="flex flex-col gap-4 pb-28">
+            {companyGroups.length === 0 && (
+              <p className="rounded-lg bg-surface p-8 text-center text-sm text-muted ring-1 ring-line">
+                {t.records.noResults}
+              </p>
+            )}
             {companyGroups.map(([code, info]) => {
               const groupItems = ordered.filter((i) => i.dataArea === code);
               const typeGroups = agg(groupItems, (i) => [i.documentType, i.documentTypeName]);
@@ -454,6 +483,15 @@ function FilterDialog({
         </div>
       </div>
     </div>
+  );
+}
+
+function IconSearch() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="11" cy="11" r="7" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
   );
 }
 

@@ -4,14 +4,17 @@ import { Prisma, type CheckType } from "@/generated/prisma/client";
 
 export type RegistryResult = { ok: boolean | null; message: string };
 
-const TTL_MS: Record<"ARES" | "VAT", number> = {
+type CacheKind = "ARES" | "VAT" | "FX";
+
+const TTL_MS: Record<CacheKind, number> = {
   ARES: 7 * 24 * 3600_000, // 7 dní
   VAT: 24 * 3600_000, // 1 den (registr se aktualizuje denně)
+  FX: 30 * 24 * 3600_000, // kurz daného dne je fixní → drž dlouho
 };
 
 // Cache přes RegistryCache (kind+key). Při chybě sítě vrátí starou cache, pokud je.
 async function cached<T>(
-  kind: "ARES" | "VAT",
+  kind: CacheKind,
   key: string,
   fetcher: () => Promise<{ ok: boolean | null; data: T }>,
 ): Promise<{ ok: boolean | null; data: T } | null> {
@@ -116,6 +119,61 @@ function accountPublished(invoiceAcc: string, accounts: VatAccount[]): boolean {
       ac.kodBanky.replace(/\D/g, "") === bank.replace(/\D/g, "") &&
       normNum(ac.predcisli) === normNum(pref),
   );
+}
+
+// --- Přepočet na CZK kurzem ČNB k datu dokladu ------------------------------
+// Denní kurzovní lístek ČNB (text, oddělený "|"): hlavička + řádky
+// Country|Currency|Amount|Code|Rate. Rate je v CZK za "Amount" jednotek měny.
+type FxRates = Record<string, { rate: number; amount: number }>;
+export type FxConversion = { czk: number; perUnit: number; date: string };
+
+// "DD.MM.YYYY" → stejný formát pro ČNB; cokoliv jiného → dnešní datum.
+function cnbDateParam(dateStr: string): string {
+  const m = (dateStr || "").trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (m) return `${m[1]}.${m[2]}.${m[3]}`;
+  const d = new Date();
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()}`;
+}
+
+async function fetchCnb(dateParam: string): Promise<{ ok: boolean | null; data: FxRates }> {
+  const r = await fetch(
+    "https://www.cnb.cz/en/financial-markets/foreign-exchange-market/" +
+      "central-bank-exchange-rate-fixing/central-bank-exchange-rate-fixing/daily.txt" +
+      `?date=${dateParam}`,
+  );
+  if (!r.ok) throw new Error(`CNB ${r.status}`);
+  const txt = await r.text();
+  const out: FxRates = {};
+  // první dva řádky = datum a hlavička; pak měny
+  for (const line of txt.trim().split(/\r?\n/).slice(2)) {
+    const c = line.split("|");
+    if (c.length < 5) continue;
+    const amount = Number(c[2].replace(",", "."));
+    const code = c[3].trim().toUpperCase();
+    const rate = Number(c[4].replace(",", "."));
+    if (code && Number.isFinite(amount) && amount > 0 && Number.isFinite(rate)) {
+      out[code] = { rate, amount };
+    }
+  }
+  return { ok: null, data: out };
+}
+
+// Přepočte částku v cizí měně na CZK kurzem ČNB k datu dokladu. CZK/prázdná → null.
+export async function convertToCzk(
+  amount: number,
+  currency: string,
+  docDate: string,
+): Promise<FxConversion | null> {
+  const cur = (currency || "").trim().toUpperCase();
+  if (!cur || cur === "CZK" || !Number.isFinite(amount)) return null;
+  const dateParam = cnbDateParam(docDate);
+  const res = await cached<FxRates>("FX", dateParam, () => fetchCnb(dateParam));
+  if (!res) return null;
+  const row = res.data[cur];
+  if (!row || !row.amount) return null;
+  const perUnit = row.rate / row.amount;
+  return { czk: amount * perUnit, perUnit, date: dateParam };
 }
 
 // --- Vyhodnocení jedné registrové kontroly ----------------------------------

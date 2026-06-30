@@ -101,7 +101,9 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
             }
             catch
             {
-                // fallback níže (chybějící kurz apod.)
+                // calcTotals spadl (např. chybějící kurz). Vyčistíme Infolog,
+                // ať nepřeteče, a spadneme na součet řádků níže.
+                infolog.clear();
             }
         }
         select sum(LineAmount) from line
@@ -110,22 +112,164 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         return line.LineAmount;
     }
 
+    // Sestaví [valuesJson, docTypeName, docLabel] pro JEDEN doklad. Buffery jsou
+    // LOKÁLNÍ (čerstvé při každém volání) – jen tak changeCompany spolehlivě
+    // přepne firmu. Při SDÍLENÉM bufferu si AX zapamatuje firmu prvního selectu
+    // a další changeCompany ignoruje → plnila by se jen jedna firma na typ dokladu.
+    container buildDocValues(
+        int        _tid,
+        RefRecId   _recId,
+        RefRecId   _ctxRecId,
+        DataAreaId _company,
+        boolean    _exact,
+        str        _defaultLabel)
+    {
+        VendInvoiceInfoTable      vii;
+        CzVendAdvanceInvoiceTable adv;
+        TrvRequisitionTable       trv;
+        VendTable                 vt;
+        VendBankAccount           vba;
+        Name         empName;
+        str          amtStr;
+        real         docAmt;
+        real         accAmt;
+        CurrencyCode accCur;
+        str   valuesJson  = '{' + #NL + #I4 + '}';
+        str   docTypeName = tableId2name(_tid);
+        str   docLabel    = _defaultLabel ? _defaultLabel : docTypeName;
+
+        // Doklad je v per-company tabulce → načti ho v JEHO společnosti.
+        changeCompany(_company)
+        {
+            try
+            {
+                // Účetní měna společnosti dokladu z parametru Ledger.AccountingCurrency
+                // (některé společnosti mají jinou účetní měnu než CZK).
+                accCur = Ledger::find(
+                             Ledger::primaryLedger(CompanyInfo::findDataArea(curext()).RecId))
+                         .AccountingCurrency;
+
+                // -------- Přijatá faktura --------
+                if (_tid == tableNum(VendInvoiceInfoTable))
+                {
+                    select firstOnly vii where vii.RecId == _recId;
+                    if (!vii.RecId)
+                        select firstOnly vii where vii.RecId == _ctxRecId;
+                    vt = VendTable::find(vii.InvoiceAccount);
+                    select firstOnly vba
+                        where vba.VendAccount == vt.AccountNum
+                           && vba.AccountID  == vt.BankAccount;
+
+                    // Částku počítáme zvlášť a chráněně – aby případný pád
+                    // calcTotals (přesná částka vč. DPH) nesmazal ostatní údaje
+                    // faktury (dodavatel, IČO, účet…).
+                    try
+                    {
+                        docAmt = viiAmount(vii, _exact);
+                    }
+                    catch
+                    {
+                        docAmt = viiAmount(vii, false);
+                    }
+                    amtStr = numv(docAmt);
+                    // Částka v účetní měně: primárně kurzem dokladu (vii.ExchRate),
+                    // jinak nejbližším kurzem z kurzovního lístku k datu dokladu.
+                    accAmt = Currency::mstAmount(
+                                 docAmt, vii.CurrencyCode,
+                                 vii.DocumentDate ? vii.DocumentDate : vii.TransDate,
+                                 UnknownNoYes::Unknown, vii.ExchRate, vii.ExchRateSecondary);
+
+                    docTypeName = 'Přijatá faktura';
+                    docLabel    = strFmt("Faktura %1 – %2", vii.Num, vt.name());
+                    valuesJson =
+                        '{' + #NL
+                      + fl(#I6, 'Číslo faktury',    q(vii.Num)) + ',' + #NL
+                      + fl(#I6, 'Dodavatel',        q(vt.name())) + ',' + #NL
+                      + fl(#I6, 'IČO',              q(vt.RegNum_W)) + ',' + #NL
+                      + fl(#I6, 'DIČ',              q(vt.VATNum)) + ',' + #NL
+                      + fl(#I6, 'Popis faktury',    q(vii.Description)) + ',' + #NL
+                      + fl(#I6, 'Bankovní účet',    q(bankAcc(vba))) + ',' + #NL
+                      + fl(#I6, 'IBAN',             q(vba.BankIBAN)) + ',' + #NL
+                      + fl(#I6, 'Měna',             q(vii.CurrencyCode)) + ',' + #NL
+                      + fl(#I6, 'Datum dokladu',    datev(vii.DocumentDate)) + ',' + #NL
+                      + fl(#I6, 'Datum splatnosti', datev(vii.FixedDueDate)) + ',' + #NL
+                      + fl(#I6, 'Celkem k úhradě',      amtStr) + ',' + #NL
+                      + fl(#I6, 'Účetní měna',          q(accCur)) + ',' + #NL
+                      + fl(#I6, 'Celkem v účetní měně', numv(accAmt)) + #NL
+                      + #I4 + '}';
+                }
+                // -------- Zálohová faktura --------
+                else if (_tid == tableNum(CzVendAdvanceInvoiceTable))
+                {
+                    select firstOnly adv where adv.RecId == _recId;
+                    if (!adv.RecId)
+                        select firstOnly adv where adv.RecId == _ctxRecId;
+                    vt = VendTable::find(adv.InvoiceAccount);
+                    select firstOnly vba
+                        where vba.VendAccount == vt.AccountNum
+                           && vba.AccountID  == adv.BankAccount;
+
+                    docTypeName = 'Zálohová faktura';
+                    docLabel    = strFmt("Zálohová faktura %1 – %2", adv.InvoiceId, vt.name());
+                    valuesJson =
+                        '{' + #NL
+                      + fl(#I6, 'Číslo zálohové faktury', q(adv.InvoiceId)) + ',' + #NL
+                      + fl(#I6, 'Číslo faktury dodavatele', q(adv.VendInvoiceId)) + ',' + #NL
+                      + fl(#I6, 'Dodavatel',        q(vt.name())) + ',' + #NL
+                      + fl(#I6, 'IČO',              q(vt.RegNum_W)) + ',' + #NL
+                      + fl(#I6, 'DIČ',              q(vt.VATNum)) + ',' + #NL
+                      + fl(#I6, 'Popis',            q(adv.InvoiceDescription)) + ',' + #NL
+                      + fl(#I6, 'Bankovní účet',    q(bankAcc(vba))) + ',' + #NL
+                      + fl(#I6, 'IBAN',             q(vba.BankIBAN)) + ',' + #NL
+                      + fl(#I6, 'Měna',             q(adv.CurrencyCode)) + ',' + #NL
+                      + fl(#I6, 'Datum faktury',    datev(adv.InvoiceDate)) + ',' + #NL
+                      + fl(#I6, 'Datum splatnosti', datev(adv.DueDate)) + ',' + #NL
+                      + fl(#I6, 'Celkem k úhradě',      numv(adv.InvoiceAmount)) + ',' + #NL
+                      + fl(#I6, 'Účetní měna',          q(accCur)) + ',' + #NL
+                      + fl(#I6, 'Celkem v účetní měně', numv(adv.amountMST(adv.InvoiceAmount))) + #NL
+                      + #I4 + '}';
+                }
+                // -------- Cestovní žádanka --------
+                else if (_tid == tableNum(TrvRequisitionTable))
+                {
+                    select firstOnly trv where trv.RecId == _recId;
+                    if (!trv.RecId)
+                        select firstOnly trv where trv.RecId == _ctxRecId;
+                    empName = HcmWorker::worker2Name(trv.CreatingWorker);
+
+                    docTypeName = 'Cestovní žádanka';
+                    docLabel    = strFmt("Cestovní žádanka %1 – %2", trv.RequisitionNumber, empName);
+                    valuesJson =
+                        '{' + #NL
+                      + fl(#I6, 'Číslo žádanky',  q(trv.RequisitionNumber)) + ',' + #NL
+                      + fl(#I6, 'Žadatel',        q(empName)) + ',' + #NL
+                      + fl(#I6, 'Účel cesty',     q(trv.TravelPurpose)) + ',' + #NL
+                      + fl(#I6, 'Popis',          q(trv.Description)) + ',' + #NL
+                      + fl(#I6, 'Destinace',      q(trv.DestinationCity)) + ',' + #NL
+                      + fl(#I6, 'Cesta od',       datev(trv.StartDate)) + ',' + #NL
+                      + fl(#I6, 'Cesta do',       datev(trv.EndDate)) + ',' + #NL
+                      + fl(#I6, 'Odhad nákladů',  q(trv.totalEstimateSystemCurrencyWithCurrency())) + #NL
+                      + #I4 + '}';
+                }
+            }
+            catch
+            {
+                // jeden vadný doklad nezhodí celý běh – necháme prázdné values
+                valuesJson = '{' + #NL + #I4 + '}';
+            }
+        }
+        return [valuesJson, docTypeName, docLabel];
+    }
+
     // ---- Zpracování všech workitemů (WorkflowWorkItemTable je GLOBÁLNÍ) -------
     void processWorkitems()
     {
         WorkflowWorkItemTable        wfWorkItem;
         WorkflowTrackingStatusTable  wfStatus;
-        VendInvoiceInfoTable         vii;
-        CzVendAdvanceInvoiceTable    adv;
-        TrvRequisitionTable          trv;
-        VendTable                    vt;
-        VendBankAccount              vba;
         str   valuesJson;
         str   obj;
         str   docLabel;
         str   docTypeName;
-        Name      empName;
-        str       amtStr;
         int       tid;
         RefRecId  recId;
         DataAreaId company;
@@ -160,113 +304,11 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
              && tid != tableNum(TrvRequisitionTable))
                 continue;
 
-            valuesJson  = '{' + #NL + #I4 + '}';
-            docTypeName = tableId2name(tid);
-            docLabel    = wfStatus.Document ? wfStatus.Document : docTypeName;
-
-            // Doklad je v per-company tabulce → načti ho v JEHO společnosti.
-            changeCompany(company)
-            {
-            try
-            {
-                // -------- Přijatá faktura --------
-                if (tid == tableNum(VendInvoiceInfoTable))
-                {
-                    select firstOnly vii where vii.RecId == recId;
-                    if (!vii.RecId)
-                        select firstOnly vii where vii.RecId == wfStatus.ContextRecId;
-                    vt = VendTable::find(vii.InvoiceAccount);
-                    select firstOnly vba
-                        where vba.VendAccount == vt.AccountNum
-                           && vba.AccountID  == vt.BankAccount;
-
-                    // Částku počítáme zvlášť a chráněně – aby případný pád
-                    // calcTotals (přesná částka vč. DPH) nesmazal ostatní údaje
-                    // faktury (dodavatel, IČO, účet…).
-                    try
-                    {
-                        amtStr = numv(viiAmount(vii, exactAmount));
-                    }
-                    catch
-                    {
-                        amtStr = numv(viiAmount(vii, false));
-                    }
-
-                    docTypeName = 'Přijatá faktura';
-                    docLabel    = strFmt("Faktura %1 – %2", vii.Num, vt.name());
-                    valuesJson =
-                        '{' + #NL
-                      + fl(#I6, 'Číslo faktury',    q(vii.Num)) + ',' + #NL
-                      + fl(#I6, 'Dodavatel',        q(vt.name())) + ',' + #NL
-                      + fl(#I6, 'IČO',              q(vt.RegNum_W)) + ',' + #NL
-                      + fl(#I6, 'DIČ',              q(vt.VATNum)) + ',' + #NL
-                      + fl(#I6, 'Popis faktury',    q(vii.Description)) + ',' + #NL
-                      + fl(#I6, 'Bankovní účet',    q(bankAcc(vba))) + ',' + #NL
-                      + fl(#I6, 'IBAN',             q(vba.BankIBAN)) + ',' + #NL
-                      + fl(#I6, 'Měna',             q(vii.CurrencyCode)) + ',' + #NL
-                      + fl(#I6, 'Datum dokladu',    datev(vii.DocumentDate)) + ',' + #NL
-                      + fl(#I6, 'Datum splatnosti', datev(vii.FixedDueDate)) + ',' + #NL
-                      + fl(#I6, 'Celkem k úhradě',  amtStr) + #NL
-                      + #I4 + '}';
-                }
-                // -------- Zálohová faktura --------
-                else if (tid == tableNum(CzVendAdvanceInvoiceTable))
-                {
-                    select firstOnly adv where adv.RecId == recId;
-                    if (!adv.RecId)
-                        select firstOnly adv where adv.RecId == wfStatus.ContextRecId;
-                    vt = VendTable::find(adv.InvoiceAccount);
-                    select firstOnly vba
-                        where vba.VendAccount == vt.AccountNum
-                           && vba.AccountID  == adv.BankAccount;
-
-                    docTypeName = 'Zálohová faktura';
-                    docLabel    = strFmt("Zálohová faktura %1 – %2", adv.InvoiceId, vt.name());
-                    valuesJson =
-                        '{' + #NL
-                      + fl(#I6, 'Číslo zálohové faktury', q(adv.InvoiceId)) + ',' + #NL
-                      + fl(#I6, 'Číslo faktury dodavatele', q(adv.VendInvoiceId)) + ',' + #NL
-                      + fl(#I6, 'Dodavatel',        q(vt.name())) + ',' + #NL
-                      + fl(#I6, 'IČO',              q(vt.RegNum_W)) + ',' + #NL
-                      + fl(#I6, 'DIČ',              q(vt.VATNum)) + ',' + #NL
-                      + fl(#I6, 'Popis',            q(adv.InvoiceDescription)) + ',' + #NL
-                      + fl(#I6, 'Bankovní účet',    q(bankAcc(vba))) + ',' + #NL
-                      + fl(#I6, 'IBAN',             q(vba.BankIBAN)) + ',' + #NL
-                      + fl(#I6, 'Měna',             q(adv.CurrencyCode)) + ',' + #NL
-                      + fl(#I6, 'Datum faktury',    datev(adv.InvoiceDate)) + ',' + #NL
-                      + fl(#I6, 'Datum splatnosti', datev(adv.DueDate)) + ',' + #NL
-                      + fl(#I6, 'Celkem k úhradě',  numv(adv.InvoiceAmount)) + #NL
-                      + #I4 + '}';
-                }
-                // -------- Cestovní žádanka --------
-                else if (tid == tableNum(TrvRequisitionTable))
-                {
-                    select firstOnly trv where trv.RecId == recId;
-                    if (!trv.RecId)
-                        select firstOnly trv where trv.RecId == wfStatus.ContextRecId;
-                    empName = HcmWorker::worker2Name(trv.CreatingWorker);
-
-                    docTypeName = 'Cestovní žádanka';
-                    docLabel    = strFmt("Cestovní žádanka %1 – %2", trv.RequisitionNumber, empName);
-                    valuesJson =
-                        '{' + #NL
-                      + fl(#I6, 'Číslo žádanky',  q(trv.RequisitionNumber)) + ',' + #NL
-                      + fl(#I6, 'Žadatel',        q(empName)) + ',' + #NL
-                      + fl(#I6, 'Účel cesty',     q(trv.TravelPurpose)) + ',' + #NL
-                      + fl(#I6, 'Popis',          q(trv.Description)) + ',' + #NL
-                      + fl(#I6, 'Destinace',      q(trv.DestinationCity)) + ',' + #NL
-                      + fl(#I6, 'Cesta od',       datev(trv.StartDate)) + ',' + #NL
-                      + fl(#I6, 'Cesta do',       datev(trv.EndDate)) + ',' + #NL
-                      + fl(#I6, 'Odhad nákladů',  q(trv.totalEstimateSystemCurrencyWithCurrency())) + #NL
-                      + #I4 + '}';
-                }
-            }
-            catch
-            {
-                // jeden vadný doklad nezhodí celý běh – necháme prázdné values
-                valuesJson = '{' + #NL + #I4 + '}';
-            }
-            } // konec changeCompany
+            // Doklad leží v per-company tabulce → načteme ho v jeho společnosti.
+            // Vše ve funkci s ČERSTVÝMI buffery, jinak changeCompany přepne firmu
+            // jen u prvního dokladu daného typu (viz buildDocValues).
+            [valuesJson, docTypeName, docLabel] =
+                buildDocValues(tid, recId, wfStatus.ContextRecId, company, exactAmount, wfStatus.Document);
 
             obj =
                 #I2 + '{' + #NL
