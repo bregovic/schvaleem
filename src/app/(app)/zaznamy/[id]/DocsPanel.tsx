@@ -34,32 +34,26 @@ export function DocsPanel({
     }
   }, [state.ok, router]);
 
-  // Escape zavře fullscreen náhled.
+  // Fullscreen přidá stav do historie; zavření (✕/Escape/Zpět) jde VŽDY přes
+  // history.back() → popstate náhled zavře a přidaný stav se uklidí. Cleanup
+  // nikdy nevolá back() (jinak by při navigaci pryč „odskočil" na předchozí
+  // stránku). Případný zbylý stav posbírá prohlížeč přirozeně.
   useEffect(() => {
     if (!full) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setFull(null);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [full]);
-
-  // Tlačítko Zpět (Android/prohlížeč) zavře nejdřív fullscreen, ne celou stránku.
-  // Při otevření přidáme stav do historie; Zpět ho sebere → zavřeme náhled.
-  useEffect(() => {
-    if (!full) return;
-    let popped = false;
     window.history.pushState({ schvaleemPdf: true }, "");
-    const onPop = () => {
-      popped = true;
-      setFull(null);
+    const onPop = () => setFull(null);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") window.history.back();
     };
     window.addEventListener("popstate", onPop);
+    window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("popstate", onPop);
-      if (!popped) window.history.back(); // zavřeno přes ✕ → ubereme přidaný stav
+      window.removeEventListener("keydown", onKey);
     };
   }, [full]);
+
+  const closeFull = () => window.history.back();
 
   return (
     <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
@@ -132,7 +126,7 @@ export function DocsPanel({
       {full && (
         <div
           className="fixed inset-0 z-50 flex flex-col bg-black/85 p-3 sm:p-6"
-          onClick={() => setFull(null)}
+          onClick={closeFull}
         >
           <div
             className="mb-2 flex items-center justify-between gap-3 text-white"
@@ -150,7 +144,7 @@ export function DocsPanel({
               </a>
               <button
                 type="button"
-                onClick={() => setFull(null)}
+                onClick={closeFull}
                 className="text-sm font-medium hover:underline"
               >
                 ✕ {t.detail.close}

@@ -100,10 +100,12 @@ export function ApprovalHub({ items, t }: { items: ApprovalItem[]; t: Dict }) {
   }, [items, fType, fCompany, query]);
   const ordered = useMemo(() => sortItems(filtered, sortBy), [filtered, sortBy]);
 
-  // resync fronty po změně dat / filtru / řazení
+  // resync fronty po změně dat / filtru / řazení. Swipe = "zpracovat teď":
+  // odložené (mají příznak) do fronty nepatří, jinak by se po refreshi vracely
+  // dokola. V seznamu zůstávají viditelné s odznakem „odloženo".
   const orderedKey = ordered.map((i) => i.id).join(",");
   useEffect(() => {
-    setQueue(ordered);
+    setQueue(ordered.filter((i) => !i.deferred));
     setSelected(new Set());
   }, [orderedKey]); // eslint-disable-line react-hooks/exhaustive-deps
 

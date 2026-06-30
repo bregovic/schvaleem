@@ -105,7 +105,6 @@ export function SwipeDeck({
         <motion.div
           key={item.id}
           drag
-          dragSnapToOrigin
           style={{ x, y, rotate }}
           onDragEnd={handleDragEnd}
           whileTap={{ cursor: "grabbing" }}
@@ -177,9 +176,9 @@ export function SwipeDeck({
           {/* automatické kontroly */}
           {item.checks.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {item.checks.map((c) => (
+              {item.checks.map((c, i) => (
                 <span
-                  key={c.label}
+                  key={`${c.label}-${i}`}
                   title={c.message}
                   className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                     c.ok === true

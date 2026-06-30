@@ -145,12 +145,41 @@ export default async function WorkitemDetail({
             </section>
           )}
 
+          <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
+            <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
+              {t.detail.docData}
+            </h2>
+            {visibleFields.length === 0 ? (
+              <p className="px-4 py-3 text-sm text-muted">{t.detail.noData}</p>
+            ) : (
+              <table className="w-full text-sm">
+                <tbody className="divide-y divide-line">
+                  {visibleFields.map((f) => (
+                    <tr key={f.key}>
+                      <td className="w-1/3 px-4 py-2.5 font-medium text-muted">{f.label}</td>
+                      <td className="px-4 py-2.5 text-fg">
+                        {f.role === "AMOUNT" ? (
+                          <span className="font-semibold">
+                            {formatAmount(f.value) ?? "–"}
+                            {display.currency ? ` ${display.currency}` : ""}
+                          </span>
+                        ) : (
+                          f.value || "–"
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+
           {display.checks.length > 0 && (
             <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
               <h2 className="mb-2 text-sm font-semibold text-muted">{t.detail.autoChecks}</h2>
               <ul className="space-y-1 text-sm">
-                {display.checks.map((c) => (
-                  <li key={c.label} className="flex items-center gap-2">
+                {display.checks.map((c, i) => (
+                  <li key={`${c.label}-${i}`} className="flex items-center gap-2">
                     <span
                       className={
                         c.ok === true ? "text-green-500" : c.ok === false ? "text-red-500" : "text-muted"
@@ -186,35 +215,6 @@ export default async function WorkitemDetail({
               </ul>
             </section>
           )}
-
-          <section className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
-            <h2 className="border-b border-line bg-surface-2 px-4 py-2.5 text-sm font-semibold text-muted">
-              {t.detail.docData}
-            </h2>
-            {visibleFields.length === 0 ? (
-              <p className="px-4 py-3 text-sm text-muted">{t.detail.noData}</p>
-            ) : (
-              <table className="w-full text-sm">
-                <tbody className="divide-y divide-line">
-                  {visibleFields.map((f) => (
-                    <tr key={f.key}>
-                      <td className="w-1/3 px-4 py-2.5 font-medium text-muted">{f.label}</td>
-                      <td className="px-4 py-2.5 text-fg">
-                        {f.role === "AMOUNT" ? (
-                          <span className="font-semibold">
-                            {formatAmount(f.value) ?? "–"}
-                            {display.currency ? ` ${display.currency}` : ""}
-                          </span>
-                        ) : (
-                          f.value || "–"
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </section>
 
           {workitem.status === "PENDING" && isOwner ? (
             <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
