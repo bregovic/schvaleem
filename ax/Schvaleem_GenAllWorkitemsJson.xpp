@@ -20,11 +20,6 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     DialogField dfFrom;
     DialogField dfPending;
 
-    // Deklarace na úrovni jobu – embedded funkce nesmí deklarovat lokální
-    // proměnnou typu třída, proto PurchTotals držíme zde a v viiTotals ho jen
-    // používáme (statická volání tříd v embedded funkcích fungují).
-    PurchTotals pt;
-
     str         dir;
     str         fileName;
     str         stamp;
@@ -91,25 +86,23 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     // měnu a ParmId – jinak by převod na účetní měnu (MST) uvnitř spadl na
     // „nutné určit měnu, ze které se převádí" a zaplavil Infolog. Pro takové
     // (rozpracované) záznamy a jako pojistka při výjimce použijeme součet řádků.
-    // [Celkem k úhradě (vč. DPH), z toho DPH] v MĚNĚ DOKLADU. Počítáno přes
-    // PurchTotals (stejně jako totals formulář faktury): posTotalAmountToPay()
-    // = dispTotalAmountToPay(), posTaxTotal() = částka DPH. Když to spadne
-    // (chybějící kurz apod.), vyčistíme Infolog a vrátíme součet řádků (bez DPH).
+    // [Celkem k úhradě (vč. DPH), z toho DPH] v MĚNĚ DOKLADU. Z calcTotals():
+    // index 10 = dispTotalAmountToPay (vč. DPH), index 5 = dispInvoiceAmount
+    // (bez DPH) → DPH = rozdíl. Když calcTotals spadne (chybějící kurz apod.),
+    // vyčistíme Infolog a vrátíme součet řádků (bez DPH).
     container viiTotals(VendInvoiceInfoTable _t)
     {
         VendInvoiceInfoLine line;
-        container           df;
-        if (_t.ParmId)
+        container           ct;
+        real                toPay, net;
+        if (_t.CurrencyCode && _t.ParmId)
         {
             try
             {
-                pt = PurchTotals::newParmTable(_t, PurchUpdate::All, AccountOrder::None,
-                                               _t.ParmId, '', _t.Ordering);
-                pt.calc();
-                df = pt.displayFields([PurchTotals::posTaxTotal(),
-                                       PurchTotals::posTotalAmountToPay()]);
-                return [conPeek(df, PurchTotals::posTotalAmountToPay()),
-                        conPeek(df, PurchTotals::posTaxTotal())];
+                ct    = _t.calcTotals();
+                toPay = conPeek(ct, 10);
+                net   = conPeek(ct, 5);
+                return [toPay, (toPay - net) > 0 ? (toPay - net) : 0];
             }
             catch
             {
