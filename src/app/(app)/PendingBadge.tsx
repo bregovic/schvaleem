@@ -42,6 +42,18 @@ export function PendingBadge({
     };
   }, [intervalMs]);
 
+  // Odznáček přímo na ikoně nainstalované PWA (zástupce v menu / na liště).
+  // Funguje, dokud appka běží (i na pozadí); po úplném zavření by to chtělo push.
+  useEffect(() => {
+    const nav = navigator as Navigator & {
+      setAppBadge?: (n?: number) => Promise<void>;
+      clearAppBadge?: () => Promise<void>;
+    };
+    if (!("setAppBadge" in navigator)) return;
+    if (count > 0) nav.setAppBadge?.(count).catch(() => {});
+    else nav.clearAppBadge?.().catch(() => {});
+  }, [count]);
+
   if (count <= 0) return null;
 
   return (
