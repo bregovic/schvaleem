@@ -188,7 +188,8 @@ model Workflow {
   // Metadata workflow z ERP (WorkflowTrackingStatusTable)
   documentTypeName String? // textový název typu, např. "Faktury dodavatele"
   label            String? // popis dokladu ("Číslo faktury: 2026006, …")
-  originator       String? // kdo workflow inicioval
+  originator       String? // kdo workflow inicioval (ERP userId)
+  originatorName   String? // reálné jméno zadavatele (z UserInfo)
   trackingStatus   String? // stav workflow v ERP
   erpCreatedAt     DateTime? // createdDateTime z ERP
   history          Json? // průběh schvalování z ERP: [{ type, user, at, comment }]
@@ -210,6 +211,7 @@ model Workitem {
   workflow          Workflow       @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   dataAreaCode      String
   assigneeErpUserId String // userId z ERP, kdo má schválit
+  assigneeName      String? // reálné jméno řešitele (z UserInfo)
   status            WorkitemStatus @default(PENDING)
 
   // Metadata workitemu z ERP (WorkflowWorkItemTable)

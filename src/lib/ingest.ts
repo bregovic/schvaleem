@@ -33,6 +33,7 @@ export async function ingestWorkitem(v: IngestInput): Promise<IngestResult> {
     documentTypeName: v.documentTypeName ?? null,
     label: v.documentLabel ?? null,
     originator: v.originator ?? null,
+    originatorName: v.originatorName ?? null,
     trackingStatus: v.trackingStatus ?? null,
     erpCreatedAt: parseErpDate(v.createdDateTime),
     // undefined = při re-importu bez historie nepřepisovat stávající
@@ -75,6 +76,7 @@ export async function ingestWorkitem(v: IngestInput): Promise<IngestResult> {
     workflowId: workflow.id,
     dataAreaCode,
     assigneeErpUserId: v.assigneeUserId,
+    assigneeName: v.assigneeName ?? null,
     subject: v.subject ?? null,
     description: v.description ?? null,
     dueAt: parseErpDate(v.dueDateTime),

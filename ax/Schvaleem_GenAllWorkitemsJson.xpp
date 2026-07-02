@@ -81,6 +81,17 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         return _vba.AccountNum;
     }
 
+    // Reálné jméno uživatele podle ID (SysUserInfo/UserInfo). UserInfo je GLOBÁLNÍ.
+    // Když se nenajde (nebo prázdné ID), vrátíme původní vstup (ať to není prázdné).
+    str userName(str _userId)
+    {
+        UserInfo userInfo;
+        if (!_userId)
+            return '';
+        select firstOnly Name from userInfo where userInfo.Id == _userId;
+        return userInfo.Name ? userInfo.Name : _userId;
+    }
+
     // „Celkem k úhradě" v MĚNĚ DOKLADU (vč. DPH) = conPeek(calcTotals(), 10),
     // což je přesně dispTotalAmountToPay(). Voláme ji ale jen když faktura MÁ
     // měnu a ParmId – jinak by převod na účetní měnu (MST) uvnitř spadl na
@@ -314,10 +325,11 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                 cmt = wfComment.Comment;
 
             ev = #I6 + '{' + #NL
-               + fl(inner, 'type',    q(enum2str(wfTrack.TrackingType))) + ',' + #NL
-               + fl(inner, 'user',    q(wfTrack.User)) + ',' + #NL
-               + fl(inner, 'at',      dtv(wfTrack.createdDateTime)) + ',' + #NL
-               + fl(inner, 'comment', q(cmt)) + #NL
+               + fl(inner, 'type',     q(enum2str(wfTrack.TrackingType))) + ',' + #NL
+               + fl(inner, 'user',     q(wfTrack.User)) + ',' + #NL
+               + fl(inner, 'userName', q(userName(wfTrack.User))) + ',' + #NL
+               + fl(inner, 'at',       dtv(wfTrack.createdDateTime)) + ',' + #NL
+               + fl(inner, 'comment',  q(cmt)) + #NL
                + #I6 + '}';
             if (arr)
                 arr += ',' + #NL;
@@ -395,9 +407,11 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
               + fl(#I4, 'documentType',     q(int2str(tid))) + ',' + #NL
               + fl(#I4, 'recordId',         q(int642str(recId))) + ',' + #NL
               + fl(#I4, 'assigneeUserId',   q(wfWorkItem.UserId)) + ',' + #NL
+              + fl(#I4, 'assigneeName',     q(userName(wfWorkItem.UserId))) + ',' + #NL
               + fl(#I4, 'documentTypeName', q(docTypeName)) + ',' + #NL
               + fl(#I4, 'documentLabel',    q(docLabel)) + ',' + #NL
               + fl(#I4, 'originator',       q(wfStatus.Originator)) + ',' + #NL
+              + fl(#I4, 'originatorName',   q(userName(wfStatus.Originator))) + ',' + #NL
               + fl(#I4, 'trackingStatus',   q(enum2str(wfStatus.TrackingStatus))) + ',' + #NL
               + fl(#I4, 'createdDateTime',  dtv(wfStatus.createdDateTime)) + ',' + #NL
               + fl(#I4, 'subject',          q(wfWorkItem.Subject)) + ',' + #NL

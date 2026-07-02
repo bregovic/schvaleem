@@ -17,7 +17,13 @@ function fmt(d: Date | null) {
   return new Intl.DateTimeFormat("cs-CZ", { dateStyle: "medium", timeStyle: "short" }).format(d);
 }
 
-type HistoryEvent = { type?: string; user?: string; at?: string; comment?: string };
+type HistoryEvent = {
+  type?: string;
+  user?: string;
+  userName?: string;
+  at?: string;
+  comment?: string;
+};
 
 // Překlad druhů workflow kroků (enum2str z AX) do češtiny.
 const TRACK_CS: Record<string, string> = {
@@ -152,7 +158,7 @@ export default async function WorkitemDetail({
         <h1 className="text-2xl font-semibold text-fg">{display.title}</h1>
         <StatusBadge status={workitem.status} t={t} />
       </div>
-      <p className="mb-6 text-sm text-muted">
+      <p className="mb-1 text-sm text-muted">
         {companyName ? `${companyName} (${workitem.dataAreaCode})` : workitem.dataAreaCode}
         {display.amount && (
           <>
@@ -181,6 +187,12 @@ export default async function WorkitemDetail({
             )}
           </>
         )}
+      </p>
+      <p className="mb-6 text-sm text-muted">
+        {t.detail.assignee}:{" "}
+        <span className="text-fg">
+          {workitem.assigneeName ?? workitem.assigneeErpUserId}
+        </span>
       </p>
 
       <div className={showDocs ? "grid gap-6 lg:grid-cols-2 lg:items-start" : "max-w-3xl"}>
@@ -278,7 +290,9 @@ export default async function WorkitemDetail({
                       <div className="min-w-0 flex-1">
                         <p className="text-sm text-fg">
                           <span className="font-medium">{trackLabel(ev.type, en)}</span>
-                          {ev.user && <span className="text-muted"> · {ev.user}</span>}
+                          {(ev.userName || ev.user) && (
+                            <span className="text-muted"> · {ev.userName || ev.user}</span>
+                          )}
                           {at && <span className="text-muted"> · {fmt(at)}</span>}
                         </p>
                         {ev.comment && (

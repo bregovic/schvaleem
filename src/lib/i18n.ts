@@ -98,6 +98,7 @@ const cs = {
     docDescription: "Popis",
     history: "Průběh schvalování",
     historyEmpty: "Zatím žádné kroky.",
+    assignee: "Řešitel",
   },
   decide: { comment: "Komentář…", approve: "✓ Schválit", reject: "✕ Zamítnout", defer: "↓ Odložit" },
   status: {
@@ -330,6 +331,7 @@ const en: typeof cs = {
     docDescription: "Description",
     history: "Approval history",
     historyEmpty: "No steps yet.",
+    assignee: "Assignee",
   },
   decide: { comment: "Comment…", approve: "✓ Approve", reject: "✕ Reject", defer: "↓ Defer" },
   status: {

@@ -75,6 +75,8 @@ export default async function ZaznamyPage() {
         title,
         popis,
         w.workflow.originator,
+        w.workflow.originatorName,
+        w.assigneeName,
         tn,
         ...Object.values(wfValues).map((v) =>
           v == null ? "" : typeof v === "object" ? JSON.stringify(v) : String(v),
@@ -104,7 +106,7 @@ export default async function ZaznamyPage() {
         popis,
         invoiceNo,
         search,
-        originator: w.workflow.originator,
+        originator: w.workflow.originatorName ?? w.workflow.originator,
         dueAt: w.dueAt ? w.dueAt.toISOString() : null,
         overdue,
         deferred: !!w.deferredAt,
