@@ -95,5 +95,15 @@ export async function ingestWorkitem(v: IngestInput): Promise<IngestResult> {
   const workitem = await prisma.workitem.create({
     data: { erpWorkitemId: v.workitemId, ...wiMeta },
   });
+
+  // Nový doklad → upozornit řešitele push notifikací (badge i při zavřené appce).
+  // Chyba pushe nesmí shodit příjem workitemu.
+  try {
+    const { notifyAssignee } = await import("@/lib/push");
+    await notifyAssignee(v.assigneeUserId);
+  } catch {
+    /* ignore */
+  }
+
   return { workflowId: workflow.id, workitemId: workitem.id, duplicate: false };
 }

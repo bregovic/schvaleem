@@ -32,8 +32,22 @@ model User {
   erpUserId    String?  @unique // userId z ERP – podle něj vidí uživatel své workitemy
   createdAt    DateTime @default(now())
 
-  sessions  Session[]
-  decisions Workitem[] @relation("WorkitemDecidedBy")
+  sessions      Session[]
+  decisions     Workitem[]         @relation("WorkitemDecidedBy")
+  pushSubs      PushSubscription[]
+}
+
+// Odběr Web Push (badge na ikoně i při zavřené appce). Jeden na zařízení/prohlížeč.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Session {
