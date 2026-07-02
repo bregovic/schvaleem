@@ -100,12 +100,12 @@ export function ApprovalHub({ items, t }: { items: ApprovalItem[]; t: Dict }) {
   }, [items, fType, fCompany, query]);
   const ordered = useMemo(() => sortItems(filtered, sortBy), [filtered, sortBy]);
 
-  // resync fronty po změně dat / filtru / řazení. Swipe = "zpracovat teď":
-  // odložené (mají příznak) do fronty nepatří, jinak by se po refreshi vracely
-  // dokola. V seznamu zůstávají viditelné s odznakem „odloženo".
+  // resync fronty po změně dat / filtru / řazení. Do fronty patří VŠECHNY
+  // položky (i dřív odložené) – odložené se řadí na konec (viz sort na serveru),
+  // takže „přijdou na řadu" po ostatních a z přehledu nezmizí.
   const orderedKey = ordered.map((i) => i.id).join(",");
   useEffect(() => {
-    setQueue(ordered.filter((i) => !i.deferred));
+    setQueue(ordered);
     setSelected(new Set());
   }, [orderedKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -135,6 +135,20 @@ export function ApprovalHub({ items, t }: { items: ApprovalItem[]; t: Dict }) {
   }
 
   function onDecision(id: string, action: Action, cmt: string) {
+    // Odložit ve swipe = jen přesun na konec fronty (skip „teď ne"), nic se
+    // nerozhoduje ani neukládá – karta se vrátí po zpracování ostatních.
+    if (action === "DEFER") {
+      setQueue((q) => {
+        if (q.length <= 1) return q;
+        const idx = q.findIndex((i) => i.id === id);
+        if (idx === -1) return q;
+        const copy = [...q];
+        const [it] = copy.splice(idx, 1);
+        copy.push(it);
+        return copy;
+      });
+      return;
+    }
     setQueue((q) => q.filter((i) => i.id !== id));
     run([id], action, cmt);
   }

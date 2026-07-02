@@ -39,7 +39,7 @@ export function SwipeDeck({
   const rotate = useTransform(x, [-220, 220], [-14, 14]);
   const okOpacity = useTransform(x, [30, 150], [0, 1]);
   const noOpacity = useTransform(x, [-150, -30], [1, 0]);
-  const deferOpacity = useTransform(y, [-150, -40, 40, 150], [1, 0, 0, 1]);
+  const deferOpacity = useTransform(y, [-160, -50, 50, 160], [1, 0, 0, 1]);
 
   const item = queue[0];
   const next = queue[1];
@@ -49,11 +49,22 @@ export function SwipeDeck({
     y.set(0);
   }
 
+  function snapBack() {
+    animate(x, 0, { type: "spring", stiffness: 300, damping: 25 });
+    animate(y, 0, { type: "spring", stiffness: 300, damping: 25 });
+  }
+
   async function fly(action: Action) {
     if (!item) return;
     if (action === "REJECT" && item.requireCommentOnReject && !comment.trim()) {
       setNeedComment(true);
       animate(x, 0, { type: "spring", stiffness: 300, damping: 25 });
+      return;
+    }
+    // Odložit = přesun na konec fronty. Když je ve frontě jen tahle karta,
+    // není kam ji odložit → vrátíme ji zpět (jinak by „odjela" naprázdno).
+    if (action === "DEFER" && queue.length <= 1) {
+      snapBack();
       return;
     }
     if (action === "APPROVE") await animate(x, 500, { duration: 0.25 });
@@ -70,14 +81,13 @@ export function SwipeDeck({
     info: { offset: { x: number; y: number }; velocity: { x: number; y: number } },
   ) {
     const { offset, velocity } = info;
-    if (offset.x > 120 || velocity.x > 700) fly("APPROVE");
-    else if (offset.x < -120 || velocity.x < -700) fly("REJECT");
-    else if (offset.y > 130 || offset.y < -130 || velocity.y > 700 || velocity.y < -700)
-      fly("DEFER");
-    else {
-      animate(x, 0, { type: "spring", stiffness: 300, damping: 25 });
-      animate(y, 0, { type: "spring", stiffness: 300, damping: 25 });
-    }
+    // Schválit/zamítnout: rozhodné vodorovné gesto (vzdálenost NEBO rychlý flik).
+    if (offset.x > 120 || velocity.x > 800) fly("APPROVE");
+    else if (offset.x < -120 || velocity.x < -800) fly("REJECT");
+    // Odložit: jen podle vzdálenosti a s vyšším prahem – ne podle rychlosti,
+    // ať rychlé cuknutí neodloží nechtěně. Když práh nepřekročíš, karta se vrátí.
+    else if (offset.y > 160 || offset.y < -160) fly("DEFER");
+    else snapBack();
   }
 
   if (!item) {
@@ -105,6 +115,8 @@ export function SwipeDeck({
         <motion.div
           key={item.id}
           drag
+          dragDirectionLock
+          dragMomentum={false}
           style={{ x, y, rotate }}
           onDragEnd={handleDragEnd}
           whileTap={{ cursor: "grabbing" }}
