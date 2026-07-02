@@ -86,9 +86,10 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
     str userName(str _userId)
     {
         UserInfo userInfo;
-        if (!_userId)
+        UserId   uid = _userId; // vázaný typ – nevázaný str nesmí být ve WHERE
+        if (!uid)
             return '';
-        select firstOnly Name from userInfo where userInfo.Id == _userId;
+        select firstOnly Name from userInfo where userInfo.Id == uid;
         return userInfo.Name ? userInfo.Name : _userId;
     }
 
