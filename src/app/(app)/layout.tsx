@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getDict } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { logoutAction } from "./actions";
+import { PendingBadge } from "./PendingBadge";
 
 export default async function AppLayout({
   children,
@@ -34,14 +35,7 @@ export default async function AppLayout({
                 priority
                 className="h-8 w-8"
               />
-              {pendingCount > 0 && (
-                <span
-                  title={`${pendingCount} ${t.nav.records}`}
-                  className="absolute -right-2 -top-1.5 flex h-[1.15rem] min-w-[1.15rem] items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold leading-none text-white ring-2 ring-surface"
-                >
-                  {pendingCount > 99 ? "99+" : pendingCount}
-                </span>
-              )}
+              <PendingBadge initial={pendingCount} label={t.nav.records} />
             </Link>
             <Link href="/zaznamy" className="hover:text-fg">
               {t.nav.records}
