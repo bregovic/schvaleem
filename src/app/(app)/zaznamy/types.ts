@@ -1,3 +1,5 @@
+import type { WfInfo } from "./workflow-info";
+
 export type CheckOutcomeC = { label: string; ok: boolean | null; message: string };
 export type PreviewFieldC = { label: string; value: string };
 
@@ -27,6 +29,7 @@ export type ApprovalItem = {
   priority: "high" | "normal";
   requireCommentOnReject: boolean;
   approveBlocked: boolean;
+  wf: WfInfo; // informace z workflow (odeslal + řešitel + průběh)
 };
 
 // Účetní formát: oddělené tisíce + 2 desetinná místa (cs-CZ). Nečíselné nechá být.

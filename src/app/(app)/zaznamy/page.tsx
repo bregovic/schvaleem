@@ -4,6 +4,7 @@ import { getDict } from "@/lib/i18n";
 import { resolveWorkflowDisplay, parseAmount } from "@/lib/config";
 import { ApprovalHub } from "./ApprovalHub";
 import type { ApprovalItem } from "./types";
+import { buildWorkflowInfo } from "./workflow-info";
 
 export default async function ZaznamyPage() {
   const user = await getCurrentUser();
@@ -117,6 +118,15 @@ export default async function ZaznamyPage() {
         priority,
         requireCommentOnReject: d.rules.requireCommentOnReject,
         approveBlocked,
+        wf: buildWorkflowInfo({
+          history: w.workflow.history,
+          originator: w.workflow.originator,
+          originatorName: w.workflow.originatorName,
+          originatorAt: w.workflow.erpCreatedAt,
+          assigneeName: w.assigneeName,
+          assigneeId: w.assigneeErpUserId,
+          locale: user.locale,
+        }),
       };
     }),
   );

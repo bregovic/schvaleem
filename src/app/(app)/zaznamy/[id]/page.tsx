@@ -5,7 +5,8 @@ import { getCurrentUser } from "@/lib/session";
 import { getDict } from "@/lib/i18n";
 import { resolveWorkflowDisplay, parseAmount } from "@/lib/config";
 import { runRegistryCheck, convertToCzk } from "@/lib/registries";
-import { parseErpDate } from "@/lib/erp";
+import { buildWorkflowInfo, hasWfInfo } from "../workflow-info";
+import { WorkflowInfo } from "../WorkflowInfo";
 import { formatAmount } from "../types";
 import { StatusBadge } from "../../StatusBadge";
 import { DecideForm } from "./DecideForm";
@@ -15,42 +16,6 @@ import { EscClose } from "./EscClose";
 function fmt(d: Date | null) {
   if (!d) return "–";
   return new Intl.DateTimeFormat("cs-CZ", { dateStyle: "medium", timeStyle: "short" }).format(d);
-}
-
-type HistoryEvent = {
-  type?: string;
-  user?: string;
-  userName?: string;
-  at?: string;
-  comment?: string;
-};
-
-// Překlad druhů workflow kroků (enum2str z AX) do češtiny.
-const TRACK_CS: Record<string, string> = {
-  Submission: "Odesláno ke schválení",
-  Submit: "Odesláno ke schválení",
-  Approval: "Schváleno",
-  Approved: "Schváleno",
-  Rejection: "Zamítnuto",
-  Rejected: "Zamítnuto",
-  Completion: "Dokončeno",
-  Completed: "Dokončeno",
-  Delegation: "Delegováno",
-  Escalation: "Eskalováno",
-  RequestChange: "Vyžádána změna",
-  ChangeRequest: "Vyžádána změna",
-  Resubmit: "Znovu odesláno",
-  Recall: "Staženo",
-  Return: "Vráceno",
-  Restart: "Restartováno",
-  Terminate: "Ukončeno",
-  Reassignment: "Přeřazeno",
-};
-
-function trackLabel(type: string | undefined, en: boolean): string {
-  if (!type) return "–";
-  if (en) return type;
-  return TRACK_CS[type] ?? type;
 }
 
 export default async function WorkitemDetail({
@@ -118,11 +83,16 @@ export default async function WorkitemDetail({
   const companyName = dataArea?.name ?? null;
   const popis = String(regValues["Popis faktury"] ?? regValues["Popis"] ?? "").trim();
 
-  // Průběh schvalování (kroky + komentáře) z ERP.
-  const history: HistoryEvent[] = Array.isArray(workitem.workflow.history)
-    ? (workitem.workflow.history as HistoryEvent[])
-    : [];
-  const en = (user?.locale ?? "cs").startsWith("en");
+  // Informace z workflow (odeslal + řešitel + průběh) – sdílený stavební blok.
+  const wf = buildWorkflowInfo({
+    history: workitem.workflow.history,
+    originator: workitem.workflow.originator,
+    originatorName: workitem.workflow.originatorName,
+    originatorAt: workitem.workflow.erpCreatedAt,
+    assigneeName: workitem.assigneeName,
+    assigneeId: workitem.assigneeErpUserId,
+    locale: user?.locale,
+  });
 
   // Dokumenty k náhledu. V testovacím režimu (env SCHVALEEM_DEMO_PDF=1) se při
   // chybějícím skenu zobrazí náhodné PDF ze systému – v ostré verzi NIKDY.
@@ -158,7 +128,7 @@ export default async function WorkitemDetail({
         <h1 className="text-2xl font-semibold text-fg">{display.title}</h1>
         <StatusBadge status={workitem.status} t={t} />
       </div>
-      <p className="mb-1 text-sm text-muted">
+      <p className="mb-6 text-sm text-muted">
         {companyName ? `${companyName} (${workitem.dataAreaCode})` : workitem.dataAreaCode}
         {display.amount && (
           <>
@@ -187,12 +157,6 @@ export default async function WorkitemDetail({
             )}
           </>
         )}
-      </p>
-      <p className="mb-6 text-sm text-muted">
-        {t.detail.assignee}:{" "}
-        <span className="text-fg">
-          {workitem.assigneeName ?? workitem.assigneeErpUserId}
-        </span>
       </p>
 
       <div className={showDocs ? "grid gap-6 lg:grid-cols-2 lg:items-start" : "max-w-3xl"}>
@@ -233,6 +197,8 @@ export default async function WorkitemDetail({
             )}
           </section>
 
+          {hasWfInfo(wf) && <WorkflowInfo wf={wf} t={t} />}
+
           {display.checks.length > 0 && (
             <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
               <h2 className="mb-2 text-sm font-semibold text-muted">{t.detail.autoChecks}</h2>
@@ -272,39 +238,6 @@ export default async function WorkitemDetail({
                   </li>
                 ))}
               </ul>
-            </section>
-          )}
-
-          {history.length > 0 && (
-            <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
-              <h2 className="mb-3 text-sm font-semibold text-muted">{t.detail.history}</h2>
-              <ol className="space-y-3">
-                {history.map((ev, i) => {
-                  const at = parseErpDate(ev.at);
-                  return (
-                    <li key={i} className="flex gap-3">
-                      <span
-                        aria-hidden
-                        className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-accent"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm text-fg">
-                          <span className="font-medium">{trackLabel(ev.type, en)}</span>
-                          {(ev.userName || ev.user) && (
-                            <span className="text-muted"> · {ev.userName || ev.user}</span>
-                          )}
-                          {at && <span className="text-muted"> · {fmt(at)}</span>}
-                        </p>
-                        {ev.comment && (
-                          <p className="mt-0.5 whitespace-pre-wrap text-sm text-muted">
-                            „{ev.comment}"
-                          </p>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
             </section>
           )}
 

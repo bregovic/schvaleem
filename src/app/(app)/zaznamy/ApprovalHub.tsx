@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { decideWorkitems } from "../actions";
 import { SwipeDeck } from "./SwipeDeck";
+import { WorkflowInfo } from "./WorkflowInfo";
+import { hasWfInfo } from "./workflow-info";
 import { amountLabel, type ApprovalItem } from "./types";
 import type { Dict } from "@/lib/i18n";
 
@@ -413,6 +415,7 @@ function Row({
             {t.records.created}: {fmtShort(it.createdAt)}
           </span>
         </p>
+        {hasWfInfo(it.wf) && <WorkflowInfo wf={it.wf} t={t} variant="compact" />}
       </Link>
     </li>
   );

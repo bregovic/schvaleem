@@ -9,6 +9,8 @@ import {
   animate,
 } from "framer-motion";
 import { amountLabel, type ApprovalItem } from "./types";
+import { WorkflowInfo } from "./WorkflowInfo";
+import { hasWfInfo } from "./workflow-info";
 import type { Dict } from "@/lib/i18n";
 
 type Action = "APPROVE" | "REJECT" | "DEFER";
@@ -157,15 +159,12 @@ export function SwipeDeck({
           <p className="text-sm text-muted">
             {item.documentTypeName} · {item.dataAreaName ?? item.dataArea}
           </p>
-          {(item.dueAt || item.originator) && (
+          {item.dueAt && (
             <p className="mt-1 text-xs">
-              {item.dueAt && (
-                <span className={item.overdue ? "font-medium text-red-400" : "text-amber-400"}>
-                  {t.swipe.due} {fmtDate(item.dueAt)}
-                  {item.overdue ? t.swipe.overdue : ""}
-                </span>
-              )}
-              {item.originator && <span className="text-muted"> · {t.swipe.from} {item.originator}</span>}
+              <span className={item.overdue ? "font-medium text-red-400" : "text-amber-400"}>
+                {t.swipe.due} {fmtDate(item.dueAt)}
+                {item.overdue ? t.swipe.overdue : ""}
+              </span>
             </p>
           )}
           {amt && <p className="mt-3 text-3xl font-bold text-fg">{amt}</p>}
@@ -183,6 +182,11 @@ export function SwipeDeck({
                 </div>
               ))}
             </dl>
+          )}
+
+          {/* informace z workflow (odeslal + řešitel + průběh) */}
+          {hasWfInfo(item.wf) && (
+            <WorkflowInfo wf={item.wf} t={t} variant="compact" maxEvents={3} />
           )}
 
           {/* automatické kontroly */}
