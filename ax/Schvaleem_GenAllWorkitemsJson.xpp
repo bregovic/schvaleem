@@ -297,10 +297,11 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         return [valuesJson, docTypeName, docLabel];
     }
 
-    // Průběh schvalování (kdo/kdy/co + komentáře) napříč celým workflow stromem.
-    // WorkflowTrackingTable = jednotlivé události (schválení, dokončení, delegování…),
-    // WorkflowTrackingCommentTable = komentáře k události. Obě jsou GLOBÁLNÍ systémové
-    // tabulky (netřeba changeCompany). Vážeme je přes RootCorrelationId instance.
+    // Průběh schvalování napříč celým workflow stromem – jen SMYSLUPLNÉ kroky:
+    // odeslání ke schválení a dokončení (schválení/zamítnutí…) workitemů. Systémové
+    // události typu „vytvoření workitemu" vynecháváme. Krok s KOMENTÁŘEM ale bereme
+    // vždy (chceme všechny komentáře). WorkflowTrackingTable = události,
+    // WorkflowTrackingCommentTable = komentáře; obě GLOBÁLNÍ (netřeba changeCompany).
     str trackingHistory(guid _rootCorr)
     {
         WorkflowTrackingTable        wfTrack;
@@ -310,6 +311,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         str arr;
         str ev;
         str cmt;
+        str typeName;
 
         while select wfTrack
             order by wfTrack.createdDateTime asc
@@ -317,15 +319,33 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
                 where wfStat.RecId == wfTrack.WorkflowTrackingStatusTable
                    && wfStat.RootCorrelationId == _rootCorr
         {
+            // Všechny komentáře k události (může jich být víc) spojíme.
             cmt = '';
-            select firstOnly wfComment
+            while select wfComment
                 order by wfComment.createdDateTime asc
-                where wfComment.WorkflowTrackingTable == wfTrack.RecId;
-            if (wfComment.RecId)
-                cmt = wfComment.Comment;
+                where wfComment.WorkflowTrackingTable == wfTrack.RecId
+            {
+                if (cmt)
+                    cmt += ' | ';
+                cmt += wfComment.Comment;
+            }
+
+            // Necháme jen odeslání a dokončovací akce; ostatní (např. vytvoření
+            // workitemu) přeskočíme – pokud ale nesou komentář, bereme je vždy.
+            typeName = enum2str(wfTrack.TrackingType);
+            if (!cmt
+             && typeName != 'Submission'   && typeName != 'Submit'
+             && typeName != 'Resubmit'     && typeName != 'Approval'
+             && typeName != 'Approved'     && typeName != 'Rejection'
+             && typeName != 'Rejected'     && typeName != 'Completion'
+             && typeName != 'Completed'    && typeName != 'Delegation'
+             && typeName != 'Return'       && typeName != 'RequestChange'
+             && typeName != 'ChangeRequest'&& typeName != 'Recall'
+             && typeName != 'Terminate')
+                continue;
 
             ev = #I6 + '{' + #NL
-               + fl(inner, 'type',     q(enum2str(wfTrack.TrackingType))) + ',' + #NL
+               + fl(inner, 'type',     q(typeName)) + ',' + #NL
                + fl(inner, 'user',     q(wfTrack.User)) + ',' + #NL
                + fl(inner, 'userName', q(userName(wfTrack.User))) + ',' + #NL
                + fl(inner, 'at',       dtv(wfTrack.createdDateTime)) + ',' + #NL
