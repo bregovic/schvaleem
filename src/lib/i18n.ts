@@ -96,6 +96,8 @@ const cs = {
     uploading: "Nahrávám…",
     uploaded: "Příloha nahrána.",
     docDescription: "Popis",
+    history: "Průběh schvalování",
+    historyEmpty: "Zatím žádné kroky.",
   },
   decide: { comment: "Komentář…", approve: "✓ Schválit", reject: "✕ Zamítnout", defer: "↓ Odložit" },
   status: {
@@ -326,6 +328,8 @@ const en: typeof cs = {
     uploading: "Uploading…",
     uploaded: "Attachment uploaded.",
     docDescription: "Description",
+    history: "Approval history",
+    historyEmpty: "No steps yet.",
   },
   decide: { comment: "Comment…", approve: "✓ Approve", reject: "✕ Reject", defer: "↓ Defer" },
   status: {

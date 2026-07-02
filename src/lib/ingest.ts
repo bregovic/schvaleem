@@ -35,6 +35,8 @@ export async function ingestWorkitem(v: IngestInput): Promise<IngestResult> {
     originator: v.originator ?? null,
     trackingStatus: v.trackingStatus ?? null,
     erpCreatedAt: parseErpDate(v.createdDateTime),
+    // undefined = při re-importu bez historie nepřepisovat stávající
+    history: v.history ?? undefined,
   };
 
   const workflow = await prisma.workflow.upsert({

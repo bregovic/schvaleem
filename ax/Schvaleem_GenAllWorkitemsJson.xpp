@@ -286,12 +286,55 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
         return [valuesJson, docTypeName, docLabel];
     }
 
+    // Průběh schvalování (kdo/kdy/co + komentáře) napříč celým workflow stromem.
+    // WorkflowTrackingTable = jednotlivé události (schválení, dokončení, delegování…),
+    // WorkflowTrackingCommentTable = komentáře k události. Obě jsou GLOBÁLNÍ systémové
+    // tabulky (netřeba changeCompany). Vážeme je přes RootCorrelationId instance.
+    str trackingHistory(guid _rootCorr)
+    {
+        WorkflowTrackingTable        wfTrack;
+        WorkflowTrackingCommentTable wfComment;
+        WorkflowTrackingStatusTable  wfStat;
+        str inner = #I6 + #I2; // odsazení polí uvnitř události
+        str arr;
+        str ev;
+        str cmt;
+
+        while select wfTrack
+            order by wfTrack.createdDateTime asc
+            join wfStat
+                where wfStat.RecId == wfTrack.WorkflowTrackingStatusTable
+                   && wfStat.RootCorrelationId == _rootCorr
+        {
+            cmt = '';
+            select firstOnly wfComment
+                order by wfComment.createdDateTime asc
+                where wfComment.WorkflowTrackingTable == wfTrack.RecId;
+            if (wfComment.RecId)
+                cmt = wfComment.Comment;
+
+            ev = #I6 + '{' + #NL
+               + fl(inner, 'type',    q(enum2str(wfTrack.TrackingType))) + ',' + #NL
+               + fl(inner, 'user',    q(wfTrack.User)) + ',' + #NL
+               + fl(inner, 'at',      dtv(wfTrack.createdDateTime)) + ',' + #NL
+               + fl(inner, 'comment', q(cmt)) + #NL
+               + #I6 + '}';
+            if (arr)
+                arr += ',' + #NL;
+            arr += ev;
+        }
+        if (!arr)
+            return '[]';
+        return '[' + #NL + arr + #NL + #I4 + ']';
+    }
+
     // ---- Zpracování všech workitemů (WorkflowWorkItemTable je GLOBÁLNÍ) -------
     void processWorkitems()
     {
         WorkflowWorkItemTable        wfWorkItem;
         WorkflowTrackingStatusTable  wfStatus;
         str   valuesJson;
+        str   historyJson;
         str   obj;
         str   docLabel;
         str   docTypeName;
@@ -341,6 +384,9 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
             [valuesJson, docTypeName, docLabel] =
                 buildDocValues(tid, recId, wfStatus.ContextRecId, company, descGross, wfStatus.Document);
 
+            // Historie schvalování (co se dělo před aktuálním krokem).
+            historyJson = trackingHistory(wfWorkItem.RootCorrelationId);
+
             obj =
                 #I2 + '{' + #NL
               + fl(#I4, 'workflowId',       q(guid2str(wfWorkItem.RootCorrelationId))) + ',' + #NL
@@ -358,6 +404,7 @@ static void Schvaleem_GenAllWorkitemsJson(Args _args)
               + fl(#I4, 'description',      q(wfWorkItem.Description)) + ',' + #NL
               + fl(#I4, 'dueDateTime',      dtv(wfWorkItem.DueDateTime)) + ',' + #NL
               + fl(#I4, 'workitemStatus',   q(enum2str(wfWorkItem.Status))) + ',' + #NL
+              + fl(#I4, 'history',          historyJson) + ',' + #NL
               + fl(#I4, 'documents',        '[]') + ',' + #NL
               + fl(#I4, 'values',           valuesJson) + #NL
               + #I2 + '}';

@@ -191,6 +191,7 @@ model Workflow {
   originator       String? // kdo workflow inicioval
   trackingStatus   String? // stav workflow v ERP
   erpCreatedAt     DateTime? // createdDateTime z ERP
+  history          Json? // průběh schvalování z ERP: [{ type, user, at, comment }]
 
   createdAt DateTime @default(now())
 

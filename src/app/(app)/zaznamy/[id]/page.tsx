@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getDict } from "@/lib/i18n";
 import { resolveWorkflowDisplay, parseAmount } from "@/lib/config";
 import { runRegistryCheck, convertToCzk } from "@/lib/registries";
+import { parseErpDate } from "@/lib/erp";
 import { formatAmount } from "../types";
 import { StatusBadge } from "../../StatusBadge";
 import { DecideForm } from "./DecideForm";
@@ -14,6 +15,36 @@ import { EscClose } from "./EscClose";
 function fmt(d: Date | null) {
   if (!d) return "–";
   return new Intl.DateTimeFormat("cs-CZ", { dateStyle: "medium", timeStyle: "short" }).format(d);
+}
+
+type HistoryEvent = { type?: string; user?: string; at?: string; comment?: string };
+
+// Překlad druhů workflow kroků (enum2str z AX) do češtiny.
+const TRACK_CS: Record<string, string> = {
+  Submission: "Odesláno ke schválení",
+  Submit: "Odesláno ke schválení",
+  Approval: "Schváleno",
+  Approved: "Schváleno",
+  Rejection: "Zamítnuto",
+  Rejected: "Zamítnuto",
+  Completion: "Dokončeno",
+  Completed: "Dokončeno",
+  Delegation: "Delegováno",
+  Escalation: "Eskalováno",
+  RequestChange: "Vyžádána změna",
+  ChangeRequest: "Vyžádána změna",
+  Resubmit: "Znovu odesláno",
+  Recall: "Staženo",
+  Return: "Vráceno",
+  Restart: "Restartováno",
+  Terminate: "Ukončeno",
+  Reassignment: "Přeřazeno",
+};
+
+function trackLabel(type: string | undefined, en: boolean): string {
+  if (!type) return "–";
+  if (en) return type;
+  return TRACK_CS[type] ?? type;
 }
 
 export default async function WorkitemDetail({
@@ -80,6 +111,12 @@ export default async function WorkitemDetail({
   });
   const companyName = dataArea?.name ?? null;
   const popis = String(regValues["Popis faktury"] ?? regValues["Popis"] ?? "").trim();
+
+  // Průběh schvalování (kroky + komentáře) z ERP.
+  const history: HistoryEvent[] = Array.isArray(workitem.workflow.history)
+    ? (workitem.workflow.history as HistoryEvent[])
+    : [];
+  const en = (user?.locale ?? "cs").startsWith("en");
 
   // Dokumenty k náhledu. V testovacím režimu (env SCHVALEEM_DEMO_PDF=1) se při
   // chybějícím skenu zobrazí náhodné PDF ze systému – v ostré verzi NIKDY.
@@ -223,6 +260,37 @@ export default async function WorkitemDetail({
                   </li>
                 ))}
               </ul>
+            </section>
+          )}
+
+          {history.length > 0 && (
+            <section className="rounded-lg bg-surface p-4 ring-1 ring-line">
+              <h2 className="mb-3 text-sm font-semibold text-muted">{t.detail.history}</h2>
+              <ol className="space-y-3">
+                {history.map((ev, i) => {
+                  const at = parseErpDate(ev.at);
+                  return (
+                    <li key={i} className="flex gap-3">
+                      <span
+                        aria-hidden
+                        className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-accent"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm text-fg">
+                          <span className="font-medium">{trackLabel(ev.type, en)}</span>
+                          {ev.user && <span className="text-muted"> · {ev.user}</span>}
+                          {at && <span className="text-muted"> · {fmt(at)}</span>}
+                        </p>
+                        {ev.comment && (
+                          <p className="mt-0.5 whitespace-pre-wrap text-sm text-muted">
+                            „{ev.comment}"
+                          </p>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
             </section>
           )}
 

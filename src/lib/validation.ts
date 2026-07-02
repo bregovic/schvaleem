@@ -15,6 +15,17 @@ export const ingestWorkitemSchema = z.object({
   originator: z.string().optional(),
   trackingStatus: z.string().optional(),
   createdDateTime: z.string().optional(),
+  // Průběh schvalování (kroky + komentáře) z ERP – volitelné
+  history: z
+    .array(
+      z.object({
+        type: z.string().optional(), // druh kroku (schválení, dokončení…)
+        user: z.string().optional(), // kdo
+        at: z.string().optional(), // kdy (ERP datum/čas)
+        comment: z.string().optional(), // komentář
+      }),
+    )
+    .optional(),
   // Metadata workitemu (volitelné)
   subject: z.string().optional(),
   description: z.string().optional(),
